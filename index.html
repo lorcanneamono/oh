@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cardistry Trainer</title>
+<meta name="description" content="Learn cardistry one move at a time. Check off 74 named moves and track your progress.">
+<meta name="theme-color" content="#0d1a2c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cardistry">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f4f6f9; --surface:#ffffff; --surface2:#eef2f7; --ink:#141a24; --muted:#5c6675; --faint:#8b95a5;
+  --line:#e4e9f0; --accent:#0f9a90; --accent-ink:#0b6f68; --accent-soft:#e3f4f2;
+  --l1:#0e9e93; --l2:#2aa46a; --l3:#2f6fe0; --l4:#7a54d6; --l5:#e0496a;
+  --shadow:0 8px 26px rgba(20,30,50,.08); --radius:16px;
+  --disp:'Sora',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1320; --surface:#141d2c; --surface2:#1b2637; --ink:#e9eef6; --muted:#9aa6b7; --faint:#6b7789;
+  --line:#25313f; --accent:#2fc4b8; --accent-ink:#8fe0d8; --accent-soft:#123130;
+  --l1:#28b7ab; --l2:#41bd83; --l3:#5a90f5; --l4:#a385ee; --l5:#f0748e;
+  --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0c1320; --surface:#141d2c; --surface2:#1b2637; --ink:#e9eef6; --muted:#9aa6b7; --faint:#6b7789;
+  --line:#25313f; --accent:#2fc4b8; --accent-ink:#8fe0d8; --accent-soft:#123130;
+  --l1:#28b7ab; --l2:#41bd83; --l3:#5a90f5; --l4:#a385ee; --l5:#f0748e;
+  --shadow:0 10px 30px rgba(0,0,0,.45); color-scheme:dark;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%; margin:0}
+body{font-family:var(--body); background:var(--bg); color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased;
+  display:flex; flex-direction:column; overflow:hidden}
+.app{display:flex; flex-direction:column; height:100%; min-height:0}
+h1,h2,h3,h4,.disp{font-family:var(--disp)}
+a{color:var(--accent-ink)}
+.wrap{max-width:820px; margin:0 auto; padding:0 16px}
+
+/* top bar */
+.topbar{flex:0 0 auto; display:flex; align-items:center; gap:10px; padding:11px 16px; background:var(--surface); border-bottom:1px solid var(--line)}
+.brand{display:flex; align-items:center; gap:9px; font-family:var(--disp); font-weight:700; font-size:17px; letter-spacing:-.3px}
+.brand .logo{width:28px; height:28px; border-radius:8px; background:linear-gradient(135deg,var(--accent),var(--l4)); display:grid; place-items:center; color:#fff; font-size:14px}
+.topbar .sp{flex:1}
+.countpill{font-family:var(--disp); font-weight:700; font-size:12.5px; color:var(--accent-ink); background:var(--accent-soft); padding:5px 11px; border-radius:100px}
+.tgl{border:1px solid var(--line); background:var(--surface); color:var(--muted); width:34px; height:34px; border-radius:9px; cursor:pointer; font-size:15px; user-select:none}
+.tgl:active{transform:scale(.92)}
+
+/* scroll area */
+.screen{flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain}
+.panel{display:none} .panel.active{display:block}
+.screen .wrap{padding-bottom:26px}
+section.block{padding:22px 0}
+.eyebrow{font-family:var(--disp); text-transform:uppercase; letter-spacing:2px; font-size:11px; font-weight:700; color:var(--accent); margin:0 0 8px}
+h2.big{font-family:var(--disp); font-weight:700; font-size:clamp(23px,6vw,32px); letter-spacing:-.6px; margin:0 0 8px}
+.lede{color:var(--muted); font-size:15.5px; max-width:60ch}
+.card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow)}
+.grid{display:grid; gap:13px}
+@media(min-width:620px){.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}}
+h3.sub{font-size:18px; margin:20px 0 8px}
+p{margin:0 0 10px}
+ul.tick{list-style:none; padding:0; margin:8px 0}
+ul.tick li{padding-left:23px; position:relative; margin:7px 0}
+ul.tick li::before{content:"\2660"; position:absolute; left:0; color:var(--accent)}
+
+/* hero */
+.hero{border-radius:20px; padding:34px 24px; color:#fff; position:relative; overflow:hidden;
+  background:linear-gradient(145deg,#0d1a2c,#143253 60%,#0f5f5c)}
+.hero .suit{position:absolute; right:-6px; top:-20px; font-size:160px; opacity:.08}
+.hero h1{font-size:clamp(28px,7.5vw,44px); line-height:1.03; letter-spacing:-1px; margin:0 0 10px}
+.hero .em{color:#5fd0c6}
+.hero p{color:#cddae8; max-width:52ch; font-size:15.5px}
+.hero .cta{margin-top:16px; display:flex; gap:9px; flex-wrap:wrap}
+.btn{font-family:var(--disp); font-weight:600; font-size:14px; border:none; border-radius:11px; padding:11px 17px; cursor:pointer;
+  background:var(--accent); color:#fff; user-select:none}
+.btn:active{transform:scale(.96)}
+.btn.ghost{background:rgba(255,255,255,.12); color:#fff; border:1px solid rgba(255,255,255,.25)}
+.statrow{display:flex; gap:9px; margin-top:20px; flex-wrap:wrap}
+.statrow .s{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); border-radius:13px; padding:11px 14px; flex:1; min-width:92px}
+.statrow .s b{display:block; font-family:var(--disp); font-size:22px; font-weight:700}
+.statrow .s span{font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:#9fb4c9}
+.note{background:var(--accent-soft); border:1px solid color-mix(in srgb,var(--accent) 35%,transparent); border-radius:12px; padding:12px 15px; color:var(--ink); font-size:14px}
+
+/* moves progress mini */
+.mini{display:flex; align-items:center; gap:14px; margin:6px 0 2px}
+.mini .lab{font-family:var(--disp); font-weight:700; font-size:13px; white-space:nowrap}
+.mini .lab small{display:block; font-weight:500; font-size:11px; color:var(--muted)}
+.mini .track{flex:1; height:11px; background:var(--surface2); border:1px solid var(--line); border-radius:100px; overflow:hidden}
+.mini .track>i{display:block; height:100%; width:0; border-radius:100px; background:linear-gradient(90deg,var(--l1),var(--l3),var(--l5)); transition:width .4s ease}
+.mini .pct{font-family:var(--disp); font-weight:700; font-size:15px; min-width:42px; text-align:right}
+
+/* controls */
+.controls{position:sticky; top:0; z-index:20; background:var(--bg); padding:10px 0 8px; border-bottom:1px solid var(--line)}
+.search{width:100%; font-family:var(--body); font-size:15px; padding:11px 14px; border-radius:12px; border:1px solid var(--line); background:var(--surface); color:var(--ink)}
+.search::placeholder{color:var(--faint)}
+.chips{display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; margin-top:9px; -webkit-overflow-scrolling:touch; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{font-family:var(--disp); font-weight:600; font-size:12.5px; padding:7px 13px; border-radius:100px; cursor:pointer; white-space:nowrap;
+  border:1px solid var(--line); background:var(--surface); color:var(--muted); user-select:none}
+.chip:active{transform:scale(.95)}
+.chip.on{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.chip.lv1.on{background:var(--l1);border-color:var(--l1);color:#fff} .chip.lv2.on{background:var(--l2);border-color:var(--l2);color:#fff}
+.chip.lv3.on{background:var(--l3);border-color:var(--l3);color:#fff} .chip.lv4.on{background:var(--l4);border-color:var(--l4);color:#fff}
+.chip.lv5.on{background:var(--l5);border-color:var(--l5);color:#fff}
+
+/* level group */
+.lvhead{display:flex; align-items:center; gap:11px; margin:20px 0 9px}
+.lvhead .num{font-family:var(--disp); font-weight:700; font-size:22px; color:#fff; width:38px; height:38px; border-radius:11px; display:grid; place-items:center}
+.n1{background:var(--l1)}.n2{background:var(--l2)}.n3{background:var(--l3)}.n4{background:var(--l4)}.n5{background:var(--l5)}
+.lvhead .t{flex:1; min-width:0}
+.lvhead .t b{font-family:var(--disp); font-size:17px; display:block; letter-spacing:-.2px}
+.lvhead .t span{font-size:12px; color:var(--muted)}
+.lvprog{font-family:var(--disp); font-size:12px; font-weight:700; color:var(--muted); white-space:nowrap}
+.lvbar{height:6px; background:var(--surface2); border:1px solid var(--line); border-radius:100px; overflow:hidden; margin:0 0 11px}
+.lvbar>i{display:block; height:100%; width:0; border-radius:100px; transition:width .35s ease}
+.b1{background:var(--l1)}.b2{background:var(--l2)}.b3{background:var(--l3)}.b4{background:var(--l4)}.b5{background:var(--l5)}
+
+/* move row */
+.move{display:flex; gap:12px; align-items:flex-start; background:var(--surface); border:1px solid var(--line);
+  border-radius:13px; padding:12px 14px; margin:8px 0; cursor:pointer; transition:border-color .12s,background .12s,transform .08s; user-select:none}
+.move:active{transform:scale(.985)}
+.move.done{background:var(--accent-soft); border-color:transparent}
+.box{flex:0 0 auto; width:24px; height:24px; border-radius:7px; border:2px solid var(--line); background:var(--surface); display:grid; place-items:center; margin-top:1px; transition:.12s}
+.move.done .box{background:var(--accent); border-color:var(--accent)}
+.box svg{width:14px; height:14px; stroke:#fff; stroke-width:3.2; fill:none; opacity:0}
+.move.done .box svg{opacity:1}
+.mbody{flex:1; min-width:0}
+.mtop{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.mname{font-family:var(--disp); font-weight:600; font-size:15.5px; letter-spacing:-.2px}
+.move.done .mname{text-decoration:line-through; text-decoration-color:var(--accent); text-decoration-thickness:2px}
+.mby{font-size:12px; color:var(--muted)}
+.mcat{font-size:11px; color:var(--faint); font-family:var(--disp); font-weight:600; text-transform:uppercase; letter-spacing:.6px}
+.mblurb{font-size:13.5px; color:var(--muted); margin:3px 0 0}
+.lvtag{font-family:var(--disp); font-weight:700; font-size:10.5px; padding:2px 8px; border-radius:100px; color:#fff}
+.p1{background:var(--l1)}.p2{background:var(--l2)}.p3{background:var(--l3)}.p4{background:var(--l4)}.p5{background:var(--l5)}
+.empty{color:var(--faint); text-align:center; padding:38px 0}
+.foot{color:var(--faint); font-size:12px; text-align:center; padding:22px 0 4px}
+
+/* progress dashboard */
+.ring{display:flex; align-items:center; gap:20px; flex-wrap:wrap}
+.ring svg{width:120px; height:120px; flex:0 0 auto}
+.ring .rlabel b{font-family:var(--disp); font-size:38px; font-weight:700; display:block; line-height:1}
+.ring .rlabel span{color:var(--muted); font-size:14px}
+.pbars{margin-top:16px}
+.pbrow{display:flex; align-items:center; gap:11px; margin:11px 0}
+.pbrow .lab{font-family:var(--disp); font-weight:600; font-size:13px; width:120px}
+.pbrow .track{flex:1; height:9px; background:var(--surface2); border:1px solid var(--line); border-radius:100px; overflow:hidden}
+.pbrow .track>i{display:block; height:100%; width:0; border-radius:100px; transition:width .4s ease}
+.pbrow .val{font-family:var(--disp); font-size:12.5px; font-weight:700; color:var(--muted); width:52px; text-align:right}
+
+/* bottom tab bar */
+.tabbar{flex:0 0 auto; position:relative; display:flex; background:var(--surface); border-top:1px solid var(--line)}
+.pline{position:absolute; top:0; left:0; right:0; height:4px; background:var(--surface2)}
+.pline>i{display:block; height:100%; width:0; border-radius:0 3px 3px 0; background:linear-gradient(90deg,var(--l1),var(--l3),var(--l5)); transition:width .45s ease}
+.tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:9px 0 7px; background:none; border:none;
+  color:var(--muted); font-family:var(--disp); font-weight:600; font-size:10.5px; letter-spacing:.2px; cursor:pointer; user-select:none; transition:color .12s,transform .08s}
+.tab svg{width:23px; height:23px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round}
+.tab.active{color:var(--accent)}
+.tab:active{transform:scale(.9)}
+
+/* standalone safe-area */
+.tabbar{padding-bottom:env(safe-area-inset-bottom,0px)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="logo">&spades;</span> Cardistry</div>
+    <div class="sp"></div>
+    <span class="countpill" id="topCount">0/74</span>
+    <button class="tgl" id="themeBtn" title="Toggle theme">&#9680;</button>
+  </div>
+
+  <div class="screen" id="screen">
+    <!-- LEARN -->
+    <div class="panel active" id="tab-learn">
+      <div class="wrap">
+        <section class="block">
+          <div class="hero">
+            <div class="suit">&spades;</div>
+            <h1>Learn cardistry,<br>one move at a <span class="em">time.</span></h1>
+            <p>Read up on the art, then work through a checklist of 74 named moves &mdash; from your first cut to full showpieces. Tick off what you land and watch your progress fill up.</p>
+            <div class="cta">
+              <button class="btn" data-go="moves">Browse the moves &rarr;</button>
+              <button class="btn ghost" data-go="progress">My progress</button>
+            </div>
+            <div class="statrow">
+              <div class="s"><b id="heroCount">0</b><span>Learned</span></div>
+              <div class="s"><b>74</b><span>In catalog</span></div>
+              <div class="s"><b>5</b><span>Levels</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="block" id="install">
+          <p class="eyebrow">Put it on your phone</p>
+          <h2 class="big">Add it to your iPhone</h2>
+          <p class="lede">Save it to your Home Screen and it opens full-screen like a real app, with your progress kept on that device.</p>
+          <div class="card" style="margin-top:13px">
+            <ol style="margin:0; padding-left:22px; line-height:1.8">
+              <li>Open this page in <b>Safari</b>. <span class="mblurb">(If it opened inside the Claude app, tap the share icon and choose <b>Open in Safari</b>, or paste the link into Safari.)</span></li>
+              <li>Tap the <b>Share</b> button &mdash; the square with an up-arrow.</li>
+              <li>Scroll down and tap <b>Add to Home Screen</b>.</li>
+              <li>Tap <b>Add</b>. A <b>Cardistry</b> icon lands on your Home Screen.</li>
+            </ol>
+            <div class="note" style="margin-top:13px">Then it launches full-screen with no browser bars &mdash; and your checked moves and theme stay saved on your iPhone.</div>
+          </div>
+        </section>
+
+        <section class="block">
+          <p class="eyebrow">Cardistry 101</p>
+          <h2 class="big">What it actually is</h2>
+          <p class="lede">Cardistry is the art of making a deck of cards look impressive on purpose &mdash; the cuts, fans, spins and displays you do with your hands, performed to be watched, not to trick anyone.</p>
+          <div class="grid g2" style="margin-top:14px">
+            <div class="card"><h3 class="sub" style="margin-top:0">Cardistry</h3><ul class="tick"><li>Purely visual &mdash; you want people to see every move.</li><li>No deception, no "pick a card."</li><li>Judged on smoothness, difficulty and style.</li></ul></div>
+            <div class="card"><h3 class="sub" style="margin-top:0">Card magic</h3><ul class="tick"><li>Hides the method so it feels impossible.</li><li>Built around a secret and a reveal.</li><li>Judged on the illusion, not the handling.</li></ul></div>
+          </div>
+          <p style="margin-top:12px">You don't need to know a single magic trick to do cardistry. You just need a deck and reps.</p>
+        </section>
+
+        <section class="block">
+          <p class="eyebrow">Your kit</p>
+          <h2 class="big">Decks &amp; care</h2>
+          <div class="grid g2" style="margin-top:6px">
+            <div class="card"><h3 class="sub" style="margin-top:0">Start with these</h3><p><b>Bicycle Standard</b>, <b>Tally-Ho</b>, <b>Copag</b> or <b>Bee</b> &mdash; quality paper decks with an air-cushion finish. Always <b>poker size</b>, never bridge, and skip 100% plastic.</p></div>
+            <div class="card"><h3 class="sub" style="margin-top:0">Break it in</h3><p>New cards are stiff. Riffle, spring and gently flex a fresh deck first. Practice over a bed, keep hands clean and dry, and pick up drops one at a time.</p></div>
+          </div>
+        </section>
+
+        <section class="block">
+          <p class="eyebrow">How to practice</p>
+          <h2 class="big">Make it stick</h2>
+          <div class="card"><ul class="tick" style="margin:0">
+            <li><b>Smoothness before speed.</b> Slow and clean first; speed comes on its own.</li>
+            <li><b>A few moves, not many.</b> Drill two or three to automatic before adding more.</li>
+            <li><b>Keep a deck within reach.</b> Little-and-often beats one weekly grind.</li>
+            <li><b>Push through the ugly stage.</b> Every move looks bad at first &mdash; come back tomorrow.</li>
+            <li><b>Film yourself.</b> The fastest way to spot the flaw.</li>
+          </ul></div>
+        </section>
+
+        <section class="block">
+          <p class="eyebrow">A little history</p>
+          <h2 class="big">The classics</h2>
+          <div class="card"><ul class="tick" style="margin:0">
+            <li><b>1992 &mdash; the Sybil.</b> Chris Kenner's cut; the DNA of modern cardistry.</li>
+            <li><b>1997 &mdash; Show Off.</b> Brian Tudor's all-flourish release and the Revolution Cut.</li>
+            <li><b>2004&ndash;2007 &mdash; Dan &amp; Dave.</b> The Buck twins split flourishing from magic; <i>The Trilogy</i> defines it.</li>
+            <li><b>2014+ &mdash; global.</b> Cardistry-Con and social media make it a worldwide art.</li>
+          </ul></div>
+        </section>
+
+        <section class="block">
+          <p class="eyebrow">Where to learn moves</p>
+          <h2 class="big">Best free tutorials</h2>
+          <div class="grid g2">
+            <div class="card"><b class="disp">School of Cardistry</b><p class="mblurb">Structured beginner tutorials. Best first stop.</p></div>
+            <div class="card"><b class="disp">Cardistry Touch</b><p class="mblurb">Huge library of named-move tutorials.</p></div>
+            <div class="card"><b class="disp">Chris Ramsay</b><p class="mblurb">Approachable moves + magic and puzzles.</p></div>
+            <div class="card"><b class="disp">Andrei Jikh</b><p class="mblurb">Cinematic classics like the Reverse Card Shot.</p></div>
+          </div>
+          <p style="margin-top:12px" class="mblurb">Tip: watch a move once, then slow the video down and mirror just the first phase with cards in hand.</p>
+        </section>
+      </div>
+    </div>
+
+    <!-- MOVES -->
+    <div class="panel" id="tab-moves">
+      <div class="wrap">
+        <section class="block" style="padding-bottom:4px">
+          <p class="eyebrow">The catalog</p>
+          <h2 class="big">Every move, checkable</h2>
+          <div class="mini">
+            <div class="lab" id="mLab">0 / 74<small>learned</small></div>
+            <div class="track"><i id="mFill"></i></div>
+            <div class="pct" id="mPct">0%</div>
+          </div>
+        </section>
+        <div class="controls">
+          <input class="search" id="search" placeholder="Search moves, creators…" autocomplete="off">
+          <div class="chips" id="lvChips">
+            <button class="chip on" data-lv="all">All levels</button>
+            <button class="chip lv1" data-lv="1">1 · Just starting</button>
+            <button class="chip lv2" data-lv="2">2 · Beginner</button>
+            <button class="chip lv3" data-lv="3">3 · Intermediate</button>
+            <button class="chip lv4" data-lv="4">4 · Advanced</button>
+            <button class="chip lv5" data-lv="5">5 · Expert</button>
+          </div>
+          <div class="chips" id="catChips"></div>
+        </div>
+        <div id="moveList" style="padding-top:6px; min-height:40vh"></div>
+        <div class="foot">Community-curated catalog · new moves are invented all the time, so this is a living list.</div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="panel" id="tab-progress">
+      <div class="wrap">
+        <section class="block">
+          <p class="eyebrow">Your journey</p>
+          <h2 class="big">Progress</h2>
+          <div class="card">
+            <div class="ring">
+              <svg viewBox="0 0 120 120" aria-hidden="true">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"></circle>
+                <circle id="ringFill" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7" transform="rotate(-90 60 60)"></circle>
+              </svg>
+              <div class="rlabel"><b id="ringPct">0%</b><span id="ringSub">0 of 74 moves learned</span></div>
+            </div>
+            <div class="pbars" id="lvProgress"></div>
+          </div>
+          <div class="grid g2" style="margin-top:13px">
+            <div class="card"><h3 class="sub" style="margin-top:0">By category</h3><div id="catProgress" class="pbars" style="margin-top:4px"></div></div>
+            <div class="card"><h3 class="sub" style="margin-top:0">Keep going</h3>
+              <p class="mblurb" id="nextTip">Head to Moves and check off your first one.</p>
+              <button class="btn" data-go="moves" style="margin-top:6px">Go to moves &rarr;</button>
+              <button class="btn ghost" id="resetBtn" style="margin-top:8px; background:transparent; color:var(--muted); border:1px solid var(--line)">Reset progress</button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- LEFTY -->
+    <div class="panel" id="tab-lefty">
+      <div class="wrap">
+        <section class="block">
+          <p class="eyebrow">For lefties</p>
+          <h2 class="big">Left-handed? Read this</h2>
+          <p class="lede">Almost every tutorial online is filmed right-handed. That's a non-issue &mdash; cardistry has no "correct" hand.</p>
+          <div class="note" style="margin:13px 0">The one rule: right-handers usually hold the deck in the <b>left</b> hand and cut with the <b>right</b>. As a lefty, mirror it &mdash; hold the deck in your <b>right</b> hand and work with your <b>left</b>.</div>
+          <div class="grid g2">
+            <div class="card"><h3 class="sub" style="margin-top:0">Mirror the video</h3><p class="mblurb">Flip a right-handed tutorial horizontally (a browser extension or mirroring site works) so the teacher's right hand lines up with your left.</p></div>
+            <div class="card"><h3 class="sub" style="margin-top:0">Or swap hands</h3><p class="mblurb">Watch normally and do everything with the opposite hand. Slower at first, but you never depend on flipping a video.</p></div>
+            <div class="card"><h3 class="sub" style="margin-top:0">Train both hands</h3><p class="mblurb">Most cardists suggest beginners build both hands from the start &mdash; it makes your flow adaptable.</p></div>
+            <div class="card"><h3 class="sub" style="margin-top:0">Two lefty notes</h3><p class="mblurb">Clockwise becomes counter-clockwise when you mirror. And mirrored fans can flash the backs &mdash; practicing both hands fixes it.</p></div>
+          </div>
+          <p style="margin-top:13px" class="mblurb">Get help: the <b>r/Cardistry</b> subreddit and the <b>Cardistry Discord</b> are friendly places to ask for left-handed pointers.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM TAB BAR -->
+  <nav class="tabbar" id="tabbar">
+    <div class="pline"><i id="barFill"></i></div>
+    <button class="tab active" data-tab="learn">
+      <svg viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v11a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v11a2.5 2.5 0 0 1 2.5-2.5H21z"/></svg>Learn</button>
+    <button class="tab" data-tab="moves">
+      <svg viewBox="0 0 24 24"><path d="M10 6h10"/><path d="M10 12h10"/><path d="M10 18h10"/><path d="M4 6.5l1.3 1.3L8 5"/><path d="M4 12.5l1.3 1.3L8 11"/><path d="M4 18.5l1.3 1.3L8 17"/></svg>Moves</button>
+    <button class="tab" data-tab="progress">
+      <svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M12 20V8"/><path d="M18 20v-9"/></svg>Progress</button>
+    <button class="tab" data-tab="lefty">
+      <svg viewBox="0 0 24 24"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.8a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11.2V6.5a1.5 1.5 0 0 1 3 0V14c0 3.3-2.2 6-5.5 6H10c-1.4 0-2.3-.6-3.2-1.6L4 15.2a1.5 1.5 0 0 1 2.2-2l1.8 1.9"/></svg>Lefty</button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CATS = ["Foundations","Cuts","Aerials & Shots","Fans","Spins & Isolations","Signature Flourishes"];
+  var M = [
+    [1,"Foundations","The Grips","foundation","Mechanic's (dealer's) grip and Biddle grip — the two positions every move starts from."],
+    [1,"Foundations","Riffle Shuffle & Bridge","classic","Riffle two halves together, then arch and release into a cascading bridge."],
+    [1,"Foundations","Overhand Shuffle","classic","The everyday shuffle — good handling warm-up and deck break-in."],
+    [1,"Foundations","Dribble","classic","Let cards fall one at a time in an even stream from hand to hand."],
+    [1,"Foundations","Ribbon Spread","classic","Sweep the deck across a table into a long even ribbon, then roll it over."],
+    [1,"Foundations","Arm Spread","classic","A ribbon spread run along your forearm, elbow to palm."],
+    [3,"Foundations","Faro Shuffle","classic","A perfect interweave — one card from each half, like a zipper. Precise and tricky."],
+    [2,"Cuts","Charlier Cut","classic","The essential one-handed cut; thumb drops the bottom half, index lifts it over."],
+    [2,"Cuts","Revolution Cut","Brian Tudor","A Charlier with an extra half-spin of the packet before it lands."],
+    [2,"Cuts","Swing Cut","classic","Index finger swings the top packet out — the basic 'make a packet' cut."],
+    [2,"Cuts","Swivel Cut","classic","Like a swing cut, but the packet pivots around your fingers."],
+    [2,"Cuts","Two-Card Cut","classic","A quick, tidy two-packet cut used to link combos."],
+    [3,"Cuts","Scissor Cut","classic","Packets slide past each other lengthwise in a scissoring motion."],
+    [3,"Cuts","Five Faces of Sybil","Chris Kenner","The foundational two-handed cut; ends in a five-packet display. Learn this."],
+    [3,"Cuts","Madonna","classic","A flowing Sybil-family display cut, a longtime community staple."],
+    [3,"Cuts","Tornado","classic","A spinning multi-packet cut that whirls the deck open."],
+    [3,"Cuts","Cobra Cut","classic","A smooth S-shaped flowing cut, older-school and elegant."],
+    [3,"Cuts","Moxie","Zeusy","A two-handed packet cut built around a clean rotation."],
+    [3,"Cuts","Windchill","Franky Morales","A two-handed packet-cut display with a spinning open."],
+    [3,"Cuts","Pincho","Oliver Søgård","A crisp, precise packet flourish with a snappy finish."],
+    [3,"Cuts","Snaker","Giona Silei","A flowing, snaking packet display — a beloved first modern move."],
+    [4,"Cuts","Jackson 5","Dan & Dave","A classic five-packet cut and display from the Buck era."],
+    [4,"Cuts","Maverick","Oliver Søgård","A two-handed packet cut with a signature rotation and spin."],
+    [4,"Cuts","Midnight Rider","Nam Duy","A rotating two-handed packet cut with a flowing shape."],
+    [4,"Cuts","Sybil's Revenge","classic","A tougher, extended variation on the classic Sybil."],
+    [4,"Cuts","Mockingbird","Daren Yeow","An elegant flowing cut — a rite of passage for intermediates."],
+    [4,"Cuts","Roulette","Dimitri Arleri","A spinning, rotating display from a defining modern creator."],
+    [4,"Cuts","Alea","Dimitri Arleri","Clean geometric packet movement; an Arleri signature."],
+    [4,"Cuts","Bender","Dimitri Arleri","Bending and springing packets through a rotation."],
+    [4,"Cuts","Retrigger","Oliver Søgård","A crisp, mechanical-feeling packet flourish."],
+    [4,"Cuts","ATM","Oliver Søgård","A much-copied Søgård display with precise packet control."],
+    [4,"Cuts","One-Handed Mechanical","Dimitri Arleri","A one-handed flourish with a precise, machine-like feel."],
+    [4,"Cuts","Pandora","Dan & Dave","A famous, intricate multi-phase flourish and milestone move."],
+    [5,"Cuts","Kryptonite","Dan & Dave","A landmark, intricate Dan & Dave flourish."],
+    [5,"Cuts","Prequel","Dan & Dave","Another iconic multi-phase Dan & Dave display."],
+    [2,"Aerials & Shots","The Spring","iconic","Bend the deck and release so cards arc from hand to hand."],
+    [2,"Aerials & Shots","Waterfall (Cascade)","classic","A continuous vertical sheet of cards falling from the top hand."],
+    [2,"Aerials & Shots","Deck Flip","classic","Flick the whole deck a full turn and land it back in place."],
+    [3,"Aerials & Shots","Hot Shot Cut","classic","Flick a single card so it shoots spinning from the deck."],
+    [3,"Aerials & Shots","Reverse Card Shot","Andrei Jikh","Shoot and catch a card in reverse — a slick hot-shot cousin."],
+    [3,"Aerials & Shots","Boomerang Card","classic","Throw a single card with spin so it curves back to your hand."],
+    [2,"Aerials & Shots","Angel Dust","Zach Mueller","A single-card aerial shot with a spin, easy and flashy."],
+    [4,"Aerials & Shots","Skydive","Azlan Valentine","A dramatic drop-and-catch where a packet free-falls and is snatched back."],
+    [4,"Aerials & Shots","Anaconda","classic","A big, sweeping aerial packet move with a coiling shape."],
+    [2,"Fans","Thumb Fan","classic","Sweep the thumb across the deck to spread it into a clean semicircle."],
+    [2,"Fans","One-Handed Fan","classic","A fan made single-handed by smearing the cards with the thumb."],
+    [2,"Fans","Corner Fan","classic","A small, quick fan produced from the corner of the deck."],
+    [3,"Fans","Pressure Fan","classic","A wide, even fan spread with two hands using card pressure."],
+    [3,"Fans","Riffle Fan","classic","A fan produced straight out of a riffle for a fluttering look."],
+    [3,"Fans","S-Fan","classic","Two fans curved into an S shape as a display."],
+    [3,"Fans","Click Fan","Andrew Avila","A snappy fan built on pressure and card bending."],
+    [4,"Fans","Giant Fan","classic","A double-size fan made by faro-ing two halves together first."],
+    [2,"Spins & Isolations","Card Twirl","classic","Twirl a single card around your fingers in a continuous roll."],
+    [2,"Spins & Isolations","Turbine","Andrei Jikh","A one-handed single-card spin — a satisfying fidget move."],
+    [2,"Spins & Isolations","Morningstar","Huron Low","A one-handed single-card combo with a spinning finish."],
+    [3,"Spins & Isolations","Pirouette","classic","Balance a single card on a fingertip and spin it, ballet-style."],
+    [3,"Spins & Isolations","Isolations","Anna DeGuzman","A card or packet appears to float, fixed in space, as the hands move."],
+    [3,"Spins & Isolations","Jedi Flip","Noel Heath","A spinning, twirling 'elemental' flourish with a floaty feel."],
+    [3,"Spins & Isolations","Kick Flip Flourish","Chris Ramsay","A packet is kicked and flipped, skateboard-style."],
+    [3,"Spins & Isolations","Judo Flip","Franco Pascali","A packet flipped over the top of the hand — snappy and stylish."],
+    [4,"Spins & Isolations","Knuckle Spin","Eliot Slevin","Spin the whole deck on your knuckles — a rotation fidget."],
+    [4,"Spins & Isolations","Polywhirl","Eliot Slevin","A continuous, looping deck rotation that keeps spinning."],
+    [4,"Spins & Isolations","Molecule","De'vo","A classic isolation-style flourish where packets orbit the hands."],
+    [5,"Spins & Isolations","Perpetual Motion Machine","Jake Tom","A continuous isolation display that seems to run forever. Very advanced."],
+    [3,"Signature Flourishes","The Werm","Dan & Dave","A four-packet square that unfolds into a five-packet line. A gateway move."],
+    [3,"Signature Flourishes","Waterbend","classic","A springy, bending flourish where a packet seems to warp between the hands."],
+    [3,"Signature Flourishes","Ferris / Twirl / Buck Shot","Dave Buck","A trio of classic Buck flourishes — a rotating wheel, a twirl and a shot."],
+    [4,"Signature Flourishes","Looper","Ladislas Toubart","A looping, continuous flourish that folds back into itself."],
+    [5,"Signature Flourishes","Looper 2","Ladislas Toubart","The sequel — pushes the loop idea into expert territory."],
+    [5,"Signature Flourishes","Fission","Yang Chan","A complex splitting flourish; the deck seems to come apart and back."],
+    [5,"Signature Flourishes","Loops","Leon Tai","Continuous looping flow that can run indefinitely once mastered."],
+    [5,"Signature Flourishes","Dunsmuir","Daniel Lin","An advanced, elegant display admired for its clean geometry."],
+    [5,"Signature Flourishes","Whiplash","Matthew Beaudouin","A sharp, fast flourish with a snapping motion. Timing over force."],
+    [5,"Signature Flourishes","Clean Sweep","classic","A flowing sweep that strings packets through one continuous arc."]
+  ];
+  var LEVELS = [
+    {n:1,name:"Just Starting",tag:"Grips and the moves everything is built on."},
+    {n:2,name:"Beginner",tag:"Your first real flourishes."},
+    {n:3,name:"Intermediate",tag:"Named signature moves; your style shows."},
+    {n:4,name:"Advanced",tag:"Multi-phase flourishes; months of reps."},
+    {n:5,name:"Expert",tag:"Flow-artist territory."}
+  ];
+  var MOVES = M.map(function(m){
+    var id = m[2].toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");
+    return {id:id, lv:m[0], cat:m[1], name:m[2], by:m[3], blurb:m[4]};
+  });
+  var TOTAL = MOVES.length;
+
+  var KEY="cardistry_trainer_v1";
+  var done={};
+  try{ var raw=localStorage.getItem(KEY); if(raw) done=JSON.parse(raw)||{}; }catch(e){ done={}; }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(done)); }catch(e){} }
+
+  var fLv="all", fCat="all", fQ="";
+  var listEl=document.getElementById('moveList');
+  var catChips=document.getElementById('catChips');
+  var chipHtml='<button class="chip on" data-cat="all">All types</button>';
+  CATS.forEach(function(c){ chipHtml+='<button class="chip" data-cat="'+c+'">'+c+'</button>'; });
+  catChips.innerHTML=chipHtml;
+
+  function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+  function renderMoves(){
+    var q=fQ.trim().toLowerCase(), html="";
+    LEVELS.forEach(function(L){
+      if(fLv!=="all" && String(L.n)!==fLv) return;
+      var inLv=MOVES.filter(function(m){ return m.lv===L.n; });
+      var shown=inLv.filter(function(m){
+        if(fCat!=="all" && m.cat!==fCat) return false;
+        if(q && (m.name.toLowerCase().indexOf(q)<0 && m.by.toLowerCase().indexOf(q)<0 && m.cat.toLowerCase().indexOf(q)<0)) return false;
+        return true;
+      });
+      if(!shown.length) return;
+      var learned=inLv.filter(function(m){return done[m.id];}).length;
+      var pct=Math.round(learned/inLv.length*100);
+      html+='<div class="lvhead"><div class="num n'+L.n+'">'+L.n+'</div><div class="t"><b>'+L.name+'</b><span>'+esc(L.tag)+'</span></div><div class="lvprog">'+learned+'/'+inLv.length+'</div></div>';
+      html+='<div class="lvbar"><i class="b'+L.n+'" style="width:'+pct+'%"></i></div>';
+      shown.forEach(function(m){
+        var d=done[m.id]?" done":"";
+        var by=(m.by==="classic"||m.by==="iconic"||m.by==="foundation")?'<span class="mby">'+m.by+'</span>':'<span class="mby">by '+esc(m.by)+'</span>';
+        html+='<div class="move'+d+'" data-id="'+m.id+'" role="button" tabindex="0" aria-pressed="'+(!!done[m.id])+'">'
+          +'<div class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg></div>'
+          +'<div class="mbody"><div class="mtop"><span class="lvtag p'+m.lv+'">L'+m.lv+'</span><span class="mname">'+esc(m.name)+'</span>'+by+'</div>'
+          +'<div class="mcat">'+esc(m.cat)+'</div><div class="mblurb">'+esc(m.blurb)+'</div></div></div>';
+      });
+    });
+    listEl.innerHTML = html || '<div class="empty">No moves match those filters.</div>';
+  }
+  function pctOf(a,b){ return b?Math.round(a/b*100):0; }
+
+  function updateProgress(){
+    var learned=MOVES.filter(function(m){return done[m.id];}).length;
+    var pct=pctOf(learned,TOTAL);
+    document.getElementById('barFill').style.width=pct+'%';
+    document.getElementById('topCount').textContent=learned+'/'+TOTAL;
+    document.getElementById('heroCount').textContent=learned;
+    document.getElementById('mLab').innerHTML=learned+' / '+TOTAL+'<small>learned</small>';
+    document.getElementById('mFill').style.width=pct+'%';
+    document.getElementById('mPct').textContent=pct+'%';
+    var circ=326.7;
+    document.getElementById('ringFill').style.strokeDashoffset=(circ*(1-learned/TOTAL)).toFixed(1);
+    document.getElementById('ringPct').textContent=pct+'%';
+    document.getElementById('ringSub').textContent=learned+' of '+TOTAL+' moves learned';
+    var lh="";
+    LEVELS.forEach(function(L){
+      var inLv=MOVES.filter(function(m){return m.lv===L.n;});
+      var got=inLv.filter(function(m){return done[m.id];}).length;
+      lh+='<div class="pbrow"><span class="lab">L'+L.n+' · '+L.name+'</span><div class="track"><i class="b'+L.n+'" style="width:'+pctOf(got,inLv.length)+'%"></i></div><span class="val">'+got+'/'+inLv.length+'</span></div>';
+    });
+    document.getElementById('lvProgress').innerHTML=lh;
+    var ch="";
+    CATS.forEach(function(c){
+      var inC=MOVES.filter(function(m){return m.cat===c;});
+      var got=inC.filter(function(m){return done[m.id];}).length;
+      ch+='<div class="pbrow"><span class="lab" style="width:140px">'+c+'</span><div class="track"><i style="width:'+pctOf(got,inC.length)+'%;background:var(--accent)"></i></div><span class="val">'+got+'/'+inC.length+'</span></div>';
+    });
+    document.getElementById('catProgress').innerHTML=ch;
+    var next=MOVES.filter(function(m){return !done[m.id];}).sort(function(a,b){return a.lv-b.lv;})[0];
+    var tip=document.getElementById('nextTip');
+    if(!next){ tip.textContent="🎉 You've learned every move in the catalog. Legend."; }
+    else { tip.innerHTML='Next up, a Level '+next.lv+' move: <b>'+esc(next.name)+'</b>.'; }
+  }
+  function toggle(id){ if(done[id]) delete done[id]; else done[id]=1; save(); renderMoves(); updateProgress(); }
+
+  listEl.addEventListener('click', function(e){ var r=e.target.closest('.move'); if(r) toggle(r.getAttribute('data-id')); });
+  listEl.addEventListener('keydown', function(e){ if(e.key==="Enter"||e.key===" "){ var r=e.target.closest('.move'); if(r){ e.preventDefault(); toggle(r.getAttribute('data-id')); } } });
+  document.getElementById('search').addEventListener('input', function(e){ fQ=e.target.value; renderMoves(); });
+  document.getElementById('lvChips').addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(!b) return; fLv=b.getAttribute('data-lv'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); renderMoves(); });
+  catChips.addEventListener('click', function(e){ var b=e.target.closest('.chip'); if(!b) return; fCat=b.getAttribute('data-cat'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); renderMoves(); });
+  document.getElementById('resetBtn').addEventListener('click', function(){ done={}; save(); renderMoves(); updateProgress(); });
+
+  var screen=document.getElementById('screen');
+  function go(tab){
+    [].forEach.call(document.querySelectorAll('.tab'),function(t){t.classList.toggle('active',t.getAttribute('data-tab')===tab);});
+    [].forEach.call(document.querySelectorAll('.panel'),function(p){p.classList.toggle('active',p.id==='tab-'+tab);});
+    screen.scrollTo(0,0);
+  }
+  document.getElementById('tabbar').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b) go(b.getAttribute('data-tab')); });
+  [].forEach.call(document.querySelectorAll('[data-go]'),function(btn){ btn.addEventListener('click',function(){ go(btn.getAttribute('data-go')); }); });
+
+  var tb=document.getElementById('themeBtn');
+  try{ var st=localStorage.getItem('cardistry_theme'); if(st) document.documentElement.setAttribute('data-theme',st); }catch(e){}
+  tb.addEventListener('click', function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var dark=cur? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
+    var next=dark?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    try{ localStorage.setItem('cardistry_theme',next); }catch(e){}
+  });
+
+  renderMoves(); updateProgress();
+})();
+</script>
+</body>
+</html>

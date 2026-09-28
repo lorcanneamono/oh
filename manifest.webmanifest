@@ -1,0 +1,13 @@
+{
+  "name": "Cardistry Trainer",
+  "short_name": "Cardistry",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0d1a2c",
+  "theme_color": "#0d1a2c",
+  "icons": [
+    { "src": "icon-180.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
