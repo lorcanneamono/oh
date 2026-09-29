@@ -165,6 +165,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .seg button{flex:1; font-family:var(--disp); font-weight:600; font-size:13.5px; border:none; background:transparent; color:var(--muted); border-radius:9px; padding:9px 8px; cursor:pointer; user-select:none}
 .seg button.on{background:var(--surface); color:var(--ink); box-shadow:var(--shadow)}
 .coachout{margin-top:12px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; font-size:14px; line-height:1.55; white-space:pre-wrap}
+.updline{font-size:13px; color:var(--muted); margin:0 0 12px}
+.updline b{color:var(--text)}
+.log details{border:1px solid var(--line); border-radius:12px; background:var(--surface2); margin-bottom:10px; overflow:hidden}
+.log details[open]{border-color:var(--brand)}
+.log summary{list-style:none; cursor:pointer; padding:13px 16px; display:flex; align-items:center; gap:10px; font-weight:600}
+.log summary::-webkit-details-marker{display:none}
+.log summary .caret{margin-left:auto; color:var(--muted); transition:transform .18s}
+.log details[open] summary .caret{transform:rotate(180deg)}
+.log summary .ver{font-size:12px; font-weight:700; color:var(--brand); background:var(--surface); border:1px solid var(--line); border-radius:999px; padding:2px 9px}
+.log summary .date{font-size:12px; font-weight:500; color:var(--muted)}
+.log .body{padding:2px 16px 15px; font-size:14px; line-height:1.55; color:var(--muted)}
+.log .body b{color:var(--text)}
+.log .new{background:var(--brand); color:#04121f; font-size:10px; font-weight:800; letter-spacing:.4px; border-radius:999px; padding:2px 7px; text-transform:uppercase}
 /* player modal */
 .modal{position:fixed; inset:0; z-index:200; background:rgba(6,10,18,.72); display:none; align-items:center; justify-content:center; padding:18px}
 .modal.on{display:flex}
@@ -229,15 +242,37 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <div class="card"><ul class="tick" style="margin:0">
-            <li><b>AI Coach</b> &mdash; upload a video of your own attempt and get specific tips on what to fix. Plus this changelog.</li>
-            <li><b>Save your data</b> &mdash; back up and restore your checked moves and tutorials (Stats tab), and exact Full/Quick tutorial links on ~23 moves.</li>
-            <li><b>Whole-video AI</b> &mdash; the tutorial analyzer now samples frames across the entire clip; added thumbnails and Full + Quick buttons.</li>
-            <li><b>Add a tutorial</b> &mdash; on the Claude version an AI writes the summary, category, level and left/right setup; edit &amp; delete your tutorials; up to 30-minute videos.</li>
-            <li><b>Watch tutorials</b> &mdash; every move got a Watch button, with an in-app player for your own uploads.</li>
-            <li><b>Home-screen app</b> &mdash; bottom tab bar, app icon, and full-screen install on iPhone.</li>
-            <li><b>Launch</b> &mdash; 74-move checklist across 5 levels with live progress bars and search.</li>
-          </ul></div>
+          <p class="updline">Last updated <b>Sep 28, 2026</b> &middot; you're on <b>v1.6</b>. Tap any version to see what changed.</p>
+          <div class="log">
+            <details open>
+              <summary><span class="ver">v1.6</span> AI Coach <span class="new">New</span><span class="date">Sep 28, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">Upload a video of your <b>own</b> attempt (Add tab &rarr; "Coach my move") and get specific tips on what to fix. Also added this changelog with version history.</div>
+            </details>
+            <details>
+              <summary><span class="ver">v1.5</span> Save your data <span class="date">Sep 27, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">Back up and restore your checked moves and added tutorials from the <b>Stats</b> tab, so nothing gets lost. Added exact Full &amp; Quick tutorial links on ~23 moves.</div>
+            </details>
+            <details>
+              <summary><span class="ver">v1.4</span> Whole-video AI <span class="date">Sep 26, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">The tutorial analyzer now samples frames across the <b>entire</b> clip instead of just the start. Added move thumbnails and separate <b>Full</b> + <b>Quick</b> tutorial buttons.</div>
+            </details>
+            <details>
+              <summary><span class="ver">v1.3</span> Add a tutorial <span class="date">Sep 25, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">On the Claude version an AI writes the summary, category, skill level and left/right setup for you. Edit &amp; delete your own tutorials, and upload videos up to 30 minutes.</div>
+            </details>
+            <details>
+              <summary><span class="ver">v1.2</span> Watch tutorials <span class="date">Sep 24, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">Every move got a <b>Watch</b> button, plus an in-app player for tutorials you upload yourself.</div>
+            </details>
+            <details>
+              <summary><span class="ver">v1.1</span> Home-screen app <span class="date">Sep 22, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">Bottom tab bar, an app icon, and full-screen install on iPhone so it runs like a real app.</div>
+            </details>
+            <details>
+              <summary><span class="ver">v1.0</span> Launch <span class="date">Sep 20, 2026</span><span class="caret">&#9662;</span></summary>
+              <div class="body">74-move checklist across 5 skill levels, with live progress bars and search.</div>
+            </details>
+          </div>
         </section>
         <section class="block">
           <p class="eyebrow">Cardistry 101</p>
