@@ -161,6 +161,10 @@ ul.tick li::before{content:"\2660"; position:absolute; left:0; color:var(--accen
 video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-height:260px}
 .status{font-size:13.5px; color:var(--muted); margin-top:8px}
 .badgeAI{display:inline-block; font-family:var(--disp); font-weight:700; font-size:10px; letter-spacing:.5px; text-transform:uppercase; color:#fff; background:linear-gradient(90deg,var(--l3),var(--l4)); border-radius:5px; padding:2px 7px; vertical-align:middle}
+.seg{display:flex; gap:6px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:4px; margin:0}
+.seg button{flex:1; font-family:var(--disp); font-weight:600; font-size:13.5px; border:none; background:transparent; color:var(--muted); border-radius:9px; padding:9px 8px; cursor:pointer; user-select:none}
+.seg button.on{background:var(--surface); color:var(--ink); box-shadow:var(--shadow)}
+.coachout{margin-top:12px; background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:14px 16px; font-size:14px; line-height:1.55; white-space:pre-wrap}
 /* player modal */
 .modal{position:fixed; inset:0; z-index:200; background:rgba(6,10,18,.72); display:none; align-items:center; justify-content:center; padding:18px}
 .modal.on{display:flex}
@@ -222,6 +226,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
             </ol>
           </div>
         </section>
+        <section class="block" id="changelog">
+          <p class="eyebrow">What's new</p>
+          <h2 class="big">Changelog</h2>
+          <div class="card"><ul class="tick" style="margin:0">
+            <li><b>AI Coach</b> &mdash; upload a video of your own attempt and get specific tips on what to fix. Plus this changelog.</li>
+            <li><b>Save your data</b> &mdash; back up and restore your checked moves and tutorials (Stats tab), and exact Full/Quick tutorial links on ~23 moves.</li>
+            <li><b>Whole-video AI</b> &mdash; the tutorial analyzer now samples frames across the entire clip; added thumbnails and Full + Quick buttons.</li>
+            <li><b>Add a tutorial</b> &mdash; on the Claude version an AI writes the summary, category, level and left/right setup; edit &amp; delete your tutorials; up to 30-minute videos.</li>
+            <li><b>Watch tutorials</b> &mdash; every move got a Watch button, with an in-app player for your own uploads.</li>
+            <li><b>Home-screen app</b> &mdash; bottom tab bar, app icon, and full-screen install on iPhone.</li>
+            <li><b>Launch</b> &mdash; 74-move checklist across 5 levels with live progress bars and search.</li>
+          </ul></div>
+        </section>
         <section class="block">
           <p class="eyebrow">Cardistry 101</p>
           <h2 class="big">What it actually is</h2>
@@ -278,9 +295,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       <div class="wrap">
         <section class="block">
           <p class="eyebrow">Grow the catalog</p>
-          <h2 class="big">Add a tutorial <span class="badgeAI" id="aiBadge" hidden>AI</span></h2>
+          <h2 class="big"><span id="addTitle">Add a tutorial</span> <span class="badgeAI" id="aiBadge" hidden>AI</span></h2>
           <p class="lede" id="addLede">Upload a cardistry clip and it gets added to your catalog. On the Claude-hosted version, an AI watches it and fills in the summary, category and skill level for you.</p>
-
+          <div class="seg" id="modeSeg">
+            <button class="on" data-mode="add">Add a tutorial</button>
+            <button data-mode="coach">Coach my move</button>
+          </div>
           <div class="card" style="margin-top:14px">
             <div class="drop" id="drop">
               <b>Tap to choose a video</b><br>
@@ -289,7 +309,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
             <input type="file" id="file" accept="video/*" hidden>
             <video class="prev" id="prev" controls playsinline hidden></video>
 
-            <div class="field" style="margin-top:14px">
+            <div class="field" id="linkField" style="margin-top:14px">
               <label>Or paste a tutorial link instead</label>
               <input id="linkIn" placeholder="https://youtube.com/… (optional)" autocomplete="off">
             </div>
@@ -298,6 +318,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
               <button class="btn" id="analyzeBtn">✨ Analyze with AI</button>
               <div class="status" id="aiStatus"></div>
             </div>
+            <div id="coachOut" class="coachout" hidden></div>
+            <div id="coachNote" class="note" hidden style="margin-top:12px"></div>
 
             <div id="form" hidden>
               <div class="field"><label>Move name</label><input id="fName" placeholder="e.g. My Sybil variation"></div>
@@ -343,6 +365,15 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
               <button class="btn" data-go="moves" style="margin-top:6px">Go to moves &rarr;</button>
               <button class="btn line" id="resetBtn" style="margin-top:8px">Reset checked moves</button>
             </div>
+          </div>
+          <div class="card" style="margin-top:13px">
+            <h3 class="sub" style="margin-top:0">Back up your data</h3>
+            <p class="mblurb">Save your checked moves and added tutorials, then restore them on another device or if your browser ever clears its data.</p>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px">
+              <button class="btn" id="exportBtn">Export backup</button>
+              <button class="btn line" id="importBtn">Restore backup</button>
+            </div>
+            <input type="file" id="importFile" accept="application/json,.json" hidden>
           </div>
         </section>
       </div>
@@ -405,6 +436,34 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       <button class="btn line" id="eDelete" style="color:var(--l5); border-color:var(--l5)">Delete</button>
     </div>
     <div class="status" id="eStatus"></div>
+  </div>
+</div>
+
+<!-- backup modal -->
+<div class="modal" id="bkModal">
+  <div class="box2" style="max-width:520px">
+    <div class="mh"><b>Your backup</b><button class="x" id="bkX">&times;</button></div>
+    <p class="mblurb">Copy this text and keep it somewhere safe (Notes, email to yourself), or download the file. To restore, use "Restore backup".</p>
+    <textarea id="bkText" class="search" style="height:150px; font-family:monospace; font-size:12px" readonly></textarea>
+    <div style="display:flex; gap:10px; margin-top:10px">
+      <button class="btn" id="bkCopy" style="flex:1">Copy</button>
+      <button class="btn line" id="bkDownload">Download file</button>
+    </div>
+    <div class="status" id="bkStatus"></div>
+  </div>
+</div>
+
+<!-- restore modal -->
+<div class="modal" id="imModal">
+  <div class="box2" style="max-width:520px">
+    <div class="mh"><b>Restore backup</b><button class="x" id="imX">&times;</button></div>
+    <p class="mblurb">Paste your backup text below, or choose a backup file. Your current data is kept and the backup is merged in.</p>
+    <textarea id="imText" class="search" style="height:130px; font-family:monospace; font-size:12px" placeholder="Paste backup here…"></textarea>
+    <div style="display:flex; gap:10px; margin-top:10px">
+      <button class="btn" id="imRestore" style="flex:1">Restore</button>
+      <button class="btn line" id="imFileBtn">Choose file…</button>
+    </div>
+    <div class="status" id="imStatus"></div>
   </div>
 </div>
 
@@ -498,22 +557,42 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
   var BUILTIN = M.map(function(m){ return {id:"b-"+slug(m[2]), lv:m[0], cat:m[1], name:m[2], by:m[3], blurb:m[4], src:"builtin"}; });
   var VIDEOS = {
+    "The Grips":"https://www.youtube.com/watch?v=L_uAGtsY-hQ",
+    "Riffle Shuffle & Bridge":"https://www.youtube.com/watch?v=tR9x4qqiTsg",
+    "Dribble":"https://www.youtube.com/watch?v=OhpGcjCzL5g",
+    "Ribbon Spread":"https://www.youtube.com/watch?v=-w3RX2VELkk",
+    "Faro Shuffle":"https://www.youtube.com/watch?v=A-tSm8g-_pw",
     "Charlier Cut":"https://www.youtube.com/watch?v=M4coyiaMcag",
+    "Revolution Cut":"https://www.youtube.com/watch?v=YWUHUFNR2Tc",
+    "Swing Cut":"https://www.youtube.com/watch?v=Rn5lmEQej_k",
+    "Swivel Cut":"https://www.youtube.com/watch?v=lsxUUL0_TG4",
+    "Scissor Cut":"https://www.youtube.com/watch?v=1E0n6kamKFo",
+    "Waterfall (Cascade)":"https://www.youtube.com/watch?v=uWM2k6XkiiA",
+    "One-Handed / Smear Fan":"https://www.youtube.com/watch?v=DB0faP_ACM0",
+    "Hot Shot Cut":"https://www.youtube.com/watch?v=ENTgs9pxzEE",
+    "Deck Flip":"https://www.youtube.com/watch?v=IN01_n7z4J0",
     "Five Faces of Sybil":"https://www.youtube.com/watch?v=JHQ1ToMV4Ro",
+    "The Werm":"https://www.youtube.com/watch?v=wdDH_oaEse4",
     "The Spring":"https://www.youtube.com/watch?v=VJ19Zfw6CKU",
     "Thumb Fan":"https://www.youtube.com/watch?v=XFIQk2LiKD0",
-    "The Werm":"https://www.youtube.com/watch?v=wdDH_oaEse4",
-    "Revolution Cut":"https://www.youtube.com/watch?v=YWUHUFNR2Tc",
     "Pressure Fan":"https://www.youtube.com/watch?v=H3BVU2Z76G0",
-    "Hot Shot Cut":"https://www.youtube.com/watch?v=ENTgs9pxzEE",
-    "Waterfall (Cascade)":"https://www.youtube.com/watch?v=uWM2k6XkiiA"
+    "Reverse Card Shot":"https://www.youtube.com/watch?v=nz9D5ubONFc",
+    "Turbine":"https://www.youtube.com/watch?v=tUZMp-kQurE",
+    "Kick Flip Flourish":"https://www.youtube.com/watch?v=yCY2SOw4ZuI",
+    "Pandora":"https://www.youtube.com/watch?v=h_bAzNkghpU"
   };
   var VIDEOS_QUICK = {
+    "Riffle Shuffle & Bridge":"https://www.youtube.com/shorts/ARbZ1tZ-1wc",
+    "Dribble":"https://www.youtube.com/shorts/SX5b2ELSQUs",
+    "Faro Shuffle":"https://www.youtube.com/shorts/s5Theysy1kQ",
     "Charlier Cut":"https://www.youtube.com/shorts/nfL8yKRKHo8",
+    "Swing Cut":"https://www.youtube.com/shorts/aOztdS54IeY",
+    "Scissor Cut":"https://www.youtube.com/shorts/ElBrXH3UmHU",
+    "Deck Flip":"https://www.youtube.com/shorts/X8Kv1mmpudA",
     "Five Faces of Sybil":"https://www.youtube.com/watch?v=jT6tIHG8Vb4",
+    "The Werm":"https://www.youtube.com/shorts/HOrpTj3KSmE",
     "The Spring":"https://www.youtube.com/shorts/wDfIErQIbQU",
     "Thumb Fan":"https://www.youtube.com/shorts/yOywyktF0Iw",
-    "The Werm":"https://www.youtube.com/shorts/HOrpTj3KSmE",
     "Revolution Cut":"https://www.youtube.com/shorts/fIF_bVJrjC8",
     "Hot Shot Cut":"https://www.youtube.com/watch?v=cb_fbmKFK5c",
     "Waterfall (Cascade)":"https://www.youtube.com/shorts/eo7vpa9NsBk"
@@ -531,10 +610,11 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function saveLocalTuts(){ try{ localStorage.setItem(TKEY, JSON.stringify(userTuts.map(function(t){var c=Object.assign({},t); delete c.videoUrl; return c;}))); }catch(e){} }
 
   // ---------- Claude capabilities (only on claude.ai-hosted version) ----------
-  var sampleFn=null, imagesLimit=null, DB=null, ASSETS=null, usingDB=false;
+  var sampleFn=null, imagesLimit=null, DB=null, ASSETS=null, DL=null, usingDB=false;
   function initCaps(){
     var c = window.claude;
     if(!(c && typeof c.use==="function")){ loadLocalTuts(); afterTutsChanged(); return; }
+    c.use("downloads").then(function(d){ DL=d; }).catch(function(){});
     c.use("sample").then(function(s){
       sampleFn=s;
       if(s){ s.limits().then(function(l){ imagesLimit = l && l.images ? l.images : null; refreshAddUI(); }).catch(function(){ refreshAddUI(); }); }
@@ -690,15 +770,11 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     document.getElementById('fCat').innerHTML=cs;
   })();
   function refreshAddUI(){
-    var ai = !!sampleFn;
-    document.getElementById('aiBadge').hidden = !ai;
-    document.getElementById('addLede').textContent = ai
-      ? "Upload a cardistry clip (up to 30 min) and an AI will watch it, write a summary, pick a category, rate the skill level, and even give the left- and right-handed setup — then it's added to your catalog."
-      : "Upload a clip (or paste a link) and fill in a few details — it's added to your catalog and sorted automatically. (The AI auto-rating runs on the Claude-hosted version.)";
+    document.getElementById('aiBadge').hidden = !sampleFn;
     document.getElementById('addFoot').textContent = usingDB
       ? "Your tutorials are saved to this app's shared database."
       : "Your tutorials are saved in this browser.";
-    updateAiRow();
+    if(typeof applyMode==='function') applyMode(); else updateAiRow();
   }
   function updateAiRow(){ aiRow.hidden = !(sampleFn && (chosenFile || (linkIn.value||"").trim())); }
   drop.addEventListener('click', function(){ fileInput.click(); });
@@ -785,34 +861,87 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       return await sampleFn.json(basePrompt+' Base it on this tutorial reference the user gave: '+(note||"(no details provided)"), {modelTier:"quick", signal:signal});
     }
   }
+  var COACH_PROMPT='You are a warm, expert cardistry coach giving feedback on a person PERFORMING a flourish in their own practice video (this is NOT a tutorial). ';
+  var COACH_ASK='Write short, practical, encouraging feedback as plain text: a line "What\'s working:" then 2-3 bullet lines each starting with "- ", then a line "What to fix:" then 2-4 bullet lines each starting with "- " with specific, doable fixes (grip, finger placement, smoothness, packet control, angles, hand height, speed, drops). If you can name the flourish, open with one short line naming it. No other preamble.';
+  async function coachVideo(signal, onText){
+    var maxPer=Math.max(1, imagesLimit? (imagesLimit.maxCount||4) : 4);
+    var dur=prev.duration; if(!isFinite(dur)||dur<=0) dur=1;
+    var target=Math.min(24, maxPer*3, Math.max(maxPer, Math.round(dur/10)));
+    var passes=Math.min(3, Math.max(1, Math.ceil(target/maxPer)));
+    var totalFrames=passes*maxPer, notes=[];
+    for(var pf=0; pf<passes; pf++){
+      if(signal.aborted) throw {code:"cancelled"};
+      aiStatus.textContent = passes>1 ? ("Watching your video… ("+(pf+1)+"/"+passes+")") : "Watching your video…";
+      var blobs=[];
+      for(var k=0;k<maxPer;k++){ var idx=pf+k*passes; await seek(prev, dur*(idx+1)/(totalFrames+1)); var b=await frameBlob(); if(b) blobs.push(b); }
+      if(!blobs.length) throw {code:"noframes"};
+      if(passes===1){ try{ prev.currentTime=0; }catch(e){}
+        var r1=await sampleFn(COACH_PROMPT+'These still frames are sampled across the whole video, start to finish. '+COACH_ASK, {images:blobs, modelTier:"default", signal:signal, onText:function(u){ if(onText) onText(u.text); }});
+        return r1.text;
+      }
+      var r=await sampleFn('You are a cardistry coach. These '+blobs.length+' still frames come from a person performing a flourish (batch '+(pf+1)+' of '+passes+'; together they span the whole clip). In 2-3 sentences note what their hands are doing and anything rough (drops, uneven fingers, bad angles, hesitation).', {images:blobs, modelTier:"quick", signal:signal});
+      notes.push('Batch '+(pf+1)+': '+r.text);
+    }
+    try{ prev.currentTime=0; }catch(e){}
+    aiStatus.textContent="Writing your feedback…";
+    var r2=await sampleFn(COACH_PROMPT+'Here are observations from across their whole video, start to finish:\n'+notes.join("\n")+'\n\n'+COACH_ASK, {modelTier:"default", signal:signal, onText:function(u){ if(onText) onText(u.text); }});
+    return r2.text;
+  }
+
+  var addMode='add';
+  var modeSeg=document.getElementById('modeSeg'), coachOut=document.getElementById('coachOut'), coachNote=document.getElementById('coachNote');
+  function applyMode(){
+    var coach = addMode==='coach';
+    document.getElementById('addTitle').textContent = coach ? "Coach my move" : "Add a tutorial";
+    document.getElementById('linkField').hidden = coach;
+    if(coach){ document.getElementById('form').hidden = true; coachOut.hidden = !coachOut.textContent; }
+    else { coachOut.hidden = true; if(chosenFile) document.getElementById('form').hidden=false; }
+    document.getElementById('addLede').textContent = coach
+      ? (sampleFn ? "Upload a clip of YOUR attempt — the AI watches the whole thing, then gives you specific tips on what to fix." : "Upload a clip of your attempt for AI feedback. (AI coaching runs on the Claude-hosted version.)")
+      : (sampleFn ? "Upload a cardistry clip (up to 30 min) and an AI will watch it, write a summary, pick a category, rate the skill level, and even give the left- and right-handed setup — then it's added to your catalog." : "Upload a clip (or paste a link) and fill in a few details — it's added to your catalog and sorted automatically. (The AI auto-rating runs on the Claude-hosted version.)");
+    analyzeBtn.textContent = coach ? "Get feedback" : "✨ Analyze with AI";
+    coachNote.hidden = !(coach && !sampleFn);
+    if(coach && !sampleFn){ coachNote.textContent="AI coaching is available on the Claude-hosted version of this app. On this copy you can still watch your video above."; }
+    updateAiRow();
+  }
+  modeSeg.addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; addMode=b.getAttribute('data-mode'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); applyMode(); });
+
   var analyzing=false, aiCtl=null;
   analyzeBtn.addEventListener('click', async function(){
     if(analyzing){ if(aiCtl) aiCtl.abort(); return; }
     if(!sampleFn){ return; }
+    if(addMode==='coach' && !chosenFile){ aiStatus.textContent="Upload a video of your attempt first."; return; }
     analyzing=true; aiCtl=new AbortController();
     analyzeBtn.textContent="Cancel"; aiStatus.textContent="Thinking…";
     try{
-      var data=await analyzeVideo(aiCtl.signal);
-      if(data){
-        document.getElementById('fName').value = data.name || "";
-        document.getElementById('fBy').value = (data.creator && data.creator!=="unknown") ? data.creator : "";
-        var lv = Math.max(1,Math.min(5, Math.round(Number(data.level)||3)));
-        document.getElementById('fLevel').value = String(lv);
-        if(CATS.indexOf(data.category)>=0) document.getElementById('fCat').value=data.category;
-        document.getElementById('fSummary').value = data.summary || "";
-        document.getElementById('fRighty').value = data.righty || "";
-        document.getElementById('fLefty').value = data.lefty || "";
-        aiStatus.textContent="✓ AI watched it and filled it in below — tweak anything, then add it.";
+      if(addMode==='coach'){
+        coachOut.hidden=false; coachOut.textContent="Watching your video…";
+        var tips=await coachVideo(aiCtl.signal, function(txt){ coachOut.textContent=txt; });
+        if(tips) coachOut.textContent=tips;
+        aiStatus.textContent="✓ Here's your feedback.";
+      } else {
+        var data=await analyzeVideo(aiCtl.signal);
+        if(data){
+          document.getElementById('fName').value = data.name || "";
+          document.getElementById('fBy').value = (data.creator && data.creator!=="unknown") ? data.creator : "";
+          var lv = Math.max(1,Math.min(5, Math.round(Number(data.level)||3)));
+          document.getElementById('fLevel').value = String(lv);
+          if(CATS.indexOf(data.category)>=0) document.getElementById('fCat').value=data.category;
+          document.getElementById('fSummary').value = data.summary || "";
+          document.getElementById('fRighty').value = data.righty || "";
+          document.getElementById('fLefty').value = data.lefty || "";
+          aiStatus.textContent="✓ AI watched it and filled it in below — tweak anything, then add it.";
+        }
       }
     }catch(e){
       var code=e&&e.code;
-      if(code==="cancelled"){ aiStatus.textContent="Stopped. Fill it in yourself, or try again."; }
-      else if(code==="not_granted"||code==="sampling_disabled"||code==="not_declared"){ aiStatus.textContent="AI isn't available here — fill it in yourself below."; sampleFn=null; refreshAddUI(); }
+      if(code==="cancelled"){ aiStatus.textContent="Stopped."; }
+      else if(code==="not_granted"||code==="sampling_disabled"||code==="not_declared"){ aiStatus.textContent="AI isn't available here."; sampleFn=null; refreshAddUI(); }
       else if(code==="rate_limited"){ aiStatus.textContent="Too many requests just now — wait a moment and try again."; }
-      else if(code==="noframes"){ aiStatus.textContent="Couldn't read frames from that video — fill it in below."; }
-      else if(code==="invalid_json"){ aiStatus.textContent="The AI reply wasn't clean — try again, or fill it in below."; }
-      else { aiStatus.textContent="Couldn't analyze it automatically — fill it in below."; }
-    }finally{ analyzing=false; aiCtl=null; analyzeBtn.textContent="✨ Analyze with AI"; }
+      else if(code==="noframes"){ aiStatus.textContent="Couldn't read frames from that video."; }
+      else if(code==="invalid_json"){ aiStatus.textContent="The AI reply wasn't clean — try again."; }
+      else { aiStatus.textContent="Couldn't analyze it automatically."; }
+    }finally{ analyzing=false; aiCtl=null; analyzeBtn.textContent = addMode==='coach' ? "Get feedback" : "✨ Analyze with AI"; }
   });
 
   document.getElementById('addBtn').addEventListener('click', async function(){
@@ -913,6 +1042,67 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       closeEdit();
     }catch(e){ document.getElementById('eStatus').textContent="Couldn't delete — try again."; btn.disabled=false; }
   });
+
+  // ---------- backup / restore ----------
+  var bkModal=document.getElementById('bkModal'), imModal=document.getElementById('imModal');
+  function buildBackup(){
+    return {v:1, at:Date.now(), done:done, tutorials:userTuts.map(function(t){
+      return {name:t.name, by:t.by, lv:t.lv, cat:t.cat, blurb:t.blurb, righty:t.righty||"", lefty:t.lefty||"", thumb:t.thumb||"", link:t.link||""};
+    })};
+  }
+  document.getElementById('exportBtn').addEventListener('click', function(){
+    var json=JSON.stringify(buildBackup());
+    document.getElementById('bkText').value=json;
+    document.getElementById('bkStatus').textContent="";
+    bkModal.classList.add('on');
+  });
+  document.getElementById('bkDownload').addEventListener('click', function(){
+    var json=document.getElementById('bkText').value, st=document.getElementById('bkStatus');
+    if(DL){ DL.save({filename:'cardistry-backup.json', data:json}).then(function(){ st.textContent="✓ Saved."; }).catch(function(){ st.textContent="Download declined — use Copy instead."; }); return; }
+    try{ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([json],{type:'application/json'})); a.download='cardistry-backup.json'; document.body.appendChild(a); a.click(); a.remove(); st.textContent="✓ Downloaded."; }catch(e){ st.textContent="Use Copy instead."; }
+  });
+  document.getElementById('bkX').addEventListener('click', function(){ bkModal.classList.remove('on'); });
+  bkModal.addEventListener('click', function(e){ if(e.target===bkModal) bkModal.classList.remove('on'); });
+  document.getElementById('bkCopy').addEventListener('click', function(){
+    var ta=document.getElementById('bkText'), st=document.getElementById('bkStatus');
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(ta.value).then(function(){ st.textContent="✓ Copied to clipboard."; }).catch(function(){ ta.focus(); ta.select(); st.textContent="Select the text and copy it."; });
+    } else { ta.focus(); ta.select(); st.textContent="Select the text and copy it."; }
+  });
+  document.getElementById('importBtn').addEventListener('click', function(){
+    document.getElementById('imText').value=""; document.getElementById('imStatus').textContent=""; imModal.classList.add('on');
+  });
+  document.getElementById('imX').addEventListener('click', function(){ imModal.classList.remove('on'); });
+  imModal.addEventListener('click', function(e){ if(e.target===imModal) imModal.classList.remove('on'); });
+  document.getElementById('imFileBtn').addEventListener('click', function(){ document.getElementById('importFile').click(); });
+  document.getElementById('importFile').addEventListener('change', function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var rd=new FileReader();
+    rd.onload=function(){ document.getElementById('imText').value=String(rd.result||""); doRestore(); };
+    rd.readAsText(f);
+  });
+  document.getElementById('imRestore').addEventListener('click', doRestore);
+  async function doRestore(){
+    var st=document.getElementById('imStatus'), obj;
+    try{ obj=JSON.parse(document.getElementById('imText').value); }catch(e){ st.textContent="That backup couldn't be read — check the text and try again."; return; }
+    var n=0;
+    if(obj && obj.done && typeof obj.done==="object"){ Object.keys(obj.done).forEach(function(k){ done[k]=1; }); saveDone(); }
+    if(obj && obj.tutorials && obj.tutorials.length){
+      var existing={}; userTuts.forEach(function(t){ existing[(t.name||"").toLowerCase()]=1; });
+      for(var i=0;i<obj.tutorials.length;i++){
+        var t=obj.tutorials[i]; if(!t || !t.name) continue;
+        if(existing[(t.name||"").toLowerCase()]) continue;
+        existing[(t.name||"").toLowerCase()]=1; n++;
+        var doc={name:t.name, creator:t.by||"you", level:Number(t.lv)||3, category:t.cat||"Cuts", summary:t.blurb||"", righty:t.righty||"", lefty:t.lefty||"", thumb:t.thumb||"", link:t.link||"", assetUrl:"", assetId:"", source:"import", createdAt:Date.now()};
+        if(usingDB && DB){ try{ await DB.collection("tutorials").add(doc); }catch(e){} }
+        else { userTuts.push({id:"t-"+Date.now()+"-"+Math.random().toString(36).slice(2,6), lv:doc.level, cat:doc.category, name:doc.name, by:doc.creator, blurb:doc.summary, righty:doc.righty, lefty:doc.lefty, thumb:doc.thumb, link:doc.link, src:"you"}); }
+      }
+      if(!usingDB) saveLocalTuts();
+    }
+    afterTutsChanged(); updateProgress();
+    st.textContent="✓ Restored. "+n+" tutorial"+(n===1?"":"s")+" added.";
+    setTimeout(function(){ imModal.classList.remove('on'); }, 1000);
+  }
 
   // ---------- tabs + theme ----------
   var screen=document.getElementById('screen');
