@@ -304,8 +304,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .caphint{font-size:13px; color:var(--muted)}
 .capstatus{font-size:13px; min-height:18px; margin:8px 0 0; color:var(--accent-ink)}
 .capbtns{display:flex; gap:8px; justify-content:center; margin:12px 0 2px; flex-wrap:wrap}
+.caplive{margin:10px 0 2px; font-size:13.5px; font-weight:700; border-radius:10px; padding:9px 12px; display:flex; align-items:center; gap:9px; line-height:1.3}
+.caplive::before{content:""; width:9px; height:9px; border-radius:50%; background:currentColor; flex:0 0 auto}
+.caplive.good{background:rgba(70,160,90,.15); color:#3f9d5e}
+.caplive.warn{background:rgba(200,140,40,.16); color:#b9822f}
+.caplive.bad{background:var(--surface2); color:var(--muted)}
+.capopts{display:flex; gap:16px; justify-content:center; margin-top:8px; font-size:12.5px; color:var(--muted); flex-wrap:wrap}
+.capopts label{display:inline-flex; align-items:center; gap:6px; cursor:pointer}
+.capopts input{accent-color:var(--accent)}
 .capgrid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:14px}
-.capslot{border:1px solid var(--line); border-radius:10px; padding:7px 6px; text-align:center; cursor:pointer; background:var(--surface2)}
+.capslot{position:relative; border:1px solid var(--line); border-radius:10px; padding:7px 6px; text-align:center; cursor:pointer; background:var(--surface2)}
+.capdel{position:absolute; top:-7px; right:-7px; width:22px; height:22px; border-radius:50%; background:var(--l5); color:#fff; border:2px solid var(--surface); font-size:13px; line-height:1; cursor:pointer; display:grid; place-items:center; padding:0; z-index:2}
+.capdel:active{transform:scale(.9)}
 .capslot.on{outline:2px solid var(--accent); outline-offset:1px}
 .capslot .th{height:46px; border-radius:6px; background:var(--surface); background-size:cover; background-position:center; display:grid; place-items:center; color:var(--faint); font-size:18px; margin-bottom:5px}
 .capslot .lb{color:var(--muted); font-size:10.5px; line-height:1.2}
@@ -385,14 +395,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.2</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.3</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">3 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">4 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.0.2</span> Scan while adding <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.0.3</span> Live camera check <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">While scanning, the AI now checks the camera <b>live</b> and tells you if the shot's good ("✓ Front looks good", "move closer", "hold steady") — with an optional <b>auto-capture</b> when it's right. And you can <b>remove any captured photo</b> with the × on its thumbnail.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.0.2</span> Scan while adding <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">You can now <b>scan a deck right when you add it</b>. Deck names &amp; brands come straight from the built-in list and can't be edited — pick the deck and it's already named.</div>
                 </details>
                 <details>
@@ -781,11 +795,16 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       <div class="camwrap" id="camWrap"><video id="capVideo" playsinline muted></video><div class="guide"></div></div>
       <div class="captarget"><span class="cstep" id="capStepNo"></span> <span id="capTargetLabel"></span></div>
       <div class="caphint" id="capTargetHint"></div>
+      <div class="caplive bad" id="capLive" hidden>Starting camera…</div>
       <div class="capstatus" id="capStatus"></div>
       <div class="capbtns">
         <button class="btn" id="capShot">Capture</button>
         <button class="btn line" id="capTakePhoto">Take a photo</button>
         <button class="btn line" id="capSkip">Skip</button>
+      </div>
+      <div class="capopts" id="capOpts">
+        <label><input type="checkbox" id="capLiveChk" checked> Live check</label>
+        <label><input type="checkbox" id="capAutoChk"> Auto-capture when good</label>
       </div>
       <input id="capFileCam" type="file" accept="image/*" capture="environment" hidden>
     </div>
@@ -1840,7 +1859,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     byId('capGrid').innerHTML = capList.map(function(t,i){
       var has=capShots[t.k];
       var th = has ? 'style="background-image:url('+has+')"' : '';
-      return '<div class="capslot'+(has?' filled':'')+(i===capActive?' on':'')+'" data-i="'+i+'"><div class="th" '+th+'>'+(has?'':CAP_ICON[t.k]||'?')+'</div><div class="lb">'+esc(t.label.replace(' of the box','').replace('A card — ','Card '))+'</div></div>';
+      var del = has ? '<button class="capdel" data-del="'+i+'" title="Remove this photo">&times;</button>' : '';
+      return '<div class="capslot'+(has?' filled':'')+(i===capActive?' on':'')+'" data-i="'+i+'">'+del+'<div class="th" '+th+'>'+(has?'':CAP_ICON[t.k]||'?')+'</div><div class="lb">'+esc(t.label.replace(' of the box','').replace('A card — ','Card '))+'</div></div>';
     }).join("");
     var n=capFilledCount();
     byId('capProg').textContent = n+' of '+capList.length+' captured'+(n<capList.length?' — need all to finish':' — all set!');
@@ -1855,6 +1875,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     renderCapGrid();
   }
   function assignShot(key,url){ if(capValidTarget(key)){ capShots[key]=url; } }
+  function facesOf(res){ var out={}; if(res&&res.faces){ res.faces.forEach(function(f){ var k=normFace(f); if(k) out[k]=1; }); } if(res&&res.inside) out['inside']=1; return out; }
+  function placeFromRes(url,res){
+    var placed=[]; var fo=facesOf(res);
+    Object.keys(fo).forEach(function(k){ if(capValidTarget(k)){ assignShot(k,url); placed.push(k); } });
+    return placed;
+  }
   async function handleCapture(url){
     if(!url){ return; }
     if(capForce){ assignShot(capList[capActive].k, url); capForce=false; byId('capStatus').textContent='Saved to '+capList[capActive].label+'.'; afterAssign(); return; }
@@ -1862,13 +1888,10 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       capBusy=true; byId('capStatus').textContent='Scanning the photo…';
       var res=null; try{ res=await aiClassify(url); }catch(e){}
       capBusy=false;
-      if(res && res.subject!=='other' && res.faces && res.faces.length){
-        var placed=[];
-        res.faces.forEach(function(f){ var k=normFace(f); if(k){ assignShot(k,url); if(capValidTarget(k)) placed.push(k); } });
-        if(res.inside && capValidTarget('inside')){ assignShot('inside',url); if(placed.indexOf('inside')<0) placed.push('inside'); }
+      if(res && res.subject!=='other'){
+        var placed=placeFromRes(url,res);
         if(placed.length){ byId('capStatus').textContent='Got: '+placed.map(function(k){return labelFor(k);}).join(', ')+(res.clear===false?' (a bit blurry — retake if it looks off)':''); afterAssign(); return; }
       }
-      // couldn't place — fall back to the active target so you're never stuck
       assignShot(capList[capActive].k, url);
       byId('capStatus').textContent="Couldn't auto-detect that one — saved it as “"+capList[capActive].label+'”. Tap a slot to reassign if needed.';
       afterAssign();
@@ -1880,11 +1903,40 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   }
   function labelFor(k){ for(var i=0;i<CAP_TARGETS.length;i++){ if(CAP_TARGETS[i].k===k) return CAP_TARGETS[i].label; } return k; }
   function afterAssign(){ renderCapGrid(); var ne=firstEmpty(); if(capFilledCount()<capList.length) setCapTarget(ne); }
+
+  // ---- live camera check ----
+  var capLoopOn=false, capLiveBusy=false, capGoodStreak=0;
+  function setLive(cls, msg){ var el=byId('capLive'); if(!el) return; el.hidden=false; el.className='caplive '+cls; el.textContent=msg; }
+  function liveOn(){ return sampleFn && capMode==='scan' && capStream && byId('capLiveChk') && byId('capLiveChk').checked; }
+  function startLiveLoop(){ if(capLoopOn) return; capLoopOn=true; capGoodStreak=0; liveTick(); }
+  function stopLiveLoop(){ capLoopOn=false; }
+  async function liveTick(){
+    if(!capLoopOn) return;
+    if(!liveOn()){ if(byId('capLive')) byId('capLive').hidden=true; setTimeout(liveTick, 700); return; }
+    if(capBusy || capLiveBusy){ setTimeout(liveTick, 500); return; }
+    var v=byId('capVideo'); if(!v || !v.videoWidth){ setLive('bad','Starting camera…'); setTimeout(liveTick, 600); return; }
+    var frame=grabFrame(); if(!frame){ setTimeout(liveTick, 800); return; }
+    capLiveBusy=true; var res=null; try{ res=await aiClassify(frame); }catch(e){}
+    capLiveBusy=false;
+    if(!capLoopOn) return;
+    var tgt=capList[capActive]; var fo=facesOf(res);
+    if(res && res.subject!=='other' && fo[tgt.k]){
+      if(res.clear===false){ capGoodStreak=0; setLive('warn','Hold steady — a little blurry'); }
+      else if(res.fills===false){ capGoodStreak=0; setLive('warn','Move a bit closer'); }
+      else { capGoodStreak++; setLive('good','✓ '+tgt.label+' looks good'+(byId('capAutoChk').checked?' — capturing…':' — tap Capture'));
+        if(byId('capAutoChk').checked && capGoodStreak>=2){ capBusy=true; var placed=placeFromRes(frame,res); if(!placed.length){ assignShot(tgt.k,frame); placed=[tgt.k]; } byId('capStatus').textContent='Auto-captured: '+placed.map(labelFor).join(', '); capBusy=false; capGoodStreak=0; afterAssign(); }
+      }
+    } else if(res && res.subject==='card'){ capGoodStreak=0; setLive('warn', tgt.k.indexOf('card')===0 ? 'Hold the card steady' : 'That’s a card — show the '+tgt.label.toLowerCase()); }
+    else if(res && res.subject==='box'){ var seen=Object.keys(fo)[0]; capGoodStreak=0; setLive('warn', seen? ('Looks like the '+labelFor(seen).toLowerCase()+' — turn to the '+tgt.label.toLowerCase()) : 'Line the box up in the frame'); }
+    else { capGoodStreak=0; setLive('bad','Point the deck at the camera'); }
+    setTimeout(liveTick, 1400);
+  }
   function startCam(){
     var wrap=byId('camWrap'), v=byId('capVideo');
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
       navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false}).then(function(stream){
         capStream=stream; v.srcObject=stream; v.style.display=''; var nf=wrap.querySelector('.nofeed'); if(nf) nf.remove(); v.play().catch(function(){});
+        if(sampleFn){ byId('capOpts').style.display=''; startLiveLoop(); } else { byId('capOpts').style.display='none'; if(byId('capLive')) byId('capLive').hidden=true; }
       }).catch(function(){ noCam(); });
     } else { noCam(); }
   }
@@ -1892,7 +1944,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     var wrap=byId('camWrap'), v=byId('capVideo'); v.style.display='none';
     if(!wrap.querySelector('.nofeed')){ var d=document.createElement('div'); d.className='nofeed'; d.textContent='Live camera preview isn’t available here — tap “Take a photo” to snap each shot with your camera.'; wrap.appendChild(d); }
   }
-  function stopCam(){ if(capStream){ capStream.getTracks().forEach(function(t){ t.stop(); }); capStream=null; } var v=byId('capVideo'); if(v) v.srcObject=null; }
+  function stopCam(){ stopLiveLoop(); if(capStream){ capStream.getTracks().forEach(function(t){ t.stop(); }); capStream=null; } var v=byId('capVideo'); if(v) v.srcObject=null; if(byId('capLive')) byId('capLive').hidden=true; }
   function setCapMode(m){
     capMode=m;
     [].forEach.call(byId('capMode').children,function(b){ b.classList.toggle('on',b.getAttribute('data-m')===m); });
@@ -1918,7 +1970,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   byId('capTakePhoto').addEventListener('click', function(){ byId('capFileCam').click(); });
   byId('capFileCam').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ handleCapture(url); }); this.value=''; });
   byId('capSkip').addEventListener('click', function(){ setCapTarget((capActive+1)%capList.length); });
-  byId('capGrid').addEventListener('click', function(e){ var s=e.target.closest('.capslot'); if(!s) return; capActive=Number(s.getAttribute('data-i')); capForce=true; renderCapGrid(); byId('capStatus').textContent='Next capture → '+capList[capActive].label+'. '+(capMode==='upload'?'Choose a photo.':'Capture or take a photo.'); if(capMode==='upload'){ byId('capFiles').click(); } });
+  byId('capGrid').addEventListener('click', function(e){
+    var del=e.target.closest('.capdel'); if(del){ e.stopPropagation(); var di=Number(del.getAttribute('data-del')); delete capShots[capList[di].k]; byId('capStatus').textContent='Removed '+capList[di].label+'.'; setCapTarget(di); return; }
+    var s=e.target.closest('.capslot'); if(!s) return; capActive=Number(s.getAttribute('data-i')); capForce=true; renderCapGrid(); byId('capStatus').textContent='Next capture → '+capList[capActive].label+'. '+(capMode==='upload'?'Choose a photo.':'Capture or take a photo.'); if(capMode==='upload'){ byId('capFiles').click(); } });
   byId('capPick').addEventListener('click', function(){ byId('capFiles').click(); });
   function downscaleP(file){ return new Promise(function(res){ downscale(file, res); }); }
   byId('capFiles').addEventListener('change', async function(e){
