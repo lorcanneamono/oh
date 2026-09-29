@@ -293,6 +293,13 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .pline>i{display:block; height:100%; width:0; border-radius:0 3px 3px 0; background:linear-gradient(90deg,var(--l1),var(--l3),var(--l5)); transition:width .45s ease}
 .tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; padding:9px 0 7px; background:none; border:none; color:var(--muted); font-family:var(--disp); font-weight:600; font-size:10px; letter-spacing:.2px; cursor:pointer; user-select:none; transition:color .12s,transform .08s}
 .tab svg{width:22px; height:22px; stroke:currentColor; stroke-width:2; fill:none; stroke-linecap:round; stroke-linejoin:round}
+.tabgrp{flex:1; display:flex}
+.tabgrp .tab{flex:1}
+.tab.addc{flex:0 0 auto; width:76px; color:var(--accent-ink); font-weight:700; justify-content:flex-end; padding-bottom:7px}
+.tab.addc .plus{width:40px; height:40px; border-radius:50%; background:var(--accent); display:grid; place-items:center; box-shadow:0 4px 12px rgba(150,80,90,.35); margin-bottom:2px}
+.tab.addc .plus svg{width:24px; height:24px; stroke:#fff; stroke-width:2.6}
+.tab.addc.active{color:var(--accent-ink)}
+.tab.addc.active .plus{box-shadow:0 4px 14px rgba(150,80,90,.5)}
 .tab.active{color:var(--accent)}
 .tab:active{transform:scale(.9)}
 
@@ -345,15 +352,27 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v5.0</b>. Big updates bump the whole number; small ones are the decimals.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v5.2.1</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v5.0</span> Your collection <span class="new">Latest</span><span class="cnt">1 update</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v5.0 – v5.2</span> Your collection <span class="new">Latest</span><span class="cnt">4 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v5.0</span> Deck collection <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">New <b>Decks</b> tab: track the decks you own and want. Search 130+ real decks (or add your own). Your decks are grouped into <b>brand dropdowns (A–Z)</b> — tap any deck to pop up its interactive <b>3D box</b> that you drag to spin and tap to open. Add a photo, box color, quantity, condition, notes and favorites.</div>
+                  <summary><span class="ver">v5.2.1</span> Centered Add button <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">The <b>Add</b> (+) button now sits in the middle of the tab bar as a raised accent button.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v5.2</span> Real box photos <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Add a <b>front and back photo</b> of your actual box and it wraps onto the 3D deck, plus a "Find this box online" link to grab a picture fast.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v5.1</span> Brand dropdowns <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Your decks are grouped into <b>brand dropdowns (A–Z)</b>, and tapping a deck now pops its 3D box up in its own viewer.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v5.0</span> Deck collection <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">New <b>Decks</b> tab: track the decks you own and want. Search 130+ real decks (or add your own) and see each as an interactive <b>3D box</b> you drag to spin and tap to open. Set box color, quantity, condition, notes and favorites.</div>
                 </details>
               </div>
             </details>
@@ -623,13 +642,16 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
               </div>
             </div>
             <div class="fld" style="margin-top:10px"><label>Box color</label><div class="colorrow" id="dfColors"></div></div>
-            <div class="fld" style="margin-top:10px"><label>Photo of the box (optional)</label>
+            <div class="fld" style="margin-top:10px"><label>Real box photos (optional)</label>
+              <p class="note" style="margin:0 0 8px">Add a photo of the actual box and it wraps right onto the 3D deck. <a id="dfFind" href="#" target="_blank" rel="noopener">Find this box online &rarr;</a></p>
               <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
-                <button class="btn line" id="dfPhotoBtn" type="button">Choose photo</button>
-                <span id="dfPhotoName" style="font-size:12px; color:var(--muted)">Stylized box until you add one</span>
-                <button class="btn line" id="dfPhotoClear" type="button" hidden>Remove photo</button>
-                <input id="dfPhoto" type="file" accept="image/*" hidden>
+                <button class="btn line" id="dfPhotoBtn" type="button">Front photo</button>
+                <button class="btn line" id="dfPhotoBackBtn" type="button">Back photo</button>
+                <button class="btn line" id="dfPhotoClear" type="button" hidden>Remove photos</button>
               </div>
+              <div id="dfPhotoName" style="font-size:12px; color:var(--muted); margin-top:6px">Stylized box until you add a photo</div>
+              <input id="dfPhoto" type="file" accept="image/*" hidden>
+              <input id="dfPhotoBack" type="file" accept="image/*" hidden>
             </div>
             <div class="fld" style="margin-top:10px"><label>Notes</label><textarea id="dfNotes" rows="2" placeholder="Where you got it, why you love it…"></textarea></div>
             <div style="display:flex; gap:8px; margin-top:14px">
@@ -653,12 +675,16 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 
   <nav class="tabbar" id="tabbar">
     <div class="pline"><i id="barFill"></i></div>
-    <button class="tab active" data-tab="learn"><svg viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v11a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v11a2.5 2.5 0 0 1 2.5-2.5H21z"/></svg>Learn</button>
-    <button class="tab" data-tab="moves"><svg viewBox="0 0 24 24"><path d="M10 6h10"/><path d="M10 12h10"/><path d="M10 18h10"/><path d="M4 6.5l1.3 1.3L8 5"/><path d="M4 12.5l1.3 1.3L8 11"/><path d="M4 18.5l1.3 1.3L8 17"/></svg>Moves</button>
-    <button class="tab" data-tab="add"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Add</button>
-    <button class="tab" data-tab="progress"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M12 20V8"/><path d="M18 20v-9"/></svg>Stats</button>
-    <button class="tab" data-tab="lefty"><svg viewBox="0 0 24 24"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.8a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11.2V6.5a1.5 1.5 0 0 1 3 0V14c0 3.3-2.2 6-5.5 6H10c-1.4 0-2.3-.6-3.2-1.6L4 15.2a1.5 1.5 0 0 1 2.2-2l1.8 1.9"/></svg>Lefty</button>
-    <button class="tab" data-tab="decks"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 8h6"/><path d="M12 12.5l1 1.2 2-2.2"/></svg>Decks</button>
+    <div class="tabgrp">
+      <button class="tab active" data-tab="learn"><svg viewBox="0 0 24 24"><path d="M3 5h6a3 3 0 0 1 3 3v11a2.5 2.5 0 0 0-2.5-2.5H3z"/><path d="M21 5h-6a3 3 0 0 0-3 3v11a2.5 2.5 0 0 1 2.5-2.5H21z"/></svg>Learn</button>
+      <button class="tab" data-tab="moves"><svg viewBox="0 0 24 24"><path d="M10 6h10"/><path d="M10 12h10"/><path d="M10 18h10"/><path d="M4 6.5l1.3 1.3L8 5"/><path d="M4 12.5l1.3 1.3L8 11"/><path d="M4 18.5l1.3 1.3L8 17"/></svg>Moves</button>
+    </div>
+    <button class="tab addc" data-tab="add"><span class="plus"><svg viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></svg></span>Add</button>
+    <div class="tabgrp">
+      <button class="tab" data-tab="progress"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M12 20V8"/><path d="M18 20v-9"/></svg>Stats</button>
+      <button class="tab" data-tab="lefty"><svg viewBox="0 0 24 24"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.8a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11.2V6.5a1.5 1.5 0 0 1 3 0V14c0 3.3-2.2 6-5.5 6H10c-1.4 0-2.3-.6-3.2-1.6L4 15.2a1.5 1.5 0 0 1 2.2-2l1.8 1.9"/></svg>Lefty</button>
+      <button class="tab" data-tab="decks"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 8h6"/><path d="M12 12.5l1 1.2 2-2.2"/></svg>Decks</button>
+    </div>
   </nav>
 </div>
 
@@ -1478,8 +1504,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function buildBox(d){
     var c=d.color||"#b23b3b", c2=shade(c,-16), c3=shade(c,-30), c4=shade(c,14);
     var faceStyle=function(bg){ return 'style="background:'+bg+'"'; };
+    var backImg = d.photoBack || d.photo;
     var frontBg = d.photo ? '#000 center/cover url('+d.photo+')' : 'linear-gradient(158deg,'+c4+','+c+' 58%,'+c2+')';
-    var backBg = d.photo ? '#000 center/cover url('+d.photo+')' : 'repeating-linear-gradient(45deg,'+c2+','+c2+' 7px,'+c3+' 7px,'+c3+' 14px)';
+    var backBg = backImg ? '#000 center/cover url('+backImg+')' : 'repeating-linear-gradient(45deg,'+c2+','+c2+' 7px,'+c3+' 7px,'+c3+' 14px)';
     var tuck = d.photo ? '' : '<div class="tuck"><div class="frame"></div><div class="suit">&spades;</div><div class="nm">'+esc(d.name)+'</div>'+(d.brand?'<div class="br">'+esc(d.brand)+'</div>':'')+'</div>';
     return '<div class="scene"><div class="box3d">'
       + '<div class="slab"><div class="pip">&spades;</div></div>'
@@ -1587,7 +1614,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   document.addEventListener('click', function(e){ if(!dEls.ac.contains(e.target)) dEls.aclist.classList.remove('on'); });
 
   // ---- deck form ----
-  var dfState={ id:null, color:BOX_COLORS[0], status:"own", fav:false, photo:"" };
+  var dfState={ id:null, color:BOX_COLORS[0], status:"own", fav:false, photo:"", photoBack:"" };
   function renderSwatches(){
     var cols=BOX_COLORS.slice(); if(dfState.color && cols.indexOf(dfState.color)<0) cols.unshift(dfState.color);
     byId('dfColors').innerHTML=cols.map(function(c){ return '<span class="sw'+(c===dfState.color?" on":"")+'" data-c="'+c+'" style="background:'+c+'"></span>'; }).join("");
@@ -1595,9 +1622,16 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   byId('dfColors').addEventListener('click', function(e){ var s=e.target.closest('.sw'); if(!s) return; dfState.color=s.getAttribute('data-c'); renderSwatches(); });
   byId('dfStatus').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; dfState.status=b.getAttribute('data-st'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); });
   byId('dfStar').addEventListener('click', function(){ dfState.fav=!dfState.fav; this.classList.toggle('on',dfState.fav); });
+  function photoLabel(){
+    var f=!!dfState.photo, bk=!!dfState.photoBack;
+    byId('dfPhotoName').textContent = (f&&bk) ? "Front + back photos added" : f ? "Front photo added" : bk ? "Back photo added" : "Stylized box until you add a photo";
+    byId('dfPhotoClear').hidden = !(f||bk);
+  }
   byId('dfPhotoBtn').addEventListener('click', function(){ byId('dfPhoto').click(); });
-  byId('dfPhoto').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ dfState.photo=url; byId('dfPhotoName').textContent="Photo added"; byId('dfPhotoClear').hidden=false; }); });
-  byId('dfPhotoClear').addEventListener('click', function(){ dfState.photo=""; byId('dfPhoto').value=""; byId('dfPhotoName').textContent="Stylized box until you add one"; this.hidden=true; });
+  byId('dfPhotoBackBtn').addEventListener('click', function(){ byId('dfPhotoBack').click(); });
+  byId('dfPhoto').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ dfState.photo=url; photoLabel(); }); });
+  byId('dfPhotoBack').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ dfState.photoBack=url; photoLabel(); }); });
+  byId('dfPhotoClear').addEventListener('click', function(){ dfState.photo=""; dfState.photoBack=""; byId('dfPhoto').value=""; byId('dfPhotoBack').value=""; photoLabel(); });
   function downscale(file, cb){
     var rd=new FileReader(); rd.onload=function(){ var img=new Image(); img.onload=function(){ var mx=620, w=img.width, h=img.height; if(w>mx||h>mx){ if(w>h){ h=Math.round(h*mx/w); w=mx; } else { w=Math.round(w*mx/h); h=mx; } } var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); try{ cb(cv.toDataURL('image/jpeg',0.82)); }catch(e){ cb(String(rd.result)); } }; img.onerror=function(){ cb(String(rd.result)); }; img.src=String(rd.result); }; rd.readAsDataURL(file);
   }
@@ -1608,6 +1642,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     dfState.status = (d&&d.status) || "own";
     dfState.fav = d? !!d.fav : false;
     dfState.photo = (d&&d.photo) || "";
+    dfState.photoBack = (d&&d.photoBack) || "";
     byId('dfTitle').textContent = editId ? "Edit deck" : "Add a deck";
     byId('dfName').value = (d&&d.name) || (pre&&pre.name) || "";
     byId('dfBrand').value = (d&&d.brand) || (pre&&pre.brand) || "";
@@ -1615,9 +1650,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     byId('dfCond').value = (d&&d.cond) || "sealed";
     byId('dfNotes').value = (d&&d.notes) || "";
     byId('dfStar').classList.toggle('on', dfState.fav);
-    byId('dfPhotoName').textContent = dfState.photo ? "Photo added" : "Stylized box until you add one";
-    byId('dfPhotoClear').hidden = !dfState.photo;
-    byId('dfPhoto').value="";
+    var fq=((d&&d.name)||(pre&&pre.name)||"")+" "+((d&&d.brand)||(pre&&pre.brand)||"")+" playing cards box";
+    byId('dfFind').href = "https://www.google.com/search?tbm=isch&q="+encodeURIComponent(fq.trim());
+    byId('dfPhoto').value=""; byId('dfPhotoBack').value=""; photoLabel();
     [].forEach.call(byId('dfStatus').children, function(b){ b.classList.toggle('on', b.getAttribute('data-st')===dfState.status); });
     byId('dfSave').textContent = editId ? "Save changes" : "Add to collection";
     renderSwatches();
@@ -1629,7 +1664,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   byId('dfCancel').addEventListener('click', closeForm);
   byId('dfSave').addEventListener('click', function(){
     var name=byId('dfName').value.trim(); if(!name){ byId('dfName').focus(); return; }
-    var rec={ name:name, brand:byId('dfBrand').value.trim(), status:dfState.status, qty:Math.max(0,Number(byId('dfQty').value)||1), cond:byId('dfCond').value, color:dfState.color, photo:dfState.photo, notes:byId('dfNotes').value.trim(), fav:dfState.fav };
+    var rec={ name:name, brand:byId('dfBrand').value.trim(), status:dfState.status, qty:Math.max(0,Number(byId('dfQty').value)||1), cond:byId('dfCond').value, color:dfState.color, photo:dfState.photo, photoBack:dfState.photoBack, notes:byId('dfNotes').value.trim(), fav:dfState.fav };
     if(dfState.id){ for(var i=0;i<decks.length;i++){ if(decks[i].id===dfState.id){ rec.id=dfState.id; rec.at=decks[i].at; decks[i]=rec; break; } } }
     else { rec.id="d-"+Date.now()+"-"+Math.random().toString(36).slice(2,6); rec.at=Date.now(); decks.unshift(rec); }
     saveDecks(); renderDecks(); closeForm();
