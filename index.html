@@ -256,6 +256,30 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .starbtn{background:none; border:none; font-size:20px; cursor:pointer; color:var(--faint); line-height:1}
 .starbtn.on{color:#e8a71a}
 .demptynote{color:var(--muted); text-align:center; padding:30px 10px}
+/* brand dropdowns + deck rows */
+.brandgrp{border:1px solid var(--line); border-radius:14px; background:var(--surface); margin-bottom:10px; overflow:hidden}
+.brandgrp>summary{list-style:none; cursor:pointer; padding:13px 15px; display:flex; align-items:center; gap:9px; font-family:var(--disp); font-weight:700; font-size:15px}
+.brandgrp>summary::-webkit-details-marker{display:none}
+.brandgrp>summary .bdot{width:10px; height:14px; border-radius:3px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.brandgrp>summary .bc{margin-left:auto; font-size:12px; font-weight:600; color:var(--muted)}
+.brandgrp>summary .caret{color:var(--muted); transition:transform .18s; margin-left:4px}
+.brandgrp[open]>summary .caret{transform:rotate(180deg)}
+.drow{display:flex; align-items:center; gap:11px; padding:11px 15px; border-top:1px solid var(--line); cursor:pointer; user-select:none}
+.drow:hover,.drow:active{background:var(--surface2)}
+.drow .chip{width:22px; height:30px; border-radius:4px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.18); background-size:cover; background-position:center}
+.drow .dnm{font-weight:600; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.drow .rtags{margin-left:auto; display:flex; gap:5px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
+.drow .go{color:var(--faint); flex:0 0 auto; font-size:18px; line-height:1}
+/* deck 3D viewer modal */
+#deckModal .box2{max-width:420px; text-align:center}
+#deckModal .scene{height:250px}
+#deckModal .box3d{--w:120px; --h:174px; --d:34px}
+.dvmeta{margin-top:6px}
+.dvmeta .dvn{font-family:var(--disp); font-weight:700; font-size:19px}
+.dvmeta .dvsub{font-size:13px; color:var(--muted); margin-top:2px}
+.dvhint{font-size:12px; color:var(--faint); margin-top:10px}
+.dvnotes{font-size:13.5px; color:var(--muted); margin-top:10px; background:var(--surface2); border-radius:10px; padding:10px 12px; text-align:left}
+.dvacts{display:flex; gap:8px; justify-content:center; margin-top:16px; flex-wrap:wrap}
 /* player modal */
 .modal{position:fixed; inset:0; z-index:200; background:rgba(6,10,18,.72); display:none; align-items:center; justify-content:center; padding:18px}
 .modal.on{display:flex}
@@ -329,7 +353,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
               <div class="inner">
                 <details open>
                   <summary><span class="ver">v5.0</span> Deck collection <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">New <b>Decks</b> tab: track the decks you own and want. Search 130+ real decks (or add your own), and each one shows as an interactive <b>3D box</b> you can drag to spin and tap to open. Add a photo, box color, quantity, condition, notes and favorites.</div>
+                  <div class="body">New <b>Decks</b> tab: track the decks you own and want. Search 130+ real decks (or add your own). Your decks are grouped into <b>brand dropdowns (A–Z)</b> — tap any deck to pop up its interactive <b>3D box</b> that you drag to spin and tap to open. Add a photo, box color, quantity, condition, notes and favorites.</div>
                 </details>
               </div>
             </details>
@@ -571,7 +595,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block">
           <p class="eyebrow">Your shelf</p>
           <h2 class="big">Deck collection</h2>
-          <p class="lede">Track the decks you own and the ones you want. Start typing a deck name to find it, or add your own. Drag a box to spin it in 3D, and tap it to slide the cards out.</p>
+          <p class="lede">Track the decks you own and the ones you want. Start typing a deck name to find it, or add your own. Your decks are grouped by brand (A–Z) — tap any one to pop up its interactive 3D box.</p>
 
           <div class="ac" id="deckAC">
             <input id="deckSearch" type="text" placeholder="Search 130+ decks — Bicycle, Bee, theory11, Fontaine…" autocomplete="off">
@@ -643,6 +667,23 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   <div class="box2">
     <div class="mh"><b id="modalTitle">Tutorial</b><button class="x" id="modalX">&times;</button></div>
     <video id="modalVid" controls playsinline></video>
+  </div>
+</div>
+
+<!-- deck 3D viewer modal -->
+<div class="modal" id="deckModal">
+  <div class="box2">
+    <div class="mh"><b id="dvTitle">Deck</b><button class="x" id="dvX">&times;</button></div>
+    <div id="dvScene"></div>
+    <div class="dvmeta"><div class="dvn" id="dvName"></div><div class="dvsub" id="dvSub"></div></div>
+    <div class="dtags" id="dvTags" style="justify-content:center; margin-top:8px"></div>
+    <div class="dvnotes" id="dvNotes" hidden></div>
+    <div class="dvhint">Drag the box to spin it &middot; tap it to slide the cards out</div>
+    <div class="dvacts">
+      <button class="btn line" id="dvEdit">Edit</button>
+      <button class="btn line" id="dvFav">★ Favorite</button>
+      <button class="btn line" id="dvRemove">Remove</button>
+    </div>
   </div>
 </div>
 
@@ -1458,6 +1499,13 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     box.addEventListener('pointerup', end);
     box.addEventListener('pointercancel', function(){ down=false; box.classList.remove('grabbing'); });
   }
+  function condLabel(c){ return c==="both"?"Sealed + opened":(c? c.charAt(0).toUpperCase()+c.slice(1):""); }
+  function rowTags(d){
+    var t='<span class="dtag '+(d.status==="own"?"own":"wish")+'">'+(d.status==="own"?"Owned":"Wish")+'</span>';
+    if(d.status==="own" && (Number(d.qty)||1)>1) t+='<span class="dtag">×'+(Number(d.qty)||1)+'</span>';
+    if(d.fav) t+='<span class="dtag fav">★</span>';
+    return t;
+  }
   function renderDecks(){
     var list=decks.filter(function(d){ if(deckFilter==="own") return d.status==="own"; if(deckFilter==="wish") return d.status==="wish"; if(deckFilter==="fav") return !!d.fav; return true; });
     var owned=decks.filter(function(d){return d.status==="own";}), wish=decks.filter(function(d){return d.status==="wish";});
@@ -1465,22 +1513,46 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     dEls.count.textContent = decks.length ? (owned.length+" deck"+(owned.length===1?"":"s")+" owned ("+ownCards+" total) · "+wish.length+" on your wishlist") : "";
     if(!decks.length){ dEls.grid.innerHTML='<div class="demptynote">No decks yet. Search above to add your first one.</div>'; return; }
     if(!list.length){ dEls.grid.innerHTML='<div class="demptynote">Nothing in this filter yet.</div>'; return; }
+    // group by brand, A–Z
+    var groups={};
+    list.forEach(function(d){ var b=(d.brand||"").trim()||"No brand"; (groups[b]=groups[b]||[]).push(d); });
+    var brands=Object.keys(groups).sort(function(a,b){ var x=a.toLowerCase(),y=b.toLowerCase(); return x<y?-1:x>y?1:0; });
     var html="";
-    list.forEach(function(d){
-      var tags='<span class="dtag '+(d.status==="own"?"own":"wish")+'">'+(d.status==="own"?"Owned":"Wishlist")+'</span>';
-      if(d.status==="own" && (Number(d.qty)||1)>1) tags+='<span class="dtag">×'+(Number(d.qty)||1)+'</span>';
-      if(d.status==="own" && d.cond) tags+='<span class="dtag">'+(d.cond==="both"?"Sealed + opened":d.cond.charAt(0).toUpperCase()+d.cond.slice(1))+'</span>';
-      if(d.fav) tags+='<span class="dtag fav">★ Favorite</span>';
-      html+='<div class="dcell" data-id="'+d.id+'">'
-        + buildBox(d)
-        + '<div class="dmeta"><div class="dn">'+esc(d.name)+'</div>'+(d.brand?'<div class="dsub">'+esc(d.brand)+'</div>':'')+(d.notes?'<div class="dsub">'+esc(d.notes)+'</div>':'')+'</div>'
-        + '<div class="dtags">'+tags+'</div>'
-        + '<div class="dacts"><button data-dedit="'+d.id+'">Edit</button><button data-dfav="'+d.id+'">'+(d.fav?"Unstar":"Star")+'</button><button data-drm="'+d.id+'">Remove</button></div>'
-        + '</div>';
+    brands.forEach(function(b){
+      var arr=groups[b].sort(function(x,y){ var m=x.name.toLowerCase(),n=y.name.toLowerCase(); return m<n?-1:m>n?1:0; });
+      html+='<details class="brandgrp" open><summary><span class="bdot" style="background:'+(arr[0].color||'#888')+'"></span>'+esc(b)+'<span class="bc">'+arr.length+' deck'+(arr.length===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
+      arr.forEach(function(d){
+        var chip = d.photo ? 'class="chip" style="background-image:url('+d.photo+')"' : 'class="chip" style="background:'+(d.color||'#888')+'"';
+        html+='<div class="drow" data-open="'+d.id+'"><span '+chip+'></span><span class="dnm">'+esc(d.name)+'</span><span class="rtags">'+rowTags(d)+'</span><span class="go">&rsaquo;</span></div>';
+      });
+      html+='</details>';
     });
     dEls.grid.innerHTML=html;
-    [].forEach.call(dEls.grid.querySelectorAll('.box3d'), wireBox);
   }
+
+  // ---- 3D viewer modal ----
+  var deckModal=byId('deckModal'), dvCur=null;
+  function openDeckModal(id){
+    var d=null; for(var i=0;i<decks.length;i++){ if(decks[i].id===id){ d=decks[i]; break; } }
+    if(!d) return; dvCur=id;
+    byId('dvTitle').textContent = d.brand ? d.brand : "Deck";
+    byId('dvScene').innerHTML = buildBox(d);
+    [].forEach.call(byId('dvScene').querySelectorAll('.box3d'), wireBox);
+    byId('dvName').textContent = d.name;
+    var sub=[]; if(d.status==="own"){ sub.push("Owned"); if((Number(d.qty)||1)>1) sub.push("×"+(Number(d.qty)||1)); if(d.cond) sub.push(condLabel(d.cond)); } else { sub.push("On your wishlist"); }
+    byId('dvSub').textContent = sub.join(" · ");
+    byId('dvTags').innerHTML = d.fav ? '<span class="dtag fav">★ Favorite</span>' : '';
+    var nt=byId('dvNotes'); if(d.notes){ nt.textContent=d.notes; nt.hidden=false; } else { nt.hidden=true; }
+    byId('dvFav').textContent = d.fav ? "★ Unfavorite" : "☆ Favorite";
+    byId('dvRemove').removeAttribute('data-armed'); byId('dvRemove').textContent="Remove";
+    deckModal.classList.add('on');
+  }
+  function closeDeckModal(){ deckModal.classList.remove('on'); dvCur=null; }
+  byId('dvX').addEventListener('click', closeDeckModal);
+  deckModal.addEventListener('click', function(e){ if(e.target===deckModal) closeDeckModal(); });
+  byId('dvEdit').addEventListener('click', function(){ if(dvCur){ var id=dvCur; closeDeckModal(); openDeckForm(null, id); } });
+  byId('dvFav').addEventListener('click', function(){ if(!dvCur) return; decks.forEach(function(d){ if(d.id===dvCur) d.fav=!d.fav; }); saveDecks(); renderDecks(); openDeckModal(dvCur); });
+  byId('dvRemove').addEventListener('click', function(){ if(!dvCur) return; var btn=this; if(btn.getAttribute('data-armed')){ decks=decks.filter(function(d){return d.id!==dvCur;}); saveDecks(); renderDecks(); closeDeckModal(); } else { btn.setAttribute('data-armed','1'); btn.textContent="Tap to confirm"; setTimeout(function(){ if(btn){ btn.removeAttribute('data-armed'); btn.textContent="Remove"; } },2500); } });
 
   // ---- autocomplete ----
   var acItems=[], acHi=-1;
@@ -1563,9 +1635,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     saveDecks(); renderDecks(); closeForm();
   });
   dEls.grid.addEventListener('click', function(e){
-    var ed=e.target.closest('[data-dedit]'); if(ed){ openDeckForm(null, ed.getAttribute('data-dedit')); return; }
-    var fv=e.target.closest('[data-dfav]'); if(fv){ var id=fv.getAttribute('data-dfav'); decks.forEach(function(d){ if(d.id===id) d.fav=!d.fav; }); saveDecks(); renderDecks(); return; }
-    var rm=e.target.closest('[data-drm]'); if(rm){ var id2=rm.getAttribute('data-drm'); if(rm.getAttribute('data-armed')){ decks=decks.filter(function(d){return d.id!==id2;}); saveDecks(); renderDecks(); } else { rm.setAttribute('data-armed','1'); rm.textContent="Sure?"; setTimeout(function(){ if(rm){ rm.removeAttribute('data-armed'); rm.textContent="Remove"; } },2500); } return; }
+    if(e.target.closest('summary')) return;      // let the brand dropdown toggle
+    var row=e.target.closest('.drow'); if(row){ openDeckModal(row.getAttribute('data-open')); }
   });
   byId('deckFilters').addEventListener('click', function(e){ var b=e.target.closest('.dchip'); if(!b) return; deckFilter=b.getAttribute('data-f'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); renderDecks(); });
 
