@@ -243,6 +243,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .dacts button{font-family:var(--disp); font-weight:600; font-size:11px; border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:8px; padding:5px 10px; cursor:pointer}
 .dacts button:active{transform:scale(.94)}
 .deckform{margin-top:14px}
+.deckpick{margin:2px 0 4px}
+.deckpick .dpn{font-family:var(--disp); font-weight:700; font-size:19px; line-height:1.2}
+.deckpick .dpb{font-size:13px; color:var(--muted); margin-top:1px}
 .df-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
 .df-row .fld{flex:1; min-width:120px}
 .fld label{display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px}
@@ -382,14 +385,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.1</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.2</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">2 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">3 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.0.1</span> Sealed decks skip the inside <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.0.2</span> Scan while adding <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">You can now <b>scan a deck right when you add it</b>. Deck names &amp; brands come straight from the built-in list and can't be edited — pick the deck and it's already named.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.0.1</span> Sealed decks skip the inside <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">If a deck's condition is <b>Sealed</b>, the scanner only asks for the 6 outer box sides — no inside or card shots, since you can't open it. Opened decks still capture all 9.</div>
                 </details>
                 <details>
@@ -672,10 +679,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
               <span class="sp" style="flex:1"></span>
               <button class="dacts" id="dfClose" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">&times;</button>
             </div>
-            <div class="df-row">
-              <div class="fld" style="flex:2"><label>Deck name</label><input id="dfName" type="text" placeholder="Deck name"></div>
-              <div class="fld"><label>Brand</label><input id="dfBrand" type="text" placeholder="Brand (optional)"></div>
-            </div>
+            <div class="deckpick"><div class="dpn" id="dfDeckName"></div><div class="dpb" id="dfDeckBrand"></div></div>
             <div class="df-row">
               <div class="fld"><label>Own it or want it?</label>
                 <div class="segb" id="dfStatus"><button class="on" data-st="own">Owned</button><button data-st="wish">Wishlist</button></div>
@@ -696,6 +700,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
               <div id="dfPhotoName" style="font-size:12px; color:var(--muted); margin-top:6px">Stylized box until you add a photo</div>
               <input id="dfPhoto" type="file" accept="image/*" hidden>
               <input id="dfPhotoBack" type="file" accept="image/*" hidden>
+            </div>
+            <div class="fld" style="margin-top:12px"><label>Scan the real deck (optional)</label>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                <button class="btn line" id="dfScanBtn" type="button">📷 Scan the deck</button>
+                <span id="dfScanStatus" style="font-size:12px; color:var(--muted)">Capture the box sides in 3D</span>
+              </div>
             </div>
             <div class="fld" style="margin-top:10px"><label>Notes</label><textarea id="dfNotes" rows="2" placeholder="Where you got it, why you love it…"></textarea></div>
             <div style="display:flex; gap:8px; margin-top:14px">
@@ -1696,8 +1706,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     var ql=q.toLowerCase();
     var matches=DECKS_DB.filter(function(x){ return (x[0]+" "+x[1]).toLowerCase().indexOf(ql)>=0; }).slice(0,40);
     var html="";
-    matches.forEach(function(x,i){ html+='<div class="acitem" data-i="'+i+'"><span class="swatch" style="background:'+x[2]+'"></span><span class="an">'+esc(x[0])+'</span><span class="ab">'+esc(x[1])+'</span></div>'; });
-    html+='<div class="acitem acadd" data-i="add"><span class="swatch" style="background:'+BOX_COLORS[0]+'"></span><span class="an">Add “'+esc(q)+'”</span><span class="ab">custom</span></div>';
+    if(matches.length){ matches.forEach(function(x,i){ html+='<div class="acitem" data-i="'+i+'"><span class="swatch" style="background:'+x[2]+'"></span><span class="an">'+esc(x[0])+'</span><span class="ab">'+esc(x[1])+'</span></div>'; }); }
+    else { html='<div class="acitem acnone"><span class="an" style="color:var(--muted); font-weight:500">No deck by that name in the list yet.</span></div>'; }
     dEls.aclist.innerHTML=html; dEls.aclist.classList.add('on'); acItems=matches; acHi=-1;
   }
   dEls.search.addEventListener('input', function(){ renderAC(this.value); });
@@ -1712,16 +1722,16 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     if(rows[acHi]) rows[acHi].scrollIntoView({block:"nearest"});
   });
   dEls.aclist.addEventListener('click', function(e){
-    var it=e.target.closest('.acitem'); if(!it) return;
-    var idx=it.getAttribute('data-i');
-    if(idx==="add"){ openDeckForm({name:dEls.search.value.trim(), brand:"", color:BOX_COLORS[0]}); }
-    else { var x=acItems[Number(idx)]; if(x) openDeckForm({name:x[0], brand:x[1], color:x[2]}); }
+    var it=e.target.closest('.acitem'); if(!it || it.classList.contains('acnone')) return;
+    var x=acItems[Number(it.getAttribute('data-i'))]; if(x) openDeckForm({name:x[0], brand:x[1], color:x[2]});
     dEls.aclist.classList.remove('on'); dEls.search.value="";
   });
   document.addEventListener('click', function(e){ if(!dEls.ac.contains(e.target)) dEls.aclist.classList.remove('on'); });
 
   // ---- deck form ----
-  var dfState={ id:null, color:BOX_COLORS[0], status:"own", fav:false, photo:"", photoBack:"" };
+  var dfState={ id:null, name:"", brand:"", color:BOX_COLORS[0], status:"own", fav:false, photo:"", photoBack:"", shots:{} };
+  function scanCount(sh){ var n=0; ['front','back','left','right','top','bottom','inside','cardFront','cardBack'].forEach(function(k){ if(sh&&sh[k]) n++; }); return n; }
+  function updateScanStatus(){ var n=scanCount(dfState.shots); byId('dfScanStatus').textContent = n? (n+' shot'+(n===1?'':'s')+' captured — tap to add more') : 'Capture the box sides in 3D'; }
   function renderSwatches(){
     var cols=BOX_COLORS.slice(); if(dfState.color && cols.indexOf(dfState.color)<0) cols.unshift(dfState.color);
     byId('dfColors').innerHTML=cols.map(function(c){ return '<span class="sw'+(c===dfState.color?" on":"")+'" data-c="'+c+'" style="background:'+c+'"></span>'; }).join("");
@@ -1745,33 +1755,42 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function openDeckForm(pre, editId){
     var d = editId ? decks.filter(function(x){return x.id===editId;})[0] : null;
     dfState.id = editId||null;
+    dfState.name = (d&&d.name) || (pre&&pre.name) || "";
+    dfState.brand = (d&&d.brand) || (pre&&pre.brand) || "";
     dfState.color = (d&&d.color) || (pre&&pre.color) || BOX_COLORS[0];
     dfState.status = (d&&d.status) || "own";
     dfState.fav = d? !!d.fav : false;
     dfState.photo = (d&&d.photo) || "";
     dfState.photoBack = (d&&d.photoBack) || "";
+    dfState.shots = Object.assign({}, (d&&d.shots) || {});
     byId('dfTitle').textContent = editId ? "Edit deck" : "Add a deck";
-    byId('dfName').value = (d&&d.name) || (pre&&pre.name) || "";
-    byId('dfBrand').value = (d&&d.brand) || (pre&&pre.brand) || "";
+    byId('dfDeckName').textContent = dfState.name;
+    byId('dfDeckBrand').textContent = dfState.brand || "";
+    byId('dfDeckBrand').style.display = dfState.brand ? "" : "none";
     byId('dfQty').value = (d&&d.qty) || 1;
     byId('dfCond').value = (d&&d.cond) || "sealed";
     byId('dfNotes').value = (d&&d.notes) || "";
     byId('dfStar').classList.toggle('on', dfState.fav);
-    var fq=((d&&d.name)||(pre&&pre.name)||"")+" "+((d&&d.brand)||(pre&&pre.brand)||"")+" playing cards box";
-    byId('dfFind').href = "https://www.google.com/search?tbm=isch&q="+encodeURIComponent(fq.trim());
-    byId('dfPhoto').value=""; byId('dfPhotoBack').value=""; photoLabel();
+    byId('dfFind').href = "https://www.google.com/search?tbm=isch&q="+encodeURIComponent((dfState.name+" "+dfState.brand+" playing cards box").trim());
+    byId('dfPhoto').value=""; byId('dfPhotoBack').value=""; photoLabel(); updateScanStatus();
     [].forEach.call(byId('dfStatus').children, function(b){ b.classList.toggle('on', b.getAttribute('data-st')===dfState.status); });
     byId('dfSave').textContent = editId ? "Save changes" : "Add to collection";
     renderSwatches();
     dEls.form.hidden=false;
     dEls.form.scrollIntoView({behavior:"smooth", block:"center"});
   }
+  byId('dfScanBtn').addEventListener('click', function(){
+    openCapture(dfState.shots, dfState.name||"the deck", byId('dfCond').value, function(shots){
+      dfState.shots=shots; dfState.photo=shots.front||dfState.photo; dfState.photoBack=shots.back||dfState.photoBack;
+      photoLabel(); updateScanStatus();
+    });
+  });
   function closeForm(){ dEls.form.hidden=true; }
   byId('dfClose').addEventListener('click', closeForm);
   byId('dfCancel').addEventListener('click', closeForm);
   byId('dfSave').addEventListener('click', function(){
-    var name=byId('dfName').value.trim(); if(!name){ byId('dfName').focus(); return; }
-    var rec={ name:name, brand:byId('dfBrand').value.trim(), status:dfState.status, qty:Math.max(0,Number(byId('dfQty').value)||1), cond:byId('dfCond').value, color:dfState.color, photo:dfState.photo, photoBack:dfState.photoBack, notes:byId('dfNotes').value.trim(), fav:dfState.fav };
+    var name=(dfState.name||"").trim(); if(!name){ return; }
+    var rec={ name:name, brand:(dfState.brand||"").trim(), status:dfState.status, qty:Math.max(0,Number(byId('dfQty').value)||1), cond:byId('dfCond').value, color:dfState.color, photo:dfState.photo, photoBack:dfState.photoBack, shots:dfState.shots||{}, notes:byId('dfNotes').value.trim(), fav:dfState.fav };
     if(dfState.id){ for(var i=0;i<decks.length;i++){ if(decks[i].id===dfState.id){ rec.id=dfState.id; rec.at=decks[i].at; decks[i]=rec; break; } } }
     else { rec.id="d-"+Date.now()+"-"+Math.random().toString(36).slice(2,6); rec.at=Date.now(); decks.unshift(rec); }
     saveDecks(); renderDecks(); closeForm();
