@@ -395,14 +395,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.3</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.4</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">4 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">5 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.0.3</span> Live camera check <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.0.4</span> Crop to just the deck <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">The AI now finds the deck in your photo and <b>crops away the background</b> (table, hands, room) so each face shows just the deck itself, not the whole picture.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.0.3</span> Live camera check <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">While scanning, the AI now checks the camera <b>live</b> and tells you if the shot's good ("✓ Front looks good", "move closer", "hold steady") — with an optional <b>auto-capture</b> when it's right. And you can <b>remove any captured photo</b> with the × on its thumbnail.</div>
                 </details>
                 <details>
@@ -1851,7 +1855,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   async function aiClassify(url){
     if(!sampleFn) return null;
     var blob=await dataURLtoBlob(url);
-    var prompt='You are cataloguing a playing-card deck from one photo. Reply with ONLY compact JSON and nothing else: {"subject":"box"|"card"|"other","faces":[...],"clear":true|false,"fills":true|false}. For a tuck box, "faces" lists every clearly visible face from: "front","back" (the two big faces), "left","right" (the long thin sides), "top" (the opening end), "bottom" (the closed end), and "inside" if the open interior/cards are shown. For a single playing card, set subject="card" and faces=["card-front"] (pips/court side) or ["card-back"] (back pattern). "clear"=in focus and well lit. "fills"=the deck or card fills most of the frame. If it is neither a deck box nor a card, subject="other" and faces=[].';
+    var prompt='You are cataloguing a playing-card deck from one photo. Reply with ONLY compact JSON and nothing else: {"subject":"box"|"card"|"other","faces":[...],"clear":true|false,"fills":true|false,"bbox":[x,y,w,h]}. For a tuck box, "faces" lists every clearly visible face from: "front","back" (the two big faces), "left","right" (the long thin sides), "top" (the opening end), "bottom" (the closed end), and "inside" if the open interior/cards are shown. For a single playing card, set subject="card" and faces=["card-front"] (pips/court side) or ["card-back"] (back pattern). "clear"=in focus and well lit. "fills"=the deck or card fills most of the frame. "bbox" is the tight bounding rectangle around JUST the deck/card (ignore hands, table, background), as fractions of the image: x,y = top-left corner, w,h = width,height, each between 0 and 1. If it is neither a deck box nor a card, subject="other", faces=[], bbox=[0,0,1,1].';
     var r=await sampleFn(prompt,{images:[blob], modelTier:"default"});
     try{ var m=(r.text||"").match(/\{[\s\S]*\}/); if(!m) return null; return JSON.parse(m[0]); }catch(e){ return null; }
   }
@@ -1876,6 +1880,27 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   }
   function assignShot(key,url){ if(capValidTarget(key)){ capShots[key]=url; } }
   function facesOf(res){ var out={}; if(res&&res.faces){ res.faces.forEach(function(f){ var k=normFace(f); if(k) out[k]=1; }); } if(res&&res.inside) out['inside']=1; return out; }
+  function validBox(b){ return b && b.length===4 && b.every(function(n){return typeof n==='number'&&isFinite(n);}) && b[2]>0.03 && b[3]>0.03 && b[0]>=0 && b[1]>=0 && b[0]<1 && b[1]<1; }
+  function cropToBox(url,b){
+    return new Promise(function(resolve){
+      var img=new Image();
+      img.onload=function(){
+        try{
+          var W=img.width, H=img.height, pad=0.03;
+          var x0=Math.max(0,b[0]-pad), y0=Math.max(0,b[1]-pad);
+          var x1=Math.min(1,b[0]+b[2]+pad), y1=Math.min(1,b[1]+b[3]+pad);
+          var x=x0*W, y=y0*H, w=(x1-x0)*W, h=(y1-y0)*H;
+          w=Math.max(10,Math.min(W-x,w)); h=Math.max(10,Math.min(H-y,h));
+          var cv=document.createElement('canvas'); cv.width=Math.round(w); cv.height=Math.round(h);
+          cv.getContext('2d').drawImage(img, x,y,w,h, 0,0,Math.round(w),Math.round(h));
+          resolve(cv.toDataURL('image/jpeg',0.85));
+        }catch(e){ resolve(url); }
+      };
+      img.onerror=function(){ resolve(url); };
+      img.src=url;
+    });
+  }
+  async function cropWithRes(url,res){ if(res && validBox(res.bbox)){ try{ return await cropToBox(url,res.bbox); }catch(e){} } return url; }
   function placeFromRes(url,res){
     var placed=[]; var fo=facesOf(res);
     Object.keys(fo).forEach(function(k){ if(capValidTarget(k)){ assignShot(k,url); placed.push(k); } });
@@ -1887,12 +1912,13 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     if(sampleFn){
       capBusy=true; byId('capStatus').textContent='Scanning the photo…';
       var res=null; try{ res=await aiClassify(url); }catch(e){}
+      var useUrl=await cropWithRes(url,res);
       capBusy=false;
       if(res && res.subject!=='other'){
-        var placed=placeFromRes(url,res);
+        var placed=placeFromRes(useUrl,res);
         if(placed.length){ byId('capStatus').textContent='Got: '+placed.map(function(k){return labelFor(k);}).join(', ')+(res.clear===false?' (a bit blurry — retake if it looks off)':''); afterAssign(); return; }
       }
-      assignShot(capList[capActive].k, url);
+      assignShot(capList[capActive].k, useUrl);
       byId('capStatus').textContent="Couldn't auto-detect that one — saved it as “"+capList[capActive].label+'”. Tap a slot to reassign if needed.';
       afterAssign();
     } else {
@@ -1924,7 +1950,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       if(res.clear===false){ capGoodStreak=0; setLive('warn','Hold steady — a little blurry'); }
       else if(res.fills===false){ capGoodStreak=0; setLive('warn','Move a bit closer'); }
       else { capGoodStreak++; setLive('good','✓ '+tgt.label+' looks good'+(byId('capAutoChk').checked?' — capturing…':' — tap Capture'));
-        if(byId('capAutoChk').checked && capGoodStreak>=2){ capBusy=true; var placed=placeFromRes(frame,res); if(!placed.length){ assignShot(tgt.k,frame); placed=[tgt.k]; } byId('capStatus').textContent='Auto-captured: '+placed.map(labelFor).join(', '); capBusy=false; capGoodStreak=0; afterAssign(); }
+        if(byId('capAutoChk').checked && capGoodStreak>=2){ capBusy=true; var cropped=await cropWithRes(frame,res); var placed=placeFromRes(cropped,res); if(!placed.length){ assignShot(tgt.k,cropped); placed=[tgt.k]; } byId('capStatus').textContent='Auto-captured: '+placed.map(labelFor).join(', '); capBusy=false; capGoodStreak=0; afterAssign(); }
       }
     } else if(res && res.subject==='card'){ capGoodStreak=0; setLive('warn', tgt.k.indexOf('card')===0 ? 'Hold the card steady' : 'That’s a card — show the '+tgt.label.toLowerCase()); }
     else if(res && res.subject==='box'){ var seen=Object.keys(fo)[0]; capGoodStreak=0; setLive('warn', seen? ('Looks like the '+labelFor(seen).toLowerCase()+' — turn to the '+tgt.label.toLowerCase()) : 'Line the box up in the frame'); }
