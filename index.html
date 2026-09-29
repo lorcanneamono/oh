@@ -382,14 +382,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.1</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">1 update</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">2 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.0</span> Deck scanner <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.0.1</span> Sealed decks skip the inside <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">If a deck's condition is <b>Sealed</b>, the scanner only asks for the 6 outer box sides — no inside or card shots, since you can't open it. Opened decks still capture all 9.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.0</span> Deck scanner <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">Tap <b>Scan the deck</b> on any deck to capture the real thing. Camera-scan or upload photos and, on the Claude version, an <b>AI reads each photo</b>, figures out which face of the box it is, and wraps it onto the 3D model — all 6 box sides, the open inside, and a card's front &amp; back. One photo showing two sides counts for both, and it won't finish until every needed shot is covered.</div>
                 </details>
               </div>
@@ -1672,7 +1676,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     if(!dvCur) return; var id=dvCur;
     var d=null; for(var i=0;i<decks.length;i++){ if(decks[i].id===id){ d=decks[i]; break; } }
     if(!d) return;
-    openCapture(d.shots, d.name, function(shots){
+    openCapture(d.shots, d.name, d.cond, function(shots){
       d.shots=shots; d.photo=shots.front||d.photo; d.photoBack=shots.back||d.photoBack;
       saveDecks(); renderDecks(); openDeckModal(id);
     });
@@ -1792,10 +1796,13 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   ];
   var CAP_ICON={front:'▮',back:'▯',left:'▏',right:'▕',top:'▔',bottom:'▁',inside:'▤',cardFront:'♠',cardBack:'✦'};
   function normFace(f){ f=(f||"").toLowerCase().replace(/\s+/g,''); if(f==='card-front'||f==='cardfront'||f==='face') return 'cardFront'; if(f==='card-back'||f==='cardback') return 'cardBack'; if(['front','back','left','right','top','bottom','inside'].indexOf(f)>=0) return f; return null; }
+  var BOX_FACE_KEYS=['front','back','left','right','top','bottom'];
   var capModal=byId('capModal'), capShots={}, capActive=0, capMode='scan', capStream=null, capOnDone=null, capForce=false, capBusy=false;
-  function capValidTarget(k){ return CAP_TARGETS.some(function(t){return t.k===k;}); }
-  function firstEmpty(){ for(var i=0;i<CAP_TARGETS.length;i++){ if(!capShots[CAP_TARGETS[i].k]) return i; } return 0; }
-  function capFilledCount(){ var n=0; CAP_TARGETS.forEach(function(t){ if(capShots[t.k]) n++; }); return n; }
+  var capList=CAP_TARGETS.slice();   // active targets (fewer when the deck is sealed)
+  function capListFor(cond){ return cond==='sealed' ? CAP_TARGETS.filter(function(t){ return BOX_FACE_KEYS.indexOf(t.k)>=0; }) : CAP_TARGETS.slice(); }
+  function capValidTarget(k){ return capList.some(function(t){return t.k===k;}); }
+  function firstEmpty(){ for(var i=0;i<capList.length;i++){ if(!capShots[capList[i].k]) return i; } return 0; }
+  function capFilledCount(){ var n=0; capList.forEach(function(t){ if(capShots[t.k]) n++; }); return n; }
   function grabFrame(){
     var v=byId('capVideo'); if(!v||!v.videoWidth) return null;
     var mx=560,w=v.videoWidth,h=v.videoHeight; if(w>mx||h>mx){ if(w>h){h=Math.round(h*mx/w);w=mx;} else {w=Math.round(w*mx/h);h=mx;} }
@@ -1811,19 +1818,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     try{ var m=(r.text||"").match(/\{[\s\S]*\}/); if(!m) return null; return JSON.parse(m[0]); }catch(e){ return null; }
   }
   function renderCapGrid(){
-    byId('capGrid').innerHTML = CAP_TARGETS.map(function(t,i){
+    byId('capGrid').innerHTML = capList.map(function(t,i){
       var has=capShots[t.k];
       var th = has ? 'style="background-image:url('+has+')"' : '';
       return '<div class="capslot'+(has?' filled':'')+(i===capActive?' on':'')+'" data-i="'+i+'"><div class="th" '+th+'>'+(has?'':CAP_ICON[t.k]||'?')+'</div><div class="lb">'+esc(t.label.replace(' of the box','').replace('A card — ','Card '))+'</div></div>';
     }).join("");
     var n=capFilledCount();
-    byId('capProg').textContent = n+' of '+CAP_TARGETS.length+' captured'+(n<CAP_TARGETS.length?' — need all to finish':' — all set!');
-    byId('capFinish').disabled = n<CAP_TARGETS.length;
+    byId('capProg').textContent = n+' of '+capList.length+' captured'+(n<capList.length?' — need all to finish':' — all set!');
+    byId('capFinish').disabled = n<capList.length;
   }
   function setCapTarget(i){
-    capActive=Math.max(0,Math.min(CAP_TARGETS.length-1,i));
-    var t=CAP_TARGETS[capActive];
-    byId('capStepNo').textContent='Step '+(capActive+1)+'/'+CAP_TARGETS.length+' ·';
+    capActive=Math.max(0,Math.min(capList.length-1,i));
+    var t=capList[capActive];
+    byId('capStepNo').textContent='Step '+(capActive+1)+'/'+capList.length+' ·';
     byId('capTargetLabel').textContent=t.label;
     byId('capTargetHint').textContent=t.hint + (sampleFn?' · the AI will confirm it.':'');
     renderCapGrid();
@@ -1831,29 +1838,29 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function assignShot(key,url){ if(capValidTarget(key)){ capShots[key]=url; } }
   async function handleCapture(url){
     if(!url){ return; }
-    if(capForce){ assignShot(CAP_TARGETS[capActive].k, url); capForce=false; byId('capStatus').textContent='Saved to '+CAP_TARGETS[capActive].label+'.'; afterAssign(); return; }
+    if(capForce){ assignShot(capList[capActive].k, url); capForce=false; byId('capStatus').textContent='Saved to '+capList[capActive].label+'.'; afterAssign(); return; }
     if(sampleFn){
       capBusy=true; byId('capStatus').textContent='Scanning the photo…';
       var res=null; try{ res=await aiClassify(url); }catch(e){}
       capBusy=false;
       if(res && res.subject!=='other' && res.faces && res.faces.length){
         var placed=[];
-        res.faces.forEach(function(f){ var k=normFace(f); if(k){ assignShot(k,url); placed.push(k); } });
-        if(res.inside){ assignShot('inside',url); if(placed.indexOf('inside')<0) placed.push('inside'); }
+        res.faces.forEach(function(f){ var k=normFace(f); if(k){ assignShot(k,url); if(capValidTarget(k)) placed.push(k); } });
+        if(res.inside && capValidTarget('inside')){ assignShot('inside',url); if(placed.indexOf('inside')<0) placed.push('inside'); }
         if(placed.length){ byId('capStatus').textContent='Got: '+placed.map(function(k){return labelFor(k);}).join(', ')+(res.clear===false?' (a bit blurry — retake if it looks off)':''); afterAssign(); return; }
       }
       // couldn't place — fall back to the active target so you're never stuck
-      assignShot(CAP_TARGETS[capActive].k, url);
-      byId('capStatus').textContent="Couldn't auto-detect that one — saved it as “"+CAP_TARGETS[capActive].label+'”. Tap a slot to reassign if needed.';
+      assignShot(capList[capActive].k, url);
+      byId('capStatus').textContent="Couldn't auto-detect that one — saved it as “"+capList[capActive].label+'”. Tap a slot to reassign if needed.';
       afterAssign();
     } else {
-      assignShot(CAP_TARGETS[capActive].k, url);
-      byId('capStatus').textContent='Saved to '+CAP_TARGETS[capActive].label+'.';
+      assignShot(capList[capActive].k, url);
+      byId('capStatus').textContent='Saved to '+capList[capActive].label+'.';
       afterAssign();
     }
   }
   function labelFor(k){ for(var i=0;i<CAP_TARGETS.length;i++){ if(CAP_TARGETS[i].k===k) return CAP_TARGETS[i].label; } return k; }
-  function afterAssign(){ renderCapGrid(); var ne=firstEmpty(); if(capFilledCount()<CAP_TARGETS.length) setCapTarget(ne); }
+  function afterAssign(){ renderCapGrid(); var ne=firstEmpty(); if(capFilledCount()<capList.length) setCapTarget(ne); }
   function startCam(){
     var wrap=byId('camWrap'), v=byId('capVideo');
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
@@ -1875,10 +1882,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     if(m==='scan') startCam(); else stopCam();
     byId('capUpNote').textContent = sampleFn ? 'Add photos of the box and cards — the AI sorts each into the right face and tells you what’s still missing.' : 'Add photos, then tap a slot below and choose a photo to place it there.';
   }
-  function openCapture(shots, title, onDone){
+  function openCapture(shots, title, cond, onDone){
+    capList = capListFor(cond);
     capShots = Object.assign({}, shots||{});
     capOnDone = onDone||function(){}; capForce=false;
-    byId('capStatus').textContent=''; byId('capUpStatus').textContent='';
+    byId('capStatus').textContent = cond==='sealed' ? 'Sealed deck — just the 6 outer sides needed (no inside or card).' : '';
+    byId('capUpStatus').textContent='';
     document.querySelector('#capModal .mh b').textContent = 'Scan '+(title||'the deck');
     renderCapGrid(); setCapTarget(firstEmpty());
     capModal.classList.add('on');
@@ -1889,17 +1898,17 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   byId('capShot').addEventListener('click', function(){ if(capBusy) return; var f=grabFrame(); if(f){ handleCapture(f); } else { byId('capFileCam').click(); } });
   byId('capTakePhoto').addEventListener('click', function(){ byId('capFileCam').click(); });
   byId('capFileCam').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ handleCapture(url); }); this.value=''; });
-  byId('capSkip').addEventListener('click', function(){ setCapTarget((capActive+1)%CAP_TARGETS.length); });
-  byId('capGrid').addEventListener('click', function(e){ var s=e.target.closest('.capslot'); if(!s) return; capActive=Number(s.getAttribute('data-i')); capForce=true; renderCapGrid(); byId('capStatus').textContent='Next capture → '+CAP_TARGETS[capActive].label+'. '+(capMode==='upload'?'Choose a photo.':'Capture or take a photo.'); if(capMode==='upload'){ byId('capFiles').click(); } });
+  byId('capSkip').addEventListener('click', function(){ setCapTarget((capActive+1)%capList.length); });
+  byId('capGrid').addEventListener('click', function(e){ var s=e.target.closest('.capslot'); if(!s) return; capActive=Number(s.getAttribute('data-i')); capForce=true; renderCapGrid(); byId('capStatus').textContent='Next capture → '+capList[capActive].label+'. '+(capMode==='upload'?'Choose a photo.':'Capture or take a photo.'); if(capMode==='upload'){ byId('capFiles').click(); } });
   byId('capPick').addEventListener('click', function(){ byId('capFiles').click(); });
   function downscaleP(file){ return new Promise(function(res){ downscale(file, res); }); }
   byId('capFiles').addEventListener('change', async function(e){
     var files=[].slice.call(e.target.files||[]); if(!files.length) return; this.value='';
     byId('capUpStatus').textContent='Reading '+files.length+' photo'+(files.length>1?'s':'')+'…';
     for(var i=0;i<files.length;i++){ var url=await downscaleP(files[i]); await handleCapture(url); }
-    byId('capUpStatus').textContent = capFilledCount()<CAP_TARGETS.length ? ('Placed what I could. Still need: '+CAP_TARGETS.filter(function(t){return !capShots[t.k];}).map(function(t){return t.label;}).join(', ')) : 'All set — tap Finish.';
+    byId('capUpStatus').textContent = capFilledCount()<capList.length ? ('Placed what I could. Still need: '+capList.filter(function(t){return !capShots[t.k];}).map(function(t){return t.label;}).join(', ')) : 'All set — tap Finish.';
   });
-  byId('capFinish').addEventListener('click', function(){ if(capFilledCount()<CAP_TARGETS.length) return; capOnDone(capShots); closeCapture(); });
+  byId('capFinish').addEventListener('click', function(){ if(capFilledCount()<capList.length) return; capOnDone(capShots); closeCapture(); });
   byId('capCancel').addEventListener('click', closeCapture);
   byId('capX').addEventListener('click', closeCapture);
   capModal.addEventListener('click', function(e){ if(e.target===capModal) closeCapture(); });
