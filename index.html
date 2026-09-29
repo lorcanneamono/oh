@@ -126,9 +126,17 @@ ul.tick li::before{content:"\2660"; position:absolute; left:0; color:var(--accen
 .lvtag{font-family:var(--disp); font-weight:700; font-size:10.5px; padding:2px 8px; border-radius:100px; color:#fff}
 .p1{background:var(--l1)}.p2{background:var(--l2)}.p3{background:var(--l3)}.p4{background:var(--l4)}.p5{background:var(--l5)}
 .yours{font-family:var(--disp); font-weight:700; font-size:9.5px; letter-spacing:.5px; text-transform:uppercase; color:#fff; background:var(--l4); border-radius:5px; padding:2px 6px}
-.watch{flex:0 0 auto; align-self:center; display:inline-flex; align-items:center; gap:5px; font-family:var(--disp); font-weight:600; font-size:12px; color:var(--accent-ink); background:var(--accent-soft); border:1px solid transparent; border-radius:9px; padding:7px 11px; cursor:pointer; text-decoration:none; user-select:none}
+.watch{flex:0 0 auto; align-self:stretch; justify-content:center; display:inline-flex; align-items:center; gap:5px; font-family:var(--disp); font-weight:600; font-size:11.5px; color:var(--accent-ink); background:var(--accent-soft); border:1px solid transparent; border-radius:9px; padding:6px 11px; cursor:pointer; text-decoration:none; user-select:none; white-space:nowrap}
+.watch.quick{color:var(--muted); background:var(--surface2); border-color:var(--line)}
 .watch:active{transform:scale(.94)}
-.watch svg{width:14px;height:14px;fill:currentColor}
+.watch svg{width:13px;height:13px;fill:currentColor}
+.acts{display:flex; flex-direction:column; gap:6px; align-self:center; flex:0 0 auto}
+.edit{display:inline-flex; align-items:center; gap:5px; font-family:var(--disp); font-weight:600; font-size:12px; color:var(--muted); background:var(--surface2); border:1px solid var(--line); border-radius:9px; padding:7px 11px; cursor:pointer; user-select:none}
+.edit:active{transform:scale(.94)}
+.hands{display:flex; gap:6px; margin-top:7px; flex-wrap:wrap; font-family:var(--disp); font-size:11.5px}
+.hands span{background:var(--surface2); border-radius:7px; padding:3px 8px; color:var(--muted); font-weight:600}
+.hands .hL{background:var(--accent-soft); color:var(--accent-ink)}
+.thumb{display:block; width:150px; height:84px; object-fit:cover; border-radius:9px; margin-top:8px; border:1px solid var(--line)}
 .empty{color:var(--faint); text-align:center; padding:38px 0}
 .foot{color:var(--faint); font-size:12px; text-align:center; padding:22px 0 4px}
 .ring{display:flex; align-items:center; gap:20px; flex-wrap:wrap}
@@ -276,7 +284,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
           <div class="card" style="margin-top:14px">
             <div class="drop" id="drop">
               <b>Tap to choose a video</b><br>
-              <span class="mblurb">or drag one here · mp4, mov, webm</span>
+              <span class="mblurb">or drag one here · mp4, mov, webm · up to 30 min</span>
             </div>
             <input type="file" id="file" accept="video/*" hidden>
             <video class="prev" id="prev" controls playsinline hidden></video>
@@ -298,6 +306,10 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
                 <div class="field"><label>Category</label><select id="fCat"></select></div>
               </div>
               <div class="field"><label>Creator (optional)</label><input id="fBy" placeholder="who made it"></div>
+              <div class="tworow">
+                <div class="field"><label>Right-handed setup</label><input id="fRighty" placeholder="deck in left, cut with right"></div>
+                <div class="field"><label>Left-handed setup</label><input id="fLefty" placeholder="mirror it — deck in right, cut with left"></div>
+              </div>
               <div class="field"><label>Summary</label><textarea id="fSummary" placeholder="What the tutorial teaches…"></textarea></div>
               <button class="btn" id="addBtn">Add to catalog</button>
               <div class="status" id="addStatus"></div>
@@ -370,6 +382,29 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   <div class="box2">
     <div class="mh"><b id="modalTitle">Tutorial</b><button class="x" id="modalX">&times;</button></div>
     <video id="modalVid" controls playsinline></video>
+  </div>
+</div>
+
+<!-- edit modal -->
+<div class="modal" id="editModal">
+  <div class="box2" style="max-width:520px; max-height:88vh; overflow:auto">
+    <div class="mh"><b>Edit tutorial</b><button class="x" id="editX">&times;</button></div>
+    <div class="field"><label>Move name</label><input id="eName"></div>
+    <div class="tworow">
+      <div class="field"><label>Level</label><select id="eLevel"></select></div>
+      <div class="field"><label>Category</label><select id="eCat"></select></div>
+    </div>
+    <div class="field"><label>Creator</label><input id="eBy"></div>
+    <div class="tworow">
+      <div class="field"><label>Right-handed setup</label><input id="eRighty"></div>
+      <div class="field"><label>Left-handed setup</label><input id="eLefty"></div>
+    </div>
+    <div class="field"><label>Summary</label><textarea id="eSummary"></textarea></div>
+    <div style="display:flex; gap:10px; margin-top:4px">
+      <button class="btn" id="eSave" style="flex:1">Save changes</button>
+      <button class="btn line" id="eDelete" style="color:var(--l5); border-color:var(--l5)">Delete</button>
+    </div>
+    <div class="status" id="eStatus"></div>
   </div>
 </div>
 
@@ -462,6 +497,28 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   ];
   function slug(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,""); }
   var BUILTIN = M.map(function(m){ return {id:"b-"+slug(m[2]), lv:m[0], cat:m[1], name:m[2], by:m[3], blurb:m[4], src:"builtin"}; });
+  var VIDEOS = {
+    "Charlier Cut":"https://www.youtube.com/watch?v=M4coyiaMcag",
+    "Five Faces of Sybil":"https://www.youtube.com/watch?v=JHQ1ToMV4Ro",
+    "The Spring":"https://www.youtube.com/watch?v=VJ19Zfw6CKU",
+    "Thumb Fan":"https://www.youtube.com/watch?v=XFIQk2LiKD0",
+    "The Werm":"https://www.youtube.com/watch?v=wdDH_oaEse4",
+    "Revolution Cut":"https://www.youtube.com/watch?v=YWUHUFNR2Tc",
+    "Pressure Fan":"https://www.youtube.com/watch?v=H3BVU2Z76G0",
+    "Hot Shot Cut":"https://www.youtube.com/watch?v=ENTgs9pxzEE",
+    "Waterfall (Cascade)":"https://www.youtube.com/watch?v=uWM2k6XkiiA"
+  };
+  var VIDEOS_QUICK = {
+    "Charlier Cut":"https://www.youtube.com/shorts/nfL8yKRKHo8",
+    "Five Faces of Sybil":"https://www.youtube.com/watch?v=jT6tIHG8Vb4",
+    "The Spring":"https://www.youtube.com/shorts/wDfIErQIbQU",
+    "Thumb Fan":"https://www.youtube.com/shorts/yOywyktF0Iw",
+    "The Werm":"https://www.youtube.com/shorts/HOrpTj3KSmE",
+    "Revolution Cut":"https://www.youtube.com/shorts/fIF_bVJrjC8",
+    "Hot Shot Cut":"https://www.youtube.com/watch?v=cb_fbmKFK5c",
+    "Waterfall (Cascade)":"https://www.youtube.com/shorts/eo7vpa9NsBk"
+  };
+  BUILTIN.forEach(function(m){ if(VIDEOS[m.name]) m.video=VIDEOS[m.name]; if(VIDEOS_QUICK[m.name]) m.videoQuick=VIDEOS_QUICK[m.name]; });
   var userTuts = [];            // {id, lv, cat, name, by, blurb, src:'you', link, videoUrl}
   function catalog(){ return BUILTIN.concat(userTuts); }
 
@@ -498,6 +555,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         userTuts = snap.docs.map(function(d){ var v=d.data()||{}; return {
           id:"t-"+d.id, docId:d.id, lv:Number(v.level)||3, cat:v.category||"Cuts",
           name:v.name||"Tutorial", by:v.creator||"you", blurb:v.summary||"", link:v.link||"",
+          righty:v.righty||"", lefty:v.lefty||"", thumb:v.thumb||"", assetUrl:v.assetUrl||"", assetId:v.assetId||"",
           videoUrl:v.assetUrl||"", src:"you" }; });
         afterTutsChanged();
       }, function(){ /* db error: fall back quietly */ loadLocalTuts(); afterTutsChanged(); });
@@ -514,6 +572,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   catChips.innerHTML=ch;
   function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;"); }
   function ytSearch(name){ return "https://www.youtube.com/results?search_query="+encodeURIComponent(name+" cardistry tutorial"); }
+  function ytShort(name){ return "https://www.youtube.com/results?search_query="+encodeURIComponent(name+" cardistry tutorial")+"&sp=EgIYAQ%3D%3D"; }
 
   function renderMoves(){
     var q=fQ.trim().toLowerCase(), html="", cat=catalog();
@@ -535,15 +594,26 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         var yours = m.src==="you" ? ' <span class="yours">Yours</span>' : '';
         var by=(m.by==="classic"||m.by==="iconic"||m.by==="foundation"||!m.by)?'<span class="mby">'+esc(m.by||"")+'</span>':'<span class="mby">by '+esc(m.by)+'</span>';
         var watch;
-        if(m.src==="you" && m.videoUrl){ watch='<button class="watch" data-play="'+esc(m.videoUrl)+'" data-title="'+esc(m.name)+'"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Play</button>'; }
-        else if(m.src==="you" && m.link){ watch='<a class="watch" href="'+esc(m.link)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Watch</a>'; }
-        else { watch='<a class="watch" href="'+ytSearch(m.name)+'" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>Watch</a>'; }
+        var playIco='<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+        if(m.src==="you"){
+          if(m.videoUrl){ watch='<button class="watch" data-play="'+esc(m.videoUrl)+'" data-title="'+esc(m.name)+'">'+playIco+'Play</button>'; }
+          else if(m.link){ watch='<a class="watch" href="'+esc(m.link)+'" target="_blank" rel="noopener">'+playIco+'Watch</a>'; }
+          else { watch=''; }
+        } else {
+          var full = m.video || ytSearch(m.name);
+          var quick = m.videoQuick || ytShort(m.name);
+          watch='<a class="watch" href="'+esc(full)+'" target="_blank" rel="noopener">'+playIco+'Full</a>'
+               +'<a class="watch quick" href="'+esc(quick)+'" target="_blank" rel="noopener">'+playIco+'Quick</a>';
+        }
+        var edit = m.src==="you" ? '<button class="edit" data-edit="'+esc(m.id)+'">Edit</button>' : '';
+        var hands = (m.src==="you" && (m.righty||m.lefty)) ? '<div class="hands"><span>R: '+esc(m.righty||"as shown")+'</span><span class="hL">L: '+esc(m.lefty||"mirror it")+'</span></div>' : '';
+        var thumb = (m.src==="you" && m.thumb) ? '<img class="thumb" src="'+esc(m.thumb)+'" alt="">' : '';
         html+='<div class="move'+d+'" data-id="'+m.id+'">'
           +'<div class="hit" role="button" tabindex="0" aria-pressed="'+(!!done[m.id])+'">'
           +'<div class="box"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg></div>'
           +'<div class="mbody"><div class="mtop"><span class="lvtag p'+m.lv+'">L'+m.lv+'</span><span class="mname">'+esc(m.name)+'</span>'+yours+by+'</div>'
-          +'<div class="mcat">'+esc(m.cat)+'</div><div class="mblurb">'+esc(m.blurb)+'</div></div></div>'
-          + watch + '</div>';
+          +'<div class="mcat">'+esc(m.cat)+'</div><div class="mblurb">'+esc(m.blurb)+'</div>'+thumb+hands+'</div></div>'
+          +'<div class="acts">'+watch+edit+'</div></div>';
       });
     });
     listEl.innerHTML = html || '<div class="empty">No moves match those filters.</div>';
@@ -587,6 +657,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function toggle(id){ if(done[id]) delete done[id]; else done[id]=1; saveDone(); renderMoves(); updateProgress(); }
 
   listEl.addEventListener('click', function(e){
+    var ed=e.target.closest('[data-edit]'); if(ed){ openEdit(ed.getAttribute('data-edit')); return; }
     var play=e.target.closest('[data-play]'); if(play){ openPlayer(play.getAttribute('data-play'), play.getAttribute('data-title')); return; }
     if(e.target.closest('.watch')) return; // let links work
     var hit=e.target.closest('.hit'); if(hit){ var mv=hit.closest('.move'); toggle(mv.getAttribute('data-id')); }
@@ -610,7 +681,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       analyzeBtn=document.getElementById('analyzeBtn'), aiStatus=document.getElementById('aiStatus'),
       form=document.getElementById('form'), addStatus=document.getElementById('addStatus'),
       linkIn=document.getElementById('linkIn');
-  var chosenFile=null, chosenUrl="";
+  var chosenFile=null, chosenUrl="", chosenThumb="";
   // fill selects
   (function(){
     var ls=""; LEVELS.forEach(function(L){ ls+='<option value="'+L.n+'">Level '+L.n+' · '+L.name+'</option>'; });
@@ -622,7 +693,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     var ai = !!sampleFn;
     document.getElementById('aiBadge').hidden = !ai;
     document.getElementById('addLede').textContent = ai
-      ? "Upload a cardistry clip and an AI will watch it, write a summary, pick a category and rate the skill level — then it's added to your catalog."
+      ? "Upload a cardistry clip (up to 30 min) and an AI will watch it, write a summary, pick a category, rate the skill level, and even give the left- and right-handed setup — then it's added to your catalog."
       : "Upload a clip (or paste a link) and fill in a few details — it's added to your catalog and sorted automatically. (The AI auto-rating runs on the Claude-hosted version.)";
     document.getElementById('addFoot').textContent = usingDB
       ? "Your tutorials are saved to this app's shared database."
@@ -635,10 +706,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   drop.addEventListener('drop', function(e){ e.preventDefault(); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
   fileInput.addEventListener('change', function(e){ if(e.target.files[0]) handleFile(e.target.files[0]); });
   linkIn.addEventListener('input', function(){ chosenUrl=linkIn.value.trim(); updateAiRow(); });
+  function clearFile(){ chosenFile=null; chosenThumb=""; prev.hidden=true; prev.removeAttribute('src'); form.hidden=true; aiRow.hidden=true; drop.querySelector('b').textContent="Tap to choose a video"; }
   function handleFile(f){
     if(!/^video\//.test(f.type)){ addStatus.textContent="That doesn't look like a video file."; return; }
-    chosenFile=f; chosenUrl="";
     var url=URL.createObjectURL(f);
+    prev.onloadedmetadata=function(){
+      if(prev.duration && prev.duration > 1810){  // 30 min + small margin
+        addStatus.textContent="That video is longer than 30 minutes — please trim it to 30 min or less.";
+        URL.revokeObjectURL(url); clearFile(); return;
+      }
+      seek(prev, (prev.duration||2)/2).then(function(){ captureThumb(); try{ prev.currentTime=0; }catch(e){} });
+    };
+    chosenFile=f; chosenThumb=""; chosenUrl="";
     prev.src=url; prev.hidden=false;
     drop.querySelector('b').textContent = f.name.length>40 ? f.name.slice(0,40)+"…" : f.name;
     form.hidden=false; addStatus.textContent="";
@@ -646,49 +725,74 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   }
 
   function seek(v,t){ return new Promise(function(res){ function on(){ v.removeEventListener('seeked',on); res(); } v.addEventListener('seeked',on); try{ v.currentTime=t; }catch(e){ res(); } }); }
-  function grabFrames(v,n){
-    return new Promise(function(resolve){
-      var run=async function(){
-        var out=[]; var dur=v.duration; if(!isFinite(dur)||dur<=0) dur=1;
-        var cv=document.createElement('canvas');
-        var w=Math.min(560, v.videoWidth||480); var h=Math.round(w*((v.videoHeight||270)/(v.videoWidth||480)));
-        cv.width=w; cv.height=h;
-        for(var i=1;i<=n;i++){
-          await seek(v, dur*i/(n+1));
-          try{ cv.getContext('2d').drawImage(v,0,0,w,h); }catch(e){}
-          var b=await new Promise(function(r){ cv.toBlob(r,'image/jpeg',0.82); });
-          if(b) out.push(b);
-        }
-        try{ v.currentTime=0; }catch(e){}
-        resolve(out);
-      };
-      if(v.readyState>=2) run(); else v.addEventListener('loadeddata', run, {once:true});
-    });
+  var _cv=document.createElement('canvas');
+  function frameBlob(){
+    var w=Math.min(560, prev.videoWidth||480), h=Math.round(w*((prev.videoHeight||270)/(prev.videoWidth||480)));
+    _cv.width=w; _cv.height=h;
+    try{ _cv.getContext('2d').drawImage(prev,0,0,w,h); }catch(e){}
+    return new Promise(function(r){ _cv.toBlob(r,'image/jpeg',0.82); });
   }
-
-  analyzeBtn.addEventListener('click', async function(){
-    if(!sampleFn){ return; }
-    analyzeBtn.disabled=true; aiStatus.textContent="Thinking…";
+  function captureThumb(){
     try{
-      var catList = CATS.map(function(c){return '"'+c+'"';}).join(", ");
-      var basePrompt = 'You are an expert cardistry coach. Reply with ONLY a JSON object: '
-        + '{"name": string (a short name for the flourish, or a descriptive one), '
-        + '"creator": string (person credited if you can tell, else "unknown"), '
-        + '"level": number 1-5 (1=absolute-beginner grips/shuffles, 2=beginner, 3=intermediate, 4=advanced, 5=expert), '
-        + '"category": one of ['+catList+'], '
-        + '"summary": string (2-3 sentences: what the tutorial teaches and how the move looks). '
-        + 'Judge the level from how complex the handling looks.';
-      var data;
-      if(chosenFile && imagesLimit){
-        aiStatus.textContent="Watching the video…";
-        var n=Math.max(1, Math.min(4, imagesLimit.maxCount||4));
-        var frames=await grabFrames(prev, n);
-        if(!frames.length){ throw {code:"noframes"}; }
-        data=await sampleFn.json(basePrompt+' These are sampled still frames from a cardistry tutorial video.', {images:frames, modelTier:"default", onText:function(u){ aiStatus.textContent="Analyzing…"; }});
-      } else {
-        var note = (linkIn.value||"").trim();
-        data=await sampleFn.json(basePrompt+' Base it on this tutorial reference the user gave: '+ (note||"(no details provided)") , {modelTier:"quick"});
+      var w=176, h=Math.max(1, Math.round(w*((prev.videoHeight||99)/(prev.videoWidth||176))));
+      var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+      cv.getContext('2d').drawImage(prev,0,0,w,h);
+      chosenThumb=cv.toDataURL('image/jpeg',0.7);
+    }catch(e){ chosenThumb=""; }
+  }
+  function buildPrompt(){
+    var catList = CATS.map(function(c){return '"'+c+'"';}).join(", ");
+    return 'You are an expert cardistry coach. Reply with ONLY a JSON object: '
+      + '{"name": string (a short name for the flourish, or a descriptive one), '
+      + '"creator": string (person credited if you can tell, else "unknown"), '
+      + '"level": number 1-5 (1=absolute-beginner grips/shuffles, 2=beginner, 3=intermediate, 4=advanced, 5=expert), '
+      + '"category": one of ['+catList+'], '
+      + '"summary": string (2-3 sentences: what the tutorial teaches and how the move looks), '
+      + '"righty": string (one short right-handed setup line, e.g. "deck in the left hand, cut with the right"), '
+      + '"lefty": string (the mirrored left-handed setup, e.g. "mirror it — deck in the right hand, cut with the left")}. '
+      + 'Judge the level from how complex the handling looks.';
+  }
+  async function analyzeVideo(signal){
+    var basePrompt=buildPrompt();
+    if(chosenFile && imagesLimit){
+      var maxPer=Math.max(1, imagesLimit.maxCount||4);
+      var dur=prev.duration; if(!isFinite(dur)||dur<=0) dur=1;
+      var target=Math.min(24, maxPer*3, Math.max(maxPer, Math.round(dur/10)));
+      var passes=Math.min(3, Math.max(1, Math.ceil(target/maxPer)));
+      var totalFrames=passes*maxPer, notes=[];
+      for(var pf=0; pf<passes; pf++){
+        if(signal.aborted) throw {code:"cancelled"};
+        aiStatus.textContent = passes>1 ? ("Watching the whole video… ("+(pf+1)+"/"+passes+")") : "Watching the video…";
+        var blobs=[];
+        for(var k=0;k<maxPer;k++){
+          var idx = pf + k*passes;   // interleave so the passes together span the entire clip
+          await seek(prev, dur*(idx+1)/(totalFrames+1));
+          var b=await frameBlob(); if(b) blobs.push(b);
+        }
+        if(!blobs.length) throw {code:"noframes"};
+        if(passes===1){
+          try{ prev.currentTime=0; }catch(e){}
+          return await sampleFn.json(basePrompt+' These still frames are sampled evenly across the ENTIRE tutorial video, start to finish.', {images:blobs, modelTier:"default", signal:signal});
+        }
+        var r=await sampleFn('You are a cardistry coach. These '+blobs.length+' still frames come from across a tutorial video (batch '+(pf+1)+' of '+passes+'; the batches together span the whole clip start to finish). In 2-3 sentences describe the card handling or flourish visible here.', {images:blobs, modelTier:"quick", signal:signal});
+        notes.push('Batch '+(pf+1)+': '+r.text);
       }
+      try{ prev.currentTime=0; }catch(e){}
+      aiStatus.textContent="Summing up the whole video…";
+      return await sampleFn.json(basePrompt+' Base your answer on these observations gathered from frames across the ENTIRE video, start to finish:\n'+notes.join("\n"), {modelTier:"default", signal:signal});
+    } else {
+      var note=(linkIn.value||"").trim();
+      return await sampleFn.json(basePrompt+' Base it on this tutorial reference the user gave: '+(note||"(no details provided)"), {modelTier:"quick", signal:signal});
+    }
+  }
+  var analyzing=false, aiCtl=null;
+  analyzeBtn.addEventListener('click', async function(){
+    if(analyzing){ if(aiCtl) aiCtl.abort(); return; }
+    if(!sampleFn){ return; }
+    analyzing=true; aiCtl=new AbortController();
+    analyzeBtn.textContent="Cancel"; aiStatus.textContent="Thinking…";
+    try{
+      var data=await analyzeVideo(aiCtl.signal);
       if(data){
         document.getElementById('fName').value = data.name || "";
         document.getElementById('fBy').value = (data.creator && data.creator!=="unknown") ? data.creator : "";
@@ -696,15 +800,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         document.getElementById('fLevel').value = String(lv);
         if(CATS.indexOf(data.category)>=0) document.getElementById('fCat').value=data.category;
         document.getElementById('fSummary').value = data.summary || "";
-        aiStatus.textContent="✓ AI filled it in below — tweak anything, then add it.";
+        document.getElementById('fRighty').value = data.righty || "";
+        document.getElementById('fLefty').value = data.lefty || "";
+        aiStatus.textContent="✓ AI watched it and filled it in below — tweak anything, then add it.";
       }
     }catch(e){
       var code=e&&e.code;
-      if(code==="not_granted"||code==="sampling_disabled"||code==="not_declared"){ aiStatus.textContent="AI isn't available here — fill it in yourself below."; sampleFn=null; refreshAddUI(); }
+      if(code==="cancelled"){ aiStatus.textContent="Stopped. Fill it in yourself, or try again."; }
+      else if(code==="not_granted"||code==="sampling_disabled"||code==="not_declared"){ aiStatus.textContent="AI isn't available here — fill it in yourself below."; sampleFn=null; refreshAddUI(); }
       else if(code==="rate_limited"){ aiStatus.textContent="Too many requests just now — wait a moment and try again."; }
       else if(code==="noframes"){ aiStatus.textContent="Couldn't read frames from that video — fill it in below."; }
+      else if(code==="invalid_json"){ aiStatus.textContent="The AI reply wasn't clean — try again, or fill it in below."; }
       else { aiStatus.textContent="Couldn't analyze it automatically — fill it in below."; }
-    }finally{ analyzeBtn.disabled=false; }
+    }finally{ analyzing=false; aiCtl=null; analyzeBtn.textContent="✨ Analyze with AI"; }
   });
 
   document.getElementById('addBtn').addEventListener('click', async function(){
@@ -714,35 +822,96 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     var category=document.getElementById('fCat').value;
     var by=(document.getElementById('fBy').value||"").trim()||"you";
     var summary=(document.getElementById('fSummary').value||"").trim();
+    var righty=(document.getElementById('fRighty').value||"").trim();
+    var lefty=(document.getElementById('fLefty').value||"").trim();
     var link=(linkIn.value||"").trim();
     var addBtn=this; addBtn.disabled=true; addStatus.textContent="Adding…";
-    var assetUrl="";
+    var assetUrl="", assetId="";
     try{
       if(chosenFile && ASSETS && chosenFile.size <= 20*1024*1024){
         addStatus.textContent="Saving the video…";
         var up=await ASSETS.upload(chosenFile);
-        if(up && up.url) assetUrl=up.url;
+        if(up && up.url){ assetUrl=up.url; assetId=up.id||""; }
       }
     }catch(e){ /* storing video is best-effort */ }
-    var doc={name:name, creator:by, level:lv, category:category, summary:summary, link:link, assetUrl:assetUrl, source:"upload", createdAt:Date.now()};
+    var doc={name:name, creator:by, level:lv, category:category, summary:summary, righty:righty, lefty:lefty, thumb:chosenThumb||"", link:link, assetUrl:assetUrl, assetId:assetId, source:"upload", createdAt:Date.now()};
     try{
       if(usingDB && DB){
         await DB.collection("tutorials").add(doc);
         // onSnapshot will refresh the list
       } else {
-        var local={id:"t-"+Date.now(), lv:lv, cat:category, name:name, by:by, blurb:summary, link:link,
+        var local={id:"t-"+Date.now(), lv:lv, cat:category, name:name, by:by, blurb:summary, righty:righty, lefty:lefty, thumb:chosenThumb||"", link:link,
           videoUrl: (chosenFile? URL.createObjectURL(chosenFile):""), src:"you"};
         userTuts.push(local); saveLocalTuts(); afterTutsChanged();
       }
       addStatus.textContent="✓ Added to your catalog!";
       // reset the form
-      chosenFile=null; prev.hidden=true; prev.removeAttribute('src'); form.hidden=true; aiRow.hidden=true; aiStatus.textContent="";
+      chosenFile=null; chosenThumb=""; prev.hidden=true; prev.removeAttribute('src'); form.hidden=true; aiRow.hidden=true; aiStatus.textContent="";
       linkIn.value=""; drop.querySelector('b').textContent="Tap to choose a video";
-      document.getElementById('fName').value=""; document.getElementById('fBy').value=""; document.getElementById('fSummary').value="";
+      ["fName","fBy","fSummary","fRighty","fLefty"].forEach(function(id){ document.getElementById(id).value=""; });
       go('moves');
     }catch(e){
       addStatus.textContent = (e&&e.code==="quota_exceeded") ? "The database is full — remove some tutorials first." : "Couldn't save it — try again.";
     }finally{ addBtn.disabled=false; }
+  });
+
+  // ---------- edit / delete tutorials ----------
+  var editModal=document.getElementById('editModal');
+  (function(){
+    var ls=""; LEVELS.forEach(function(L){ ls+='<option value="'+L.n+'">Level '+L.n+' · '+L.name+'</option>'; });
+    document.getElementById('eLevel').innerHTML=ls;
+    var cs=""; CATS.forEach(function(c){ cs+='<option value="'+c+'">'+c+'</option>'; });
+    document.getElementById('eCat').innerHTML=cs;
+  })();
+  var editingId=null, delArmed=false;
+  function findTut(id){ for(var i=0;i<userTuts.length;i++){ if(userTuts[i].id===id) return userTuts[i]; } return null; }
+  function openEdit(id){
+    var t=findTut(id); if(!t) return;
+    editingId=id; delArmed=false;
+    document.getElementById('eName').value=t.name||"";
+    document.getElementById('eLevel').value=String(t.lv||3);
+    document.getElementById('eCat').value=(CATS.indexOf(t.cat)>=0? t.cat : "Cuts");
+    document.getElementById('eBy').value=(t.by&&t.by!=="you")?t.by:"";
+    document.getElementById('eRighty').value=t.righty||"";
+    document.getElementById('eLefty').value=t.lefty||"";
+    document.getElementById('eSummary').value=t.blurb||"";
+    document.getElementById('eStatus').textContent="";
+    document.getElementById('eDelete').textContent="Delete";
+    editModal.classList.add('on');
+  }
+  function closeEdit(){ editModal.classList.remove('on'); editingId=null; }
+  document.getElementById('editX').addEventListener('click', closeEdit);
+  editModal.addEventListener('click', function(e){ if(e.target===editModal) closeEdit(); });
+  document.getElementById('eSave').addEventListener('click', async function(){
+    var t=findTut(editingId); if(!t) return;
+    var patch={
+      name:(document.getElementById('eName').value||"").trim()||t.name,
+      level:Number(document.getElementById('eLevel').value)||t.lv,
+      category:document.getElementById('eCat').value,
+      creator:(document.getElementById('eBy').value||"").trim()||"you",
+      righty:(document.getElementById('eRighty').value||"").trim(),
+      lefty:(document.getElementById('eLefty').value||"").trim(),
+      summary:(document.getElementById('eSummary').value||"").trim()
+    };
+    var btn=this; btn.disabled=true; document.getElementById('eStatus').textContent="Saving…";
+    try{
+      if(usingDB && DB && t.docId){ await DB.collection("tutorials").doc(t.docId).update(patch); }
+      else { t.name=patch.name; t.lv=patch.level; t.cat=patch.category; t.by=patch.creator; t.righty=patch.righty; t.lefty=patch.lefty; t.blurb=patch.summary; saveLocalTuts(); afterTutsChanged(); }
+      closeEdit();
+    }catch(e){ document.getElementById('eStatus').textContent="Couldn't save — try again."; }
+    finally{ btn.disabled=false; }
+  });
+  document.getElementById('eDelete').addEventListener('click', async function(){
+    if(!delArmed){ delArmed=true; this.textContent="Tap again to delete"; return; }
+    var t=findTut(editingId); if(!t){ closeEdit(); return; }
+    var btn=this; btn.disabled=true;
+    try{
+      if(usingDB && DB && t.docId){
+        await DB.collection("tutorials").doc(t.docId).delete();
+        if(ASSETS && t.assetId){ try{ await ASSETS.delete(t.assetId); }catch(e){} }
+      } else { userTuts=userTuts.filter(function(x){ return x.id!==editingId; }); saveLocalTuts(); afterTutsChanged(); }
+      closeEdit();
+    }catch(e){ document.getElementById('eStatus').textContent="Couldn't delete — try again."; btn.disabled=false; }
   });
 
   // ---------- tabs + theme ----------
