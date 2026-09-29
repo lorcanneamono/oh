@@ -191,6 +191,71 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .log .grp .inner details{margin-bottom:8px}
 .log .grp .inner details:last-child{margin-bottom:0}
 .log .grp .inner summary{padding:11px 13px; font-size:14px}
+/* ---- deck collection ---- */
+.deckbar{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 4px}
+.dchip{font-family:var(--disp); font-weight:600; font-size:12.5px; color:var(--muted); background:var(--surface); border:1px solid var(--line); border-radius:100px; padding:7px 14px; cursor:pointer; user-select:none}
+.dchip.on{background:var(--accent); color:#fff; border-color:transparent}
+.ac{position:relative; margin-top:6px}
+.ac input{width:100%; font-family:var(--body); font-size:15px; padding:13px 14px; border:1px solid var(--line); border-radius:13px; background:var(--surface); color:var(--ink)}
+.aclist{position:absolute; z-index:40; left:0; right:0; top:calc(100% + 6px); background:var(--surface); border:1px solid var(--line); border-radius:13px; box-shadow:var(--shadow); max-height:280px; overflow:auto; display:none}
+.aclist.on{display:block}
+.acitem{padding:11px 14px; cursor:pointer; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--line)}
+.acitem:last-child{border-bottom:none}
+.acitem:hover,.acitem.hi{background:var(--surface2)}
+.acitem .an{font-weight:600; font-size:14px}
+.acitem .ab{font-size:12px; color:var(--faint); margin-left:auto}
+.acitem .swatch{width:16px; height:22px; border-radius:3px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.acadd{color:var(--accent-ink); font-weight:700}
+.deckgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:20px 16px; margin-top:20px}
+.dcell{display:flex; flex-direction:column; align-items:center; gap:8px}
+.scene{perspective:1000px; width:100%; height:210px; display:grid; place-items:center; touch-action:pan-y}
+.box3d{--w:104px; --h:150px; --d:30px; width:var(--w); height:var(--h); position:relative; transform-style:preserve-3d; transform:rotateX(-14deg) rotateY(-26deg); cursor:grab; touch-action:none}
+.box3d.grabbing{cursor:grabbing}
+.box3d.spin{animation:deckspin 14s linear infinite}
+@keyframes deckspin{from{transform:rotateX(-14deg) rotateY(-26deg)}to{transform:rotateX(-14deg) rotateY(334deg)}}
+.face{position:absolute; top:50%; left:50%; overflow:hidden; box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}
+.face.front{width:var(--w); height:var(--h); transform:translate(-50%,-50%) translateZ(calc(var(--d)/2)); border-radius:8px}
+.face.back{width:var(--w); height:var(--h); transform:translate(-50%,-50%) rotateY(180deg) translateZ(calc(var(--d)/2)); border-radius:8px}
+.face.right{width:var(--d); height:var(--h); transform:translate(-50%,-50%) rotateY(90deg) translateZ(calc(var(--w)/2))}
+.face.left{width:var(--d); height:var(--h); transform:translate(-50%,-50%) rotateY(-90deg) translateZ(calc(var(--w)/2))}
+.face.top{width:var(--w); height:var(--d); transform:translate(-50%,-50%) rotateX(90deg) translateZ(calc(var(--h)/2))}
+.face.bottom{width:var(--w); height:var(--d); transform:translate(-50%,-50%) rotateX(-90deg) translateZ(calc(var(--h)/2))}
+.face .tuck{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; color:#fff}
+.face .tuck .frame{position:absolute; inset:7px; border:1.5px solid rgba(255,255,255,.6); border-radius:5px}
+.face .tuck .suit{font-size:26px; opacity:.9; line-height:1}
+.face .tuck .nm{font-family:var(--disp); font-weight:700; font-size:13px; line-height:1.15; margin-top:7px; text-shadow:0 1px 3px rgba(0,0,0,.35); word-break:break-word}
+.face .tuck .br{font-size:9.5px; letter-spacing:1px; text-transform:uppercase; opacity:.85; margin-top:4px}
+.face .edge{position:absolute; inset:0; background:repeating-linear-gradient(90deg,#fff,#fff 1px,#e7e2da 1px,#e7e2da 3px)}
+.slab{position:absolute; top:50%; left:50%; width:calc(var(--w) - 12px); height:calc(var(--h) - 8px); transform:translate(-50%,-50%) translateZ(0); border-radius:6px 6px 3px 3px; background:linear-gradient(#fff,#efeae1); box-shadow:inset 0 0 0 1px rgba(0,0,0,.1); transition:transform .5s cubic-bezier(.3,1.2,.4,1)}
+.box3d.open .slab{transform:translate(-50%,-115%) translateZ(0)}
+.slab::before{content:""; position:absolute; left:6px; right:6px; top:6px; height:34px; border-radius:4px; background:radial-gradient(circle at 50% 40%,var(--accent-soft),transparent 70%)}
+.slab .pip{position:absolute; top:9px; left:50%; transform:translateX(-50%); font-size:20px; color:var(--accent-ink)}
+.dmeta{text-align:center; max-width:150px}
+.dmeta .dn{font-family:var(--disp); font-weight:700; font-size:13.5px; line-height:1.2}
+.dmeta .dsub{font-size:11.5px; color:var(--muted); margin-top:2px}
+.dtags{display:flex; gap:5px; justify-content:center; flex-wrap:wrap; margin-top:5px}
+.dtag{font-size:10px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; padding:2px 7px; border-radius:100px; background:var(--surface2); color:var(--muted)}
+.dtag.own{background:var(--accent-soft); color:var(--accent-ink)}
+.dtag.wish{background:transparent; border:1px solid var(--line)}
+.dtag.fav{background:#fbe9c4; color:#8a5a12}
+:root[data-theme="dark"] .dtag.fav, .drow-dark .dtag.fav{background:#4a3a1e; color:#f0c979}
+.dacts{display:flex; gap:6px; justify-content:center; margin-top:4px}
+.dacts button{font-family:var(--disp); font-weight:600; font-size:11px; border:1px solid var(--line); background:var(--surface); color:var(--muted); border-radius:8px; padding:5px 10px; cursor:pointer}
+.dacts button:active{transform:scale(.94)}
+.deckform{margin-top:14px}
+.df-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+.df-row .fld{flex:1; min-width:120px}
+.fld label{display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:4px}
+.fld input[type=text],.fld input[type=number],.fld select,.fld textarea{width:100%; font-family:var(--body); font-size:14px; padding:10px 11px; border:1px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink)}
+.colorrow{display:flex; gap:7px; flex-wrap:wrap; align-items:center}
+.sw{width:26px; height:34px; border-radius:5px; cursor:pointer; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.sw.on{outline:3px solid var(--accent); outline-offset:2px}
+.segb{display:inline-flex; border:1px solid var(--line); border-radius:10px; overflow:hidden}
+.segb button{font-family:var(--disp); font-weight:600; font-size:13px; padding:8px 14px; background:var(--surface); color:var(--muted); border:none; cursor:pointer}
+.segb button.on{background:var(--accent); color:#fff}
+.starbtn{background:none; border:none; font-size:20px; cursor:pointer; color:var(--faint); line-height:1}
+.starbtn.on{color:#e8a71a}
+.demptynote{color:var(--muted); text-align:center; padding:30px 10px}
 /* player modal */
 .modal{position:fixed; inset:0; z-index:200; background:rgba(6,10,18,.72); display:none; align-items:center; justify-content:center; padding:18px}
 .modal.on{display:flex}
@@ -256,43 +321,76 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v1.10</b>. Tap any version to see what changed.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v5.0</b>. Big updates bump the whole number; small ones are the decimals.</p>
           <div class="log">
+
             <details class="grp" open>
-              <summary><span class="range">v1.0 – v2.0</span> First release series <span class="new">Latest</span><span class="cnt">10 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v5.0</span> Your collection <span class="new">Latest</span><span class="cnt">1 update</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v1.10</span> More short clips <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">Hand-picked a direct short clip for <b>32 moves</b> now (up from 13). Any move without one still opens a short-only search, so every <b>Short</b> stays 5 minutes or under.</div>
+                  <summary><span class="ver">v5.0</span> Deck collection <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">New <b>Decks</b> tab: track the decks you own and want. Search 130+ real decks (or add your own), and each one shows as an interactive <b>3D box</b> you can drag to spin and tap to open. Add a photo, box color, quantity, condition, notes and favorites.</div>
+                </details>
+              </div>
+            </details>
+
+            <details class="grp">
+              <summary><span class="range">v4.0</span> Cozy redesign <span class="cnt">3 updates</span><span class="caret">&#9662;</span></summary>
+              <div class="inner">
+                <details>
+                  <summary><span class="ver">v4.0.2</span> Video credits <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Each move now shows a small credit line naming the YouTube creators of its Full and Short videos.</div>
                 </details>
                 <details>
-                  <summary><span class="ver">v1.9</span> Cozy makeover <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v4.0.1</span> More short clips <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Hand-picked a direct short clip for <b>32 moves</b> (up from 13). Any move without one still opens a short-only search, so every <b>Short</b> stays 5 minutes or under.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v4.0</span> Cozy makeover <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">A warmer, softer floral look and comfier fonts. <b>Short</b> now always opens a video 5 minutes or under, and the third button is now <b>Search</b> — a plain YouTube search for that trick.</div>
                 </details>
+              </div>
+            </details>
+
+            <details class="grp">
+              <summary><span class="range">v3.0 – v3.1</span> Coach &amp; watching <span class="cnt">3 updates</span><span class="caret">&#9662;</span></summary>
+              <div class="inner">
                 <details>
-                  <summary><span class="ver">v1.8</span> Tap-the-box to check off <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v3.1.1</span> Tap-the-box to check off <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">You now mark a move learned by tapping its little <b>checkbox</b> — tapping the name or reading the description won't check it off by accident anymore.</div>
                 </details>
                 <details>
-                  <summary><span class="ver">v1.7</span> Three ways to watch <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">Every move now has three buttons: <b>Full</b> (the long, detailed tutorial), <b>Short</b> (a tutorial 5 min and under), and <b>Quick</b> (a fast clip of the move). Added more exact tutorial links too.</div>
+                  <summary><span class="ver">v3.1</span> Three ways to watch <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Every move got separate <b>Full</b> (long, detailed) and <b>Short</b> (5 min and under) tutorial buttons, plus more exact tutorial links.</div>
                 </details>
                 <details>
-                  <summary><span class="ver">v1.6</span> AI Coach <span class="date">Sep 28, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">Upload a video of your <b>own</b> attempt (Add tab &rarr; "Coach my move") and get specific tips on what to fix. Also added this changelog with version history.</div>
+                  <summary><span class="ver">v3.0</span> AI Coach <span class="date">Sep 28, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Upload a video of your <b>own</b> attempt (Add tab &rarr; "Coach my move") and get specific tips on what to fix. Also added this changelog.</div>
+                </details>
+              </div>
+            </details>
+
+            <details class="grp">
+              <summary><span class="range">v2.0 – v2.2</span> Add-your-own tutorials <span class="cnt">3 updates</span><span class="caret">&#9662;</span></summary>
+              <div class="inner">
+                <details>
+                  <summary><span class="ver">v2.2</span> Save your data <span class="date">Sep 27, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Back up and restore your checked moves and added tutorials from the <b>Stats</b> tab, so nothing gets lost.</div>
                 </details>
                 <details>
-                  <summary><span class="ver">v1.5</span> Save your data <span class="date">Sep 27, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">Back up and restore your checked moves and added tutorials from the <b>Stats</b> tab, so nothing gets lost. Added exact Full &amp; Quick tutorial links on ~23 moves.</div>
+                  <summary><span class="ver">v2.1</span> Whole-video AI <span class="date">Sep 26, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">The tutorial analyzer now samples frames across the <b>entire</b> clip instead of just the start. Added move thumbnails too.</div>
                 </details>
                 <details>
-                  <summary><span class="ver">v1.4</span> Whole-video AI <span class="date">Sep 26, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">The tutorial analyzer now samples frames across the <b>entire</b> clip instead of just the start. Added move thumbnails and separate <b>Full</b> + <b>Quick</b> tutorial buttons.</div>
-                </details>
-                <details>
-                  <summary><span class="ver">v1.3</span> Add a tutorial <span class="date">Sep 25, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v2.0</span> Add a tutorial <span class="date">Sep 25, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">On the Claude version an AI writes the summary, category, skill level and left/right setup for you. Edit &amp; delete your own tutorials, and upload videos up to 30 minutes.</div>
                 </details>
+              </div>
+            </details>
+
+            <details class="grp">
+              <summary><span class="range">v1.0 – v1.2</span> The basics <span class="cnt">3 updates</span><span class="caret">&#9662;</span></summary>
+              <div class="inner">
                 <details>
                   <summary><span class="ver">v1.2</span> Watch tutorials <span class="date">Sep 24, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">Every move got a <b>Watch</b> button, plus an in-app player for tutorials you upload yourself.</div>
@@ -307,6 +405,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
                 </details>
               </div>
             </details>
+
           </div>
         </section>
         <section class="block">
@@ -466,6 +565,66 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         </section>
       </div>
     </div>
+
+    <div class="panel" id="tab-decks">
+      <div class="wrap">
+        <section class="block">
+          <p class="eyebrow">Your shelf</p>
+          <h2 class="big">Deck collection</h2>
+          <p class="lede">Track the decks you own and the ones you want. Start typing a deck name to find it, or add your own. Drag a box to spin it in 3D, and tap it to slide the cards out.</p>
+
+          <div class="ac" id="deckAC">
+            <input id="deckSearch" type="text" placeholder="Search 130+ decks — Bicycle, Bee, theory11, Fontaine…" autocomplete="off">
+            <div class="aclist" id="deckACList"></div>
+          </div>
+
+          <div class="deckform card" id="deckForm" hidden>
+            <div style="display:flex; align-items:center; gap:10px">
+              <b id="dfTitle" style="font-family:var(--disp); font-size:16px">Add a deck</b>
+              <button class="starbtn" id="dfStar" title="Favorite">&#9733;</button>
+              <span class="sp" style="flex:1"></span>
+              <button class="dacts" id="dfClose" style="background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer">&times;</button>
+            </div>
+            <div class="df-row">
+              <div class="fld" style="flex:2"><label>Deck name</label><input id="dfName" type="text" placeholder="Deck name"></div>
+              <div class="fld"><label>Brand</label><input id="dfBrand" type="text" placeholder="Brand (optional)"></div>
+            </div>
+            <div class="df-row">
+              <div class="fld"><label>Own it or want it?</label>
+                <div class="segb" id="dfStatus"><button class="on" data-st="own">Owned</button><button data-st="wish">Wishlist</button></div>
+              </div>
+              <div class="fld"><label>How many</label><input id="dfQty" type="number" min="0" value="1"></div>
+              <div class="fld"><label>Condition</label>
+                <select id="dfCond"><option value="sealed">Sealed</option><option value="opened">Opened</option><option value="both">Some of each</option></select>
+              </div>
+            </div>
+            <div class="fld" style="margin-top:10px"><label>Box color</label><div class="colorrow" id="dfColors"></div></div>
+            <div class="fld" style="margin-top:10px"><label>Photo of the box (optional)</label>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                <button class="btn line" id="dfPhotoBtn" type="button">Choose photo</button>
+                <span id="dfPhotoName" style="font-size:12px; color:var(--muted)">Stylized box until you add one</span>
+                <button class="btn line" id="dfPhotoClear" type="button" hidden>Remove photo</button>
+                <input id="dfPhoto" type="file" accept="image/*" hidden>
+              </div>
+            </div>
+            <div class="fld" style="margin-top:10px"><label>Notes</label><textarea id="dfNotes" rows="2" placeholder="Where you got it, why you love it…"></textarea></div>
+            <div style="display:flex; gap:8px; margin-top:14px">
+              <button class="btn" id="dfSave">Add to collection</button>
+              <button class="btn line" id="dfCancel">Cancel</button>
+            </div>
+          </div>
+
+          <div class="deckbar" id="deckFilters">
+            <button class="dchip on" data-f="all">All</button>
+            <button class="dchip" data-f="own">Owned</button>
+            <button class="dchip" data-f="wish">Wishlist</button>
+            <button class="dchip" data-f="fav">Favorites</button>
+          </div>
+          <div id="deckCount" class="note" style="margin-top:6px"></div>
+          <div class="deckgrid" id="deckGrid"></div>
+        </section>
+      </div>
+    </div>
   </div>
 
   <nav class="tabbar" id="tabbar">
@@ -475,6 +634,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     <button class="tab" data-tab="add"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Add</button>
     <button class="tab" data-tab="progress"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M6 20v-6"/><path d="M12 20V8"/><path d="M18 20v-9"/></svg>Stats</button>
     <button class="tab" data-tab="lefty"><svg viewBox="0 0 24 24"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11"/><path d="M11 11V4.8a1.5 1.5 0 0 1 3 0V11"/><path d="M14 11.2V6.5a1.5 1.5 0 0 1 3 0V14c0 3.3-2.2 6-5.5 6H10c-1.4 0-2.3-.6-3.2-1.6L4 15.2a1.5 1.5 0 0 1 2.2-2l1.8 1.9"/></svg>Lefty</button>
+    <button class="tab" data-tab="decks"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 8h6"/><path d="M12 12.5l1 1.2 2-2.2"/></svg>Decks</button>
   </nav>
 </div>
 
@@ -1157,7 +1317,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   // ---------- backup / restore ----------
   var bkModal=document.getElementById('bkModal'), imModal=document.getElementById('imModal');
   function buildBackup(){
-    return {v:1, at:Date.now(), done:done, tutorials:userTuts.map(function(t){
+    return {v:1, at:Date.now(), done:done, decks:decks, tutorials:userTuts.map(function(t){
       return {name:t.name, by:t.by, lv:t.lv, cat:t.cat, blurb:t.blurb, righty:t.righty||"", lefty:t.lefty||"", thumb:t.thumb||"", link:t.link||""};
     })};
   }
@@ -1210,8 +1370,20 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       }
       if(!usingDB) saveLocalTuts();
     }
+    var dn=0;
+    if(obj && obj.decks && obj.decks.length){
+      var dhave={}; decks.forEach(function(d){ dhave[(d.name||"").toLowerCase()+"|"+(d.brand||"").toLowerCase()]=1; });
+      obj.decks.forEach(function(d){
+        if(!d || !d.name) return;
+        var key=(d.name||"").toLowerCase()+"|"+(d.brand||"").toLowerCase();
+        if(dhave[key]) return; dhave[key]=1; dn++;
+        if(!d.id) d.id="d-"+Date.now()+"-"+Math.random().toString(36).slice(2,6);
+        decks.push(d);
+      });
+      saveDecks(); renderDecks();
+    }
     afterTutsChanged(); updateProgress();
-    st.textContent="✓ Restored. "+n+" tutorial"+(n===1?"":"s")+" added.";
+    st.textContent="✓ Restored. "+n+" tutorial"+(n===1?"":"s")+(dn?(" and "+dn+" deck"+(dn===1?"":"s")):"")+" added.";
     setTimeout(function(){ imModal.classList.remove('on'); }, 1000);
   }
 
@@ -1234,7 +1406,170 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     try{ localStorage.setItem('cardistry_theme',next); }catch(e){}
   });
 
-  renderMoves(); updateProgress(); refreshAddUI(); initCaps();
+  // ================= Deck collection =================
+  var DKEY="cardistry_decks_v1";
+  var BOX_COLORS=["#b23b3b","#c0392b","#2b3a67","#1f6f5c","#2e5aac","#6c3fa0","#111417","#c99a2e","#20776b","#a83279","#3a7d34","#8a5a2b","#0e0e0e","#d64b6a","#4a4a4a","#2aa4c0"];
+  var DECKS_DB=[
+    ["Bicycle Rider Back","Bicycle","#c0392b"],["Bicycle Standard","Bicycle","#2e5aac"],["Bicycle 808","Bicycle","#c0392b"],["Bicycle MetalLuxe","Bicycle","#c9a24a"],["Bicycle Dragon","Bicycle","#b23b3b"],["Bicycle Stargazer","Bicycle","#1b2a4a"],["Bicycle Cardistry","Bicycle","#2aa4a0"],["Bicycle Prestige","Bicycle","#2e5aac"],["Bicycle Insignia","Bicycle","#0e6b52"],["Bicycle Tragic Royalty","Bicycle","#3a2a4a"],["Bicycle Nautic","Bicycle","#1f6f8a"],["Bicycle Gold","Bicycle","#c99a2e"],["Bicycle Silver","Bicycle","#8a8f97"],["Bicycle Gilded Rider","Bicycle","#c9a24a"],["Bicycle Dark Mode","Bicycle","#14151a"],["Bicycle Rider Back Red","Bicycle","#c0392b"],["Bicycle Rider Back Blue","Bicycle","#2e5aac"],["Bicycle AutoBike No.1","Bicycle","#b23b3b"],["Bicycle Steampunk","Bicycle","#7a5a2b"],["Bicycle Elite Edition","Bicycle","#2b3a67"],
+    ["Bee Standard","Bee","#c0392b"],["Bee Stinger","Bee","#111417"],["Bee Erdnase","Ellusionist","#2b2b2b"],["Bee Diamond Back","Bee","#2e5aac"],["Bee MetalLuxe","Bee","#c9a24a"],["Bee Golden","Bee","#c99a2e"],
+    ["Tally-Ho Circle Back","Tally-Ho","#b23b3b"],["Tally-Ho Fan Back","Tally-Ho","#2e5aac"],["Tally-Ho Viper","Ellusionist","#1a5e3a"],["Tally-Ho MetalLuxe","Tally-Ho","#c9a24a"],
+    ["Aviator","USPCC","#1f6f5c"],["Aristocrat","USPCC","#3a2a4a"],["Aristocrat Bankers","USPCC","#2b3a67"],["Hoyle Standard","Hoyle","#c0392b"],["Streamline","Bicycle","#2e5aac"],["Maverick","USPCC","#b23b3b"],["Wynn","USPCC","#7a1f2b"],
+    ["Monarch","theory11","#14213d"],["Contraband","theory11","#0f1a2b"],["Artisan","theory11","#b98a3a"],["Artisan White","theory11","#d9cfbf"],["Union","theory11","#6b3f2b"],["Mono","theory11","#111417"],["Cohorts","theory11","#8a8f97"],["Citizens","theory11","#1f3a5c"],["High Victorian","theory11","#7a2b3a"],["Star Wars Light Side","theory11","#cfc7b8"],["Star Wars Dark Side","theory11","#111417"],["Harry Potter Gryffindor","theory11","#7a1f1f"],["Harry Potter Slytherin","theory11","#1f5e3a"],["Lord of the Rings","theory11","#2b2416"],["The Avengers","theory11","#7a1f1f"],["National","theory11","#b23b3b"],["Medallions","theory11","#0f1a2b"],["Baroque","theory11","#6b3f2b"],["Bright","theory11","#e0a63a"],["Champions","theory11","#c9a24a"],["Malibu","theory11","#2aa4c0"],["Guardians","theory11","#1f6f5c"],["Tycoon","theory11","#111417"],["Memento Mori","theory11","#111417"],["Sailor","theory11","#2b3a67"],
+    ["Arcane","Ellusionist","#111417"],["Ghost","Ellusionist","#8a8f97"],["Black Tiger","Ellusionist","#111417"],["Black Ghost","Ellusionist","#0a0a0a"],["Shadow Masters","Ellusionist","#1a1a1a"],["Knights","Ellusionist","#1a1a1a"],["Artifice","Ellusionist","#1f3a5c"],["Killer Bees","Ellusionist","#c99a2e"],["Trilogy","Ellusionist","#2b2b2b"],["Chrome","Ellusionist","#8a8f97"],["Deadwood","Ellusionist","#5a4632"],
+    ["Fontaine","Fontaine","#c0392b"],["Fontaine Fours","Fontaine","#2e5aac"],["Fontaine Neon","Fontaine","#e0398a"],["Fontaine Sports","Fontaine","#1f6f5c"],["Fontaine Camo","Fontaine","#5a6b3a"],["Fontaine Gum","Fontaine","#e07aa0"],["Fontaine Purple","Fontaine","#6c3fa0"],["Fontaine Chameleons","Fontaine","#2aa46a"],
+    ["Orbit V1","Orbit","#2e5aac"],["Orbit V2","Orbit","#b23b3b"],["Orbit V3","Orbit","#1f6f5c"],["Orbit V4","Orbit","#6c3fa0"],["Orbit V5","Orbit","#c99a2e"],["Orbit V6","Orbit","#2b3a67"],["Orbit V7","Orbit","#0e6b52"],["Orbit V8","Orbit","#a83279"],["Orbit Nebula","Orbit","#3a2a6a"],["Orbit Standards","Orbit","#2e5aac"],
+    ["Virtuoso SS15","The Virts","#e0a63a"],["Virtuoso FW17","The Virts","#2b3a67"],["Virtuoso RED","The Virts","#c0392b"],
+    ["Smoke & Mirrors","Dan & Dave","#8a8f97"],["Private Reserve","Dan & Dave","#1a1a1a"],
+    ["NOC Original","NOC","#c0392b"],["NOC Pro","NOC","#1a1a1a"],["NOC Sport","NOC","#2aa46a"],["NOC3000","NOC","#111417"],["NOC Summer","NOC","#2aa4c0"],["NOC Winter","NOC","#2b3a67"],["NOC Out","NOC","#c99a2e"],
+    ["Table Players","Kings Wild","#1f6f5c"],["Americana","Kings Wild","#2b3a67"],["Prohibition","Kings Wild","#5a4632"],["Federal 52","Kings Wild","#2b3a67"],
+    ["Cotta's Almanac","Art of Play","#7a2b1f"],["DKNG Wheels","Art of Play","#c99a2e"],["Boardwalk","Art of Play","#2aa4a0"],
+    ["Mechanic Deck","Mechanic Industries","#1a1a1a"],["Anyone Worldwide","Anyone","#111417"],["Split Spades","David Blaine","#1a1a1a"],["Split Spades Lions","David Blaine","#c0392b"],["Gemini Casino","Gemini","#c0392b"],["Jerry's Nugget","Modern Feel","#b23b3b"],["Phoenix","Card-Shark","#c0392b"],["Legends","Legends PC","#2b3a67"],["Butterfly Playing Cards","Ondrej Psenicka","#2aa4c0"],["Odyssey","Odyssey","#2b3a67"],["Copag 310","Copag","#c0392b"],["Copag 1546","Copag","#c0392b"],["Modiano","Modiano","#2e5aac"],["Fournier 2800","Fournier","#c0392b"],["Erdnase 1902","Conjuring Arts","#5a4632"],["Rounders","Madison","#111417"],["Kings & Crooks","Daniel Madison","#1a1a1a"]
+  ];
+  var decks=[];
+  try{ var dkr=localStorage.getItem(DKEY); if(dkr) decks=JSON.parse(dkr)||[]; }catch(e){}
+  function saveDecks(){ try{ localStorage.setItem(DKEY, JSON.stringify(decks)); }catch(e){} }
+  function shade(hex,p){ try{ var h=hex.replace('#',''); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; var r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16); function a(x){ return Math.max(0,Math.min(255, Math.round(x + (p/100)*255))); } return 'rgb('+a(r)+','+a(g)+','+a(b)+')'; }catch(e){ return hex; } }
+
+  var deckFilter="all";
+  var dEls={ search:byId('deckSearch'), aclist:byId('deckACList'), ac:byId('deckAC'), form:byId('deckForm'), grid:byId('deckGrid'), count:byId('deckCount') };
+  function byId(x){ return document.getElementById(x); }
+
+  function buildBox(d){
+    var c=d.color||"#b23b3b", c2=shade(c,-16), c3=shade(c,-30), c4=shade(c,14);
+    var faceStyle=function(bg){ return 'style="background:'+bg+'"'; };
+    var frontBg = d.photo ? '#000 center/cover url('+d.photo+')' : 'linear-gradient(158deg,'+c4+','+c+' 58%,'+c2+')';
+    var backBg = d.photo ? '#000 center/cover url('+d.photo+')' : 'repeating-linear-gradient(45deg,'+c2+','+c2+' 7px,'+c3+' 7px,'+c3+' 14px)';
+    var tuck = d.photo ? '' : '<div class="tuck"><div class="frame"></div><div class="suit">&spades;</div><div class="nm">'+esc(d.name)+'</div>'+(d.brand?'<div class="br">'+esc(d.brand)+'</div>':'')+'</div>';
+    return '<div class="scene"><div class="box3d">'
+      + '<div class="slab"><div class="pip">&spades;</div></div>'
+      + '<div class="face front" '+faceStyle(frontBg)+'>'+tuck+'</div>'
+      + '<div class="face back" '+faceStyle(backBg)+'></div>'
+      + '<div class="face right" '+faceStyle('linear-gradient('+c2+','+c3+')')+'></div>'
+      + '<div class="face left" '+faceStyle('linear-gradient('+c2+','+c3+')')+'></div>'
+      + '<div class="face top" '+faceStyle(c4)+'></div>'
+      + '<div class="face bottom" '+faceStyle(c3)+'></div>'
+      + '</div></div>';
+  }
+  function wireBox(box){
+    var rx=-14, ry=-26, down=false, sx=0, sy=0, prx=0, pry=0, moved=0;
+    box.addEventListener('pointerdown', function(e){ down=true; moved=0; sx=e.clientX; sy=e.clientY; prx=rx; pry=ry; try{ box.setPointerCapture(e.pointerId); }catch(_){} box.classList.add('grabbing'); e.preventDefault(); });
+    box.addEventListener('pointermove', function(e){ if(!down) return; var dx=e.clientX-sx, dy=e.clientY-sy; moved+=Math.abs(dx)+Math.abs(dy); ry=pry+dx*0.6; rx=prx-dy*0.5; rx=Math.max(-85,Math.min(85,rx)); box.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg)'; });
+    function end(){ if(!down) return; down=false; box.classList.remove('grabbing'); if(moved<9){ box.classList.toggle('open'); } }
+    box.addEventListener('pointerup', end);
+    box.addEventListener('pointercancel', function(){ down=false; box.classList.remove('grabbing'); });
+  }
+  function renderDecks(){
+    var list=decks.filter(function(d){ if(deckFilter==="own") return d.status==="own"; if(deckFilter==="wish") return d.status==="wish"; if(deckFilter==="fav") return !!d.fav; return true; });
+    var owned=decks.filter(function(d){return d.status==="own";}), wish=decks.filter(function(d){return d.status==="wish";});
+    var ownCards=owned.reduce(function(s,d){return s+(Number(d.qty)||1);},0);
+    dEls.count.textContent = decks.length ? (owned.length+" deck"+(owned.length===1?"":"s")+" owned ("+ownCards+" total) · "+wish.length+" on your wishlist") : "";
+    if(!decks.length){ dEls.grid.innerHTML='<div class="demptynote">No decks yet. Search above to add your first one.</div>'; return; }
+    if(!list.length){ dEls.grid.innerHTML='<div class="demptynote">Nothing in this filter yet.</div>'; return; }
+    var html="";
+    list.forEach(function(d){
+      var tags='<span class="dtag '+(d.status==="own"?"own":"wish")+'">'+(d.status==="own"?"Owned":"Wishlist")+'</span>';
+      if(d.status==="own" && (Number(d.qty)||1)>1) tags+='<span class="dtag">×'+(Number(d.qty)||1)+'</span>';
+      if(d.status==="own" && d.cond) tags+='<span class="dtag">'+(d.cond==="both"?"Sealed + opened":d.cond.charAt(0).toUpperCase()+d.cond.slice(1))+'</span>';
+      if(d.fav) tags+='<span class="dtag fav">★ Favorite</span>';
+      html+='<div class="dcell" data-id="'+d.id+'">'
+        + buildBox(d)
+        + '<div class="dmeta"><div class="dn">'+esc(d.name)+'</div>'+(d.brand?'<div class="dsub">'+esc(d.brand)+'</div>':'')+(d.notes?'<div class="dsub">'+esc(d.notes)+'</div>':'')+'</div>'
+        + '<div class="dtags">'+tags+'</div>'
+        + '<div class="dacts"><button data-dedit="'+d.id+'">Edit</button><button data-dfav="'+d.id+'">'+(d.fav?"Unstar":"Star")+'</button><button data-drm="'+d.id+'">Remove</button></div>'
+        + '</div>';
+    });
+    dEls.grid.innerHTML=html;
+    [].forEach.call(dEls.grid.querySelectorAll('.box3d'), wireBox);
+  }
+
+  // ---- autocomplete ----
+  var acItems=[], acHi=-1;
+  function renderAC(q){
+    q=(q||"").trim();
+    if(!q){ dEls.aclist.classList.remove('on'); dEls.aclist.innerHTML=""; return; }
+    var ql=q.toLowerCase();
+    var matches=DECKS_DB.filter(function(x){ return (x[0]+" "+x[1]).toLowerCase().indexOf(ql)>=0; }).slice(0,40);
+    var html="";
+    matches.forEach(function(x,i){ html+='<div class="acitem" data-i="'+i+'"><span class="swatch" style="background:'+x[2]+'"></span><span class="an">'+esc(x[0])+'</span><span class="ab">'+esc(x[1])+'</span></div>'; });
+    html+='<div class="acitem acadd" data-i="add"><span class="swatch" style="background:'+BOX_COLORS[0]+'"></span><span class="an">Add “'+esc(q)+'”</span><span class="ab">custom</span></div>';
+    dEls.aclist.innerHTML=html; dEls.aclist.classList.add('on'); acItems=matches; acHi=-1;
+  }
+  dEls.search.addEventListener('input', function(){ renderAC(this.value); });
+  dEls.search.addEventListener('focus', function(){ if(this.value.trim()) renderAC(this.value); });
+  dEls.search.addEventListener('keydown', function(e){
+    var rows=dEls.aclist.querySelectorAll('.acitem'); if(!rows.length) return;
+    if(e.key==="ArrowDown"){ e.preventDefault(); acHi=Math.min(rows.length-1,acHi+1); }
+    else if(e.key==="ArrowUp"){ e.preventDefault(); acHi=Math.max(0,acHi-1); }
+    else if(e.key==="Enter"){ e.preventDefault(); var r=rows[acHi<0?0:acHi]; if(r) r.click(); return; }
+    else return;
+    [].forEach.call(rows,function(x,i){ x.classList.toggle('hi',i===acHi); });
+    if(rows[acHi]) rows[acHi].scrollIntoView({block:"nearest"});
+  });
+  dEls.aclist.addEventListener('click', function(e){
+    var it=e.target.closest('.acitem'); if(!it) return;
+    var idx=it.getAttribute('data-i');
+    if(idx==="add"){ openDeckForm({name:dEls.search.value.trim(), brand:"", color:BOX_COLORS[0]}); }
+    else { var x=acItems[Number(idx)]; if(x) openDeckForm({name:x[0], brand:x[1], color:x[2]}); }
+    dEls.aclist.classList.remove('on'); dEls.search.value="";
+  });
+  document.addEventListener('click', function(e){ if(!dEls.ac.contains(e.target)) dEls.aclist.classList.remove('on'); });
+
+  // ---- deck form ----
+  var dfState={ id:null, color:BOX_COLORS[0], status:"own", fav:false, photo:"" };
+  function renderSwatches(){
+    var cols=BOX_COLORS.slice(); if(dfState.color && cols.indexOf(dfState.color)<0) cols.unshift(dfState.color);
+    byId('dfColors').innerHTML=cols.map(function(c){ return '<span class="sw'+(c===dfState.color?" on":"")+'" data-c="'+c+'" style="background:'+c+'"></span>'; }).join("");
+  }
+  byId('dfColors').addEventListener('click', function(e){ var s=e.target.closest('.sw'); if(!s) return; dfState.color=s.getAttribute('data-c'); renderSwatches(); });
+  byId('dfStatus').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; dfState.status=b.getAttribute('data-st'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); });
+  byId('dfStar').addEventListener('click', function(){ dfState.fav=!dfState.fav; this.classList.toggle('on',dfState.fav); });
+  byId('dfPhotoBtn').addEventListener('click', function(){ byId('dfPhoto').click(); });
+  byId('dfPhoto').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ dfState.photo=url; byId('dfPhotoName').textContent="Photo added"; byId('dfPhotoClear').hidden=false; }); });
+  byId('dfPhotoClear').addEventListener('click', function(){ dfState.photo=""; byId('dfPhoto').value=""; byId('dfPhotoName').textContent="Stylized box until you add one"; this.hidden=true; });
+  function downscale(file, cb){
+    var rd=new FileReader(); rd.onload=function(){ var img=new Image(); img.onload=function(){ var mx=620, w=img.width, h=img.height; if(w>mx||h>mx){ if(w>h){ h=Math.round(h*mx/w); w=mx; } else { w=Math.round(w*mx/h); h=mx; } } var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); try{ cb(cv.toDataURL('image/jpeg',0.82)); }catch(e){ cb(String(rd.result)); } }; img.onerror=function(){ cb(String(rd.result)); }; img.src=String(rd.result); }; rd.readAsDataURL(file);
+  }
+  function openDeckForm(pre, editId){
+    var d = editId ? decks.filter(function(x){return x.id===editId;})[0] : null;
+    dfState.id = editId||null;
+    dfState.color = (d&&d.color) || (pre&&pre.color) || BOX_COLORS[0];
+    dfState.status = (d&&d.status) || "own";
+    dfState.fav = d? !!d.fav : false;
+    dfState.photo = (d&&d.photo) || "";
+    byId('dfTitle').textContent = editId ? "Edit deck" : "Add a deck";
+    byId('dfName').value = (d&&d.name) || (pre&&pre.name) || "";
+    byId('dfBrand').value = (d&&d.brand) || (pre&&pre.brand) || "";
+    byId('dfQty').value = (d&&d.qty) || 1;
+    byId('dfCond').value = (d&&d.cond) || "sealed";
+    byId('dfNotes').value = (d&&d.notes) || "";
+    byId('dfStar').classList.toggle('on', dfState.fav);
+    byId('dfPhotoName').textContent = dfState.photo ? "Photo added" : "Stylized box until you add one";
+    byId('dfPhotoClear').hidden = !dfState.photo;
+    byId('dfPhoto').value="";
+    [].forEach.call(byId('dfStatus').children, function(b){ b.classList.toggle('on', b.getAttribute('data-st')===dfState.status); });
+    byId('dfSave').textContent = editId ? "Save changes" : "Add to collection";
+    renderSwatches();
+    dEls.form.hidden=false;
+    dEls.form.scrollIntoView({behavior:"smooth", block:"center"});
+  }
+  function closeForm(){ dEls.form.hidden=true; }
+  byId('dfClose').addEventListener('click', closeForm);
+  byId('dfCancel').addEventListener('click', closeForm);
+  byId('dfSave').addEventListener('click', function(){
+    var name=byId('dfName').value.trim(); if(!name){ byId('dfName').focus(); return; }
+    var rec={ name:name, brand:byId('dfBrand').value.trim(), status:dfState.status, qty:Math.max(0,Number(byId('dfQty').value)||1), cond:byId('dfCond').value, color:dfState.color, photo:dfState.photo, notes:byId('dfNotes').value.trim(), fav:dfState.fav };
+    if(dfState.id){ for(var i=0;i<decks.length;i++){ if(decks[i].id===dfState.id){ rec.id=dfState.id; rec.at=decks[i].at; decks[i]=rec; break; } } }
+    else { rec.id="d-"+Date.now()+"-"+Math.random().toString(36).slice(2,6); rec.at=Date.now(); decks.unshift(rec); }
+    saveDecks(); renderDecks(); closeForm();
+  });
+  dEls.grid.addEventListener('click', function(e){
+    var ed=e.target.closest('[data-dedit]'); if(ed){ openDeckForm(null, ed.getAttribute('data-dedit')); return; }
+    var fv=e.target.closest('[data-dfav]'); if(fv){ var id=fv.getAttribute('data-dfav'); decks.forEach(function(d){ if(d.id===id) d.fav=!d.fav; }); saveDecks(); renderDecks(); return; }
+    var rm=e.target.closest('[data-drm]'); if(rm){ var id2=rm.getAttribute('data-drm'); if(rm.getAttribute('data-armed')){ decks=decks.filter(function(d){return d.id!==id2;}); saveDecks(); renderDecks(); } else { rm.setAttribute('data-armed','1'); rm.textContent="Sure?"; setTimeout(function(){ if(rm){ rm.removeAttribute('data-armed'); rm.textContent="Remove"; } },2500); } return; }
+  });
+  byId('deckFilters').addEventListener('click', function(e){ var b=e.target.closest('.dchip'); if(!b) return; deckFilter=b.getAttribute('data-f'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); renderDecks(); });
+
+  renderMoves(); updateProgress(); refreshAddUI(); renderDecks(); initCaps();
 })();
 </script>
 </body>
