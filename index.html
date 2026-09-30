@@ -17,24 +17,24 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
 :root{
-  --bg:#faf4ec; --surface:#fffdf8; --surface2:#f4ebdd; --ink:#41362e; --muted:#8c7b6b; --faint:#b4a595;
-  --line:#ecdfce; --accent:#c77a86; --accent-ink:#a1545f; --accent-soft:#f8e8e9;
-  --l1:#7ba36a; --l2:#4fa98a; --l3:#5b8fd0; --l4:#a481cf; --l5:#d47285;
-  --shadow:0 10px 30px rgba(120,90,60,.12); --radius:20px;
-  --disp:'Fraunces',Georgia,serif; --body:'Nunito',system-ui,sans-serif;
+  --bg:#f4f1f2; --surface:#ffffff; --surface2:#efe9eb; --ink:#1a1416; --muted:#6d636a; --faint:#a89ea5;
+  --line:#e4dcdf; --accent:#c40f2e; --accent-ink:#9c0c24; --accent-soft:#fbe5e9;
+  --l1:#c0392b; --l2:#d9772f; --l3:#3f74c4; --l4:#8a56c9; --l5:#a11029;
+  --shadow:0 12px 34px rgba(30,10,15,.16); --radius:18px;
+  --disp:'Playfair Display',Georgia,serif; --body:'Inter',system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#211a17; --surface:#2b2320; --surface2:#382e28; --ink:#f3e8dd; --muted:#b8a597; --faint:#8b7869;
-  --line:#41352e; --accent:#e29aa1; --accent-ink:#f1c6ca; --accent-soft:#3a2a2b;
-  --l1:#8fc07f; --l2:#5cc0a0; --l3:#7ba6e6; --l4:#bd9ae8; --l5:#ec8b9a;
-  --shadow:0 12px 34px rgba(0,0,0,.5); color-scheme:dark;
+  --bg:#0f0d0f; --surface:#181418; --surface2:#211c21; --ink:#f4ecef; --muted:#a99ea4; --faint:#6f646b;
+  --line:#2d262d; --accent:#e0243f; --accent-ink:#ff8794; --accent-soft:#2a1418;
+  --l1:#e05161; --l2:#e28a44; --l3:#5f8fe4; --l4:#a878e6; --l5:#d13a52;
+  --shadow:0 16px 40px rgba(0,0,0,.6); color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#211a17; --surface:#2b2320; --surface2:#382e28; --ink:#f3e8dd; --muted:#b8a597; --faint:#8b7869;
-  --line:#41352e; --accent:#e29aa1; --accent-ink:#f1c6ca; --accent-soft:#3a2a2b;
-  --l1:#8fc07f; --l2:#5cc0a0; --l3:#7ba6e6; --l4:#bd9ae8; --l5:#ec8b9a;
-  --shadow:0 12px 34px rgba(0,0,0,.5); color-scheme:dark;
+  --bg:#0f0d0f; --surface:#181418; --surface2:#211c21; --ink:#f4ecef; --muted:#a99ea4; --faint:#6f646b;
+  --line:#2d262d; --accent:#e0243f; --accent-ink:#ff8794; --accent-soft:#2a1418;
+  --l1:#e05161; --l2:#e28a44; --l3:#5f8fe4; --l4:#a878e6; --l5:#d13a52;
+  --shadow:0 16px 40px rgba(0,0,0,.6); color-scheme:dark;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{height:100%; margin:0}
@@ -66,12 +66,12 @@ p{margin:0 0 10px}
 ul.tick{list-style:none; padding:0; margin:8px 0}
 ul.tick li{padding-left:23px; position:relative; margin:7px 0}
 ul.tick li::before{content:"\2660"; position:absolute; left:0; color:var(--accent)}
-.hero{border-radius:26px; padding:34px 24px; color:#fff; position:relative; overflow:hidden; background:linear-gradient(150deg,#6d4f57,#a56d6f 50%,#d8ab8b)}
-.hero .suit{position:absolute; right:-6px; top:-20px; font-size:160px; opacity:.1}
-.hero .bloom{position:absolute; left:-30px; bottom:-40px; font-size:150px; opacity:.12; transform:rotate(-12deg)}
-.hero h1{font-size:clamp(28px,7.5vw,44px); line-height:1.05; letter-spacing:-.5px; margin:0 0 10px}
-.hero .em{color:#ffdccb}
-.hero p{color:#f4e6dc; max-width:52ch; font-size:15.5px}
+.hero{border-radius:22px; padding:36px 24px; color:#fff; position:relative; overflow:hidden; background:radial-gradient(130% 150% at 15% 0%,#4a0f1c 0%,#26090f 48%,#0c0709 100%); box-shadow:inset 0 0 0 1px rgba(224,36,63,.3), var(--shadow)}
+.hero .suit{position:absolute; right:-6px; top:-20px; font-size:170px; opacity:.14; color:#fff}
+.hero .bloom{position:absolute; left:-24px; bottom:-44px; font-size:150px; opacity:.16; color:#e0243f; transform:rotate(-8deg)}
+.hero h1{font-family:var(--disp); font-weight:800; font-size:clamp(29px,7.8vw,46px); line-height:1.04; letter-spacing:-.3px; margin:0 0 10px}
+.hero .em{color:#ff6b7b}
+.hero p{color:#e7d7da; max-width:52ch; font-size:15.5px}
 .hero .cta{margin-top:16px; display:flex; gap:9px; flex-wrap:wrap}
 .btn{font-family:var(--disp); font-weight:600; font-size:14px; border:none; border-radius:11px; padding:11px 17px; cursor:pointer; background:var(--accent); color:#fff; user-select:none}
 .btn:active{transform:scale(.96)}
@@ -206,7 +206,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .acitem .ab{font-size:12px; color:var(--faint); margin-left:auto}
 .acitem .swatch{width:16px; height:22px; border-radius:3px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
 .acadd{color:var(--accent-ink); font-weight:700}
-.deckgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:20px 16px; margin-top:20px}
+.deckgrid{display:flex; flex-direction:column; gap:10px; margin-top:18px}
+.note:empty{display:none}
 .dcell{display:flex; flex-direction:column; align-items:center; gap:8px}
 .scene{perspective:1000px; width:100%; height:210px; display:grid; place-items:center; touch-action:pan-y}
 .box3d{--w:104px; --h:150px; --d:30px; width:var(--w); height:var(--h); position:relative; transform-style:preserve-3d; transform:rotateX(-14deg) rotateY(-26deg); cursor:grab; touch-action:none}
@@ -266,16 +267,14 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .brandgrp>summary .bdot{width:10px; height:14px; border-radius:3px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
 .brandgrp>summary .bc{margin-left:auto; font-size:12px; font-weight:600; color:var(--muted)}
 .brandgrp>summary .caret{color:var(--muted); transition:transform .18s; margin-left:4px}
-.branddir>summary{gap:11px}
-.branddir>summary .bdot{width:12px; height:16px; border-radius:3px}
-.branddir>summary .bnm{font-size:15px; flex:0 0 auto}
-.branddir>summary .bbar{flex:1; height:8px; border-radius:100px; background:var(--surface2); overflow:hidden; margin:0 4px; min-width:26px}
-.branddir>summary .bbar>i{display:block; height:100%; border-radius:100px; background:linear-gradient(90deg,var(--accent),var(--l4))}
-.branddir>summary .bct{font-family:var(--disp); font-weight:700; font-size:13px; color:var(--accent-ink); background:var(--accent-soft); border-radius:100px; padding:2px 9px; min-width:34px; text-align:center}
-.brandhdr{display:flex; align-items:baseline; gap:10px; margin:2px 0 4px}
-.brandhdr b{font-family:var(--disp); font-size:20px}
+.branddir>summary{gap:12px; padding:14px 16px}
+.branddir>summary .bdot{width:11px; height:15px; border-radius:3px; box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.branddir>summary .bnm{flex:1; min-width:0; font-family:var(--disp); font-weight:700; font-size:16px; letter-spacing:-.2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.branddir>summary .bct{flex:0 0 auto; font-weight:700; font-size:12.5px; color:var(--accent-ink); background:var(--accent-soft); border:1px solid rgba(224,36,63,.35); border-radius:100px; padding:3px 11px; white-space:nowrap}
+.brandhdr{display:flex; align-items:baseline; gap:10px; margin:2px 0 8px; flex-wrap:wrap}
+.brandhdr b{font-family:var(--disp); font-weight:800; font-size:22px}
 .brandhdr span{font-size:13px; color:var(--muted)}
-.owned-check{color:var(--accent-ink); font-weight:700; margin-left:6px; font-size:12px}
+.owned-check{color:var(--accent-ink); font-weight:700; margin-left:6px; font-size:11.5px}
 .brandgrp[open]>summary .caret{transform:rotate(180deg)}
 .drow{display:flex; align-items:center; gap:11px; padding:11px 15px; border-top:1px solid var(--line); cursor:pointer; user-select:none}
 .drow:hover,.drow:active{background:var(--surface2)}
@@ -376,7 +375,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block">
           <div class="hero">
             <div class="suit">&spades;</div>
-            <div class="bloom">&#10047;</div>
+            <div class="bloom">&diams;</div>
             <h1>Learn cardistry,<br>one move at a <span class="em">time.</span></h1>
             <p>Read up on the art, check off 74+ named moves, watch tutorials, and even upload your own clip for an AI to summarize and rate.</p>
             <div class="cta">
@@ -405,15 +404,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.1</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.2</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0 – v6.1</span> Scan your decks <span class="new">Latest</span><span class="cnt">15 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0 – v6.2</span> Scan your decks <span class="new">Latest</span><span class="cnt">16 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.1</span> All brands page <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">New <b>All brands</b> view on the Decks tab — a directory of every one of the <b>143 brands</b> in the database with its deck count (and a little bar), sorted A–Z. Tap a brand to see all its decks, and tap any deck to add it to your collection. Switch between <b>My decks</b> and <b>All brands</b> with the toggle up top.</div>
+                  <summary><span class="ver">v6.2</span> Playing-card makeover <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">A modern <b>red &amp; black</b> theme built around the suits — aces, hearts, diamonds and clubs. Card-red accents on near-black, with a suit motif in the hero. Opens in the dark look by default (toggle to light anytime). Also tidied the <b>All brands</b> list into clean full-width rows: brand name on the left, deck count on the right.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.1</span> All brands page <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">New <b>All brands</b> view on the Decks tab — a directory of every one of the <b>143 brands</b> in the database with its deck count, sorted A–Z. Tap a brand to see all its decks, and tap any deck to add it. Toggle between <b>My decks</b> and <b>All brands</b> up top.</div>
                 </details>
                 <details>
                   <summary><span class="ver">v6.0.13</span> More MISSING decks <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
@@ -1624,7 +1627,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   document.getElementById('tabbar').addEventListener('click', function(e){ var b=e.target.closest('.tab'); if(b) go(b.getAttribute('data-tab')); });
   [].forEach.call(document.querySelectorAll('[data-go]'),function(btn){ btn.addEventListener('click',function(){ go(btn.getAttribute('data-go')); }); });
   var tb=document.getElementById('themeBtn');
-  try{ var st=localStorage.getItem('cardistry_theme'); if(st) document.documentElement.setAttribute('data-theme',st); }catch(e){}
+  try{ var st=localStorage.getItem('cardistry_theme'); document.documentElement.setAttribute('data-theme', st || 'dark'); }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
   tb.addEventListener('click', function(){
     var cur=document.documentElement.getAttribute('data-theme');
     var dark=cur? cur==='dark' : window.matchMedia('(prefers-color-scheme:dark)').matches;
@@ -1774,9 +1777,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     dEls.count.textContent="";
     var html='<div class="brandhdr"><b>'+brands.length+' brands</b><span>'+DECKS_DB.length+' decks in the database — tap a brand to see its decks</span></div>';
     brands.forEach(function(b){
-      var idxs=groups[b], n=idxs.length, w=Math.max(6,Math.round(n/maxC*100));
+      var idxs=groups[b], n=idxs.length;
       var col=DECKS_DB[idxs[0]][2]||'#888';
-      html+='<details class="brandgrp branddir"><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bbar"><i style="width:'+w+'%"></i></span><span class="bct">'+n+'</span><span class="caret">&#9662;</span></summary>';
+      html+='<details class="brandgrp branddir"><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bct">'+n+' deck'+(n===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
       idxs.sort(function(p,q){ var m=DECKS_DB[p][0].toLowerCase(), r=DECKS_DB[q][0].toLowerCase(); return m<r?-1:m>r?1:0; }).forEach(function(i){
         var e=DECKS_DB[i]; var have=ownedSet[e[0].toLowerCase()];
         html+='<div class="drow" data-bi="'+i+'"><span class="chip" style="background:'+(e[2]||'#888')+'"></span><span class="dnm">'+esc(e[0])+(have?'<span class="owned-check">✓ in collection</span>':'')+'</span><span class="go">'+(have?'':'+')+'</span></div>';
