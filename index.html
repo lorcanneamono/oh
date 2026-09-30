@@ -405,14 +405,22 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 30, 2026</b> &middot; you're on <b>v6.3</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 30, 2026</b> &middot; you're on <b>v6.3.2</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0 – v6.3</span> Scan your decks <span class="new">Latest</span><span class="cnt">17 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0 – v6.3.2</span> Scan your decks <span class="new">Latest</span><span class="cnt">19 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.3</span> More decks added <span class="new">New</span><span class="date">Sep 30, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.3.2</span> Search all brands <span class="new">New</span><span class="date">Sep 30, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Added a search box to the <b>All brands</b> view. Type a brand (Bicycle, Fontaine…) to jump to it, or a deck name (Kyanite, Carrots…) to find which brand it lives under — matching brands open automatically and show just the decks that match.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.3.1</span> Full Fontaine catalog <span class="date">Sep 30, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Replaced the Fontaine lineup with your complete hand-checked list — <b>128 Fontaine decks</b>, from Red/Blue/Black to the Nickelodeon gilded editions, the Carrots and Foils lines, Fever Dream (CGI, Decoder, Hacker) and more. No duplicates.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.3</span> More decks added <span class="date">Sep 30, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">Pulled full catalogs from <b>SoCal Playing Cards</b>, <b>Alternate Worlds</b>, and <b>Fontaine</b> (its site blocks crawlers, so its decks came in via retailers). The database now holds <b>~2,890 decks across 326 brands</b>, all de-duplicated. New/expanded brands include Thirdway Industries, Room One, David Jon, Doc's, King Star, Black Roses, Jocu, Anyone Worldwide, ARK, Aquarius, EuroGraphics and many more.</div>
                 </details>
                 <details>
@@ -791,6 +799,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
           </div>
 
           <div class="segb" id="deckModeSeg" style="margin-top:14px"><button class="on" data-v="mine">My decks</button><button data-v="brands">All brands</button></div>
+          <div id="brandSearchWrap" style="display:none; margin-top:12px"><input id="brandSearch" class="search" type="text" placeholder="Search brands or decks — Bicycle, Fontaine, Kyanite…" autocomplete="off"></div>
           <div class="deckbar" id="deckFilters">
             <button class="dchip on" data-f="all">All</button>
             <button class="dchip" data-f="own">Owned</button>
@@ -1697,6 +1706,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       var color=x[2]; if(!color){ var h=0; for(var i=0;i<lk.length;i++) h=(h*31+lk.charCodeAt(i))>>>0; color=BOX_COLORS[h%BOX_COLORS.length]; }
       out.push([name, brand, color]);
     });
+    var FONT_USER=[["Royal Fever Fontaine"],["Royal Fever White Fontaine"],["Black Glitch Fontaine"],["Flipper Fontaine"],["Peach Fontaine"],["Birthday Fontaine"],["Birdie Fontaine"],["Beef Fontaine"],["Vacation Fontaine"],["Botanical Fontaine"],["Blue Glitch Fontaine"],["Casino Fontaine"],["Black Undercover Fontaine"],["Red Undercover Fontaine"],["Sky Blue Fontaine"],["Thumbprint Fontaine"],["Missing Fontaine"],["Emerald Foil Fontaine"],["Insect Fontaine"],["Crazy Rat Fontaine"],["Bad Boy Fontaine"],["USA Fontaine"],["SPF Fontaine"],["Fellow Fontaine"],["Teddy Fontaine"],["Alien Fontaine"],["Skank Fontaine"],["Crazy Kid Fontaine"],["Play Fontaine"],["Trickster Fontaine"],["Heat Vision Fontaine"],["Guest Fontaine"],["World Fontaine"],["Knight Fontaine"],["Ruby Foil Fontaine"],["Kyanite Foil Fontaine"],["Amethyst Foil Fontaine"],["Gold Foil Fontaine"],["Sesame Street Gilded Fontaine"],["Sesame Street Fontaine"],["Spiral Holo Gilded Fontaine"],["Ren And Stimpy Gilded Fontaine"],["Rugrats Gilded Fontaine"],["Wild Thornberrys Fontaine"],["Aaah Real Monsters Fontaine"],["Ren and Stimpy Fontaine"],["Rugrats Fontaine"],["Hey Arnold! Fontaine"],["Catdog Fontaine"],["Rocko’s Modern Life Fontaine"],["Cell Fontaine"],["Gradient Fontaine"],["Pimlico Fontaine"],["Red Grid Fontaine"],["Green Grid Fontaine"],["Blue Grid Fontaine"],["Grid Fontaine"],["Terrazzo Fontaine"],["Coral Fontaine"],["Splatter Fontaine"],["Opps All Jokers Fontaine"],["Clay Fontaine"],["Discovery Fontaine"],["Rainbow Holo Fontaine"],["Black Holo Fontaine"],["Red FTP Fontaine"],["FTP Fontaine"],["Spongebob Holo Fontaine"],["Spongebob Fontaine"],["Denim Fontaine"],["Illusion pack Fontaine"],["Army of Darkness Fontaine"],["Spiral Holo Fontaine"],["1993 Fontaine"],["CGI Fontaine"],["Decoder Fontaine"],["Hacker Fontaine"],["Rave Fontaine"],["Characters Fontaine"],["Matt Mccormick Fontaine"],["Seafoam Fontaine"],["Safety Fontaine"],["Kogan Fontaine Special"],["Holo Fontaine"],["Good Co v2 Fontaine"],["Kogan Fontaine"],["Cotton Candy Fontaine"],["Slime Fontaine"],["Pink Panther Fontaine"],["Broccoli Fontaine"],["Cranberry Fontaine"],["Gray Fontaine"],["Pumpkin Fontaine"],["Halloween Fontaine"],["Dabsmyla Fontaine"],["Horchata Fontaine"],["Rasberry Fontaine"],["Babylon Fontaine"],["Aquaberry Fontaine"],["Pineapple Fontaine"],["Brain Dead v2 Fontaine"],["Brain Dead Fontaine"],["Ripndip v2 Fontaine"],["Good Co Fontaine"],["Guess Sticker Fontaine"],["Guess Cycling Fontaine"],["Parrot Fontaine"],["Floral Fontaine"],["Polka Fontaine"],["Window Fontaine"],["Glitch Fontaine"],["500 Fontaine"],["Chocolate Fontaine"],["Gilded Carrots v3 Fontaine"],["Carrots v3 Fontaine"],["Carrots v2 Fontaine"],["Watermelon Fontaine"],["Ripndip Fontaine"],["Wine Fontaine"],["Guess Fontaine"],["CTM Fontaine"],["Carrots Fontaine"],["Sleight Fontaine"],["Green Fontaine"],["Pink Fontaine"],["Black Fontaine"],["Blue Fontaine"],["Red Fontaine"]];
+    out = out.filter(function(x){ return x[1]!=="Fontaine"; });
+    (function(){ var ex={}; out.forEach(function(x){ ex[x[0].toLowerCase()]=1; });
+      FONT_USER.forEach(function(p){ var nm=clean(p[0]); var lk=nm.toLowerCase(); if(!nm||ex[lk]) return; ex[lk]=1;
+        var h=0; for(var i=0;i<lk.length;i++) h=(h*31+lk.charCodeAt(i))>>>0;
+        out.push([nm,"Fontaine",BOX_COLORS[h%BOX_COLORS.length]]); }); })();
     DECKS_DB=out;
   })();
   var decks=[];
@@ -1749,7 +1764,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     if(d.fav) t+='<span class="dtag fav">★</span>';
     return t;
   }
-  var deckView="mine", dbView=[];
+  var deckView="mine", dbView=[], brandQuery="";
   function renderDecks(){ if(deckView==="brands") renderAllBrands(); else renderMine(); }
   function renderMine(){
     var list=decks.filter(function(d){ if(deckFilter==="own") return d.status==="own"; if(deckFilter==="wish") return d.status==="wish"; if(deckFilter==="fav") return !!d.fav; return true; });
@@ -1778,21 +1793,36 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     var groups={};
     DECKS_DB.forEach(function(x,i){ var b=(x[1]||"").trim()||"Other"; (groups[b]=groups[b]||[]).push(i); });
     var brands=Object.keys(groups).sort(function(a,b){ var x=a.toLowerCase(),y=b.toLowerCase(); return x<y?-1:x>y?1:0; });
-    var maxC=0; brands.forEach(function(b){ if(groups[b].length>maxC) maxC=groups[b].length; });
     var ownedSet={}; decks.forEach(function(d){ ownedSet[(d.name||"").toLowerCase()]=1; });
     dEls.count.textContent="";
-    var html='<div class="brandhdr"><b>'+brands.length+' brands</b><span>'+DECKS_DB.length+' decks in the database — tap a brand to see its decks</span></div>';
+    var q=(brandQuery||"").trim().toLowerCase();
+    var total=DECKS_DB.length, shownBrands=0;
+    var body="";
     brands.forEach(function(b){
-      var idxs=groups[b], n=idxs.length;
+      var idxs=groups[b];
+      var brandMatch = q ? (b.toLowerCase().indexOf(q)>=0) : true;
+      // decide which deck rows to show
+      var rowIdxs;
+      if(!q){ rowIdxs=idxs; }
+      else if(brandMatch){ rowIdxs=idxs; }
+      else { rowIdxs=idxs.filter(function(i){ return DECKS_DB[i][0].toLowerCase().indexOf(q)>=0; }); }
+      if(q && !brandMatch && rowIdxs.length===0) return; // brand hidden
+      shownBrands++;
+      var n=idxs.length;
       var col=DECKS_DB[idxs[0]][2]||'#888';
-      html+='<details class="brandgrp branddir"><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bct">'+n+' deck'+(n===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
-      idxs.sort(function(p,q){ var m=DECKS_DB[p][0].toLowerCase(), r=DECKS_DB[q][0].toLowerCase(); return m<r?-1:m>r?1:0; }).forEach(function(i){
+      var openAttr = q ? ' open' : '';
+      body+='<details class="brandgrp branddir"'+openAttr+'><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bct">'+n+' deck'+(n===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
+      rowIdxs.sort(function(p,r){ var m=DECKS_DB[p][0].toLowerCase(), s=DECKS_DB[r][0].toLowerCase(); return m<s?-1:m>s?1:0; }).forEach(function(i){
         var e=DECKS_DB[i]; var have=ownedSet[e[0].toLowerCase()];
-        html+='<div class="drow" data-bi="'+i+'"><span class="chip" style="background:'+(e[2]||'#888')+'"></span><span class="dnm">'+esc(e[0])+(have?'<span class="owned-check">✓ in collection</span>':'')+'</span><span class="go">'+(have?'':'+')+'</span></div>';
+        body+='<div class="drow" data-bi="'+i+'"><span class="chip" style="background:'+(e[2]||'#888')+'"></span><span class="dnm">'+esc(e[0])+(have?'<span class="owned-check">✓ in collection</span>':'')+'</span><span class="go">'+(have?'':'+')+'</span></div>';
       });
-      html+='</details>';
+      body+='</details>';
     });
-    dEls.grid.innerHTML=html;
+    var hdr;
+    if(q){ hdr='<div class="brandhdr"><b>'+shownBrands+' of '+brands.length+' brands</b><span>matching "'+esc(brandQuery.trim())+'"</span></div>'; }
+    else { hdr='<div class="brandhdr"><b>'+brands.length+' brands</b><span>'+total+' decks in the database — tap a brand to see its decks</span></div>'; }
+    if(q && shownBrands===0){ body='<div class="note" style="margin-top:14px">No brands or decks match "'+esc(brandQuery.trim())+'".</div>'; }
+    dEls.grid.innerHTML=hdr+body;
   }
 
   // ---- 3D viewer modal ----
@@ -1940,7 +1970,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     openDeckModal(row.getAttribute('data-open'));
   });
   byId('deckFilters').addEventListener('click', function(e){ var b=e.target.closest('.dchip'); if(!b) return; deckFilter=b.getAttribute('data-f'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); renderDecks(); });
-  byId('deckModeSeg').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; deckView=b.getAttribute('data-v'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); byId('deckFilters').style.display = deckView==="mine" ? "" : "none"; renderDecks(); });
+  byId('deckModeSeg').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; deckView=b.getAttribute('data-v'); [].forEach.call(this.children,function(c){c.classList.toggle('on',c===b);}); byId('deckFilters').style.display = deckView==="mine" ? "" : "none"; byId('brandSearchWrap').style.display = deckView==="brands" ? "" : "none"; renderDecks(); });
+  byId('brandSearch').addEventListener('input', function(){ brandQuery=this.value; renderAllBrands(); });
 
   // ================= Deck scanner =================
   var CAP_TARGETS=[
