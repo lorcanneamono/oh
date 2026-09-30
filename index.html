@@ -270,7 +270,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .drow{display:flex; align-items:center; gap:11px; padding:11px 15px; border-top:1px solid var(--line); cursor:pointer; user-select:none}
 .drow:hover,.drow:active{background:var(--surface2)}
 .drow .chip{width:22px; height:30px; border-radius:4px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.18); background-size:cover; background-position:center}
-.drow .dnm{font-weight:600; font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.drow .dnm{font-weight:600; font-size:14px; min-width:0; flex:1; white-space:normal; overflow-wrap:anywhere; line-height:1.3}
 .drow .rtags{margin-left:auto; display:flex; gap:5px; align-items:center; flex-wrap:wrap; justify-content:flex-end}
 .drow .go{color:var(--faint); flex:0 0 auto; font-size:18px; line-height:1}
 /* deck 3D viewer modal */
@@ -395,15 +395,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.11</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Sep 29, 2026</b> &middot; you're on <b>v6.0.12</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">12 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0</span> Scan your decks <span class="new">Latest</span><span class="cnt">13 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.0.11</span> 1,000+ decks <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
-                  <div class="body">Crawled deeper into the catalog and added <b>~600 more decks</b> — Riffle Shuffle, Ellusionist, Bicycle, Expert PCC, Bocopo, Thirdway, Vanda, Legends and many more. The loader now <b>auto-merges brand names</b> (all Bicycle decks land under one Bicycle group, etc.) and <b>removes every duplicate</b>. The list now has 1,000+ decks.</div>
+                  <summary><span class="ver">v6.0.12</span> Cleaner deck list <span class="new">New</span><span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Deck rows now show the <b>full name</b> (no more cut-off titles), and the <b>"Owned" tag is gone</b> from the list — use the filter chips (All / Owned / Wishlist) to sort by that instead.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.0.11</span> 1,000+ decks <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Crawled deeper into the catalog and added <b>~600 more decks</b> — Riffle Shuffle, Ellusionist, Bicycle, Expert PCC, Bocopo, Thirdway, Vanda, Legends and many more. The loader now <b>auto-merges brand names</b> and <b>removes every duplicate</b>. The list now has 1,000+ decks.</div>
                 </details>
                 <details>
                   <summary><span class="ver">v6.0.10</span> Hundreds of decks added <span class="date">Sep 29, 2026</span><span class="caret">&#9662;</span></summary>
@@ -1711,7 +1715,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   }
   function condLabel(c){ return c==="both"?"Sealed + opened":(c? c.charAt(0).toUpperCase()+c.slice(1):""); }
   function rowTags(d){
-    var t='<span class="dtag '+(d.status==="own"?"own":"wish")+'">'+(d.status==="own"?"Owned":"Wish")+'</span>';
+    var t='';
     if(d.status==="own" && (Number(d.qty)||1)>1) t+='<span class="dtag">×'+(Number(d.qty)||1)+'</span>';
     if(d.fav) t+='<span class="dtag fav">★</span>';
     return t;
