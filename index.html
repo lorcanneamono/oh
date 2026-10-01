@@ -335,6 +335,19 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 /* player modal */
 .modal{position:fixed; inset:0; z-index:200; background:rgba(6,10,18,.72); display:none; align-items:center; justify-content:center; padding:18px}
 .modal.on{display:flex}
+#authGate{position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; overflow:auto; background:radial-gradient(130% 150% at 15% 0%,#4a0f1c 0%,#26090f 48%,#0c0709 100%)}
+#authGate.hide{display:none}
+.gatecard{width:100%; max-width:380px; background:var(--surface); border-radius:20px; padding:26px 22px; box-shadow:var(--shadow); border:1px solid var(--line)}
+.gatelogo{width:54px; height:54px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:30px; color:#fff; background:linear-gradient(145deg,var(--accent),var(--accent-ink)); margin:0 auto 12px}
+.gateh1{font-family:var(--disp); font-weight:800; font-size:26px; text-align:center; margin:0}
+.gatesub{color:var(--muted); text-align:center; font-size:14px; margin:6px 0 18px}
+.gatebtns{display:flex; flex-direction:column; gap:10px}
+.gatesep{display:flex; align-items:center; gap:10px; color:var(--faint); font-size:12px; margin:16px 0}
+.gatesep:before,.gatesep:after{content:""; flex:1; height:1px; background:var(--line)}
+.gatestatus{min-height:18px; font-size:13px; color:var(--accent); text-align:center; margin-top:10px}
+.gatetoggle{display:flex; flex-direction:column; gap:6px; align-items:center; font-size:13px; color:var(--muted); margin-top:12px; text-align:center}
+.gatetoggle a{color:var(--accent); font-weight:700; text-decoration:none}
+.gatenote{font-size:12px; color:var(--faint); text-align:center; margin-top:14px; line-height:1.5}
 .authbtn{display:flex; align-items:center; justify-content:center; gap:10px; width:100%; font-weight:700}
 .authbtn.dark{background:#111; color:#fff; border-color:#111}
 .gmark{display:inline-flex; align-items:center; justify-content:center; width:20px; height:20px; border-radius:50%; background:#fff; color:#4285F4; font-weight:800; font-family:Arial,sans-serif; font-size:14px; border:1px solid #e2e2e2}
@@ -374,6 +387,30 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     <button class="tgl" id="themeBtn" title="Toggle theme">&#9680;</button>
   </div>
 
+  <div id="authGate">
+    <div class="gatecard">
+      <div class="gatelogo">&spades;</div>
+      <h1 class="gateh1">Cardistry Trainer</h1>
+      <p class="gatesub" id="gateSub">Sign in or create an account to get started.</p>
+      <div class="gatebtns">
+        <button class="btn authbtn" id="gGoogle"><span class="gmark">G</span> Continue with Google</button>
+        <button class="btn authbtn dark" id="gApple"><span class="amark">&#63743;</span> Continue with Apple</button>
+      </div>
+      <div class="gatesep"><span>or</span></div>
+      <form id="gForm" autocomplete="on">
+        <input id="gEmail" class="search" type="email" placeholder="Email" autocomplete="email" required>
+        <input id="gPass" class="search" type="password" placeholder="Password" autocomplete="current-password" required style="margin-top:8px">
+        <button class="btn" id="gSubmit" type="submit" style="width:100%; margin-top:10px">Sign in</button>
+      </form>
+      <div class="gatestatus" id="gStatus"></div>
+      <div class="gatetoggle">
+        <a href="#" id="gForgot">Forgot password?</a>
+        <span><span id="gToggleTxt">New here?</span> <a href="#" id="gToggle">Create an account</a></span>
+      </div>
+      <div class="gatenote" id="gLocalNote" style="display:none"></div>
+    </div>
+  </div>
+
   <div class="screen" id="screen">
     <!-- LEARN -->
     <div class="panel active" id="tab-learn">
@@ -410,14 +447,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Sep 30, 2026</b> &middot; you're on <b>v6.4</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.4.1</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0 – v6.4</span> Scan your decks <span class="new">Latest</span><span class="cnt">20 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0 – v6.4.1</span> Scan your decks <span class="new">Latest</span><span class="cnt">21 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.4</span> Accounts &amp; cloud sync <span class="new">New</span><span class="date">Sep 30, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.4.1</span> Sign-in required <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">The app now opens to a <b>login screen</b> — visitors sign in with Google or Apple, or create an account with an email and password, before they can use it. Returning users stay signed in. (On this Claude preview the gate is skipped, since sign-in only runs on the live site.)</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.4</span> Accounts &amp; cloud sync <span class="date">Sep 30, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">Added <b>Sign in with Google or Apple</b> (account button, top-right). When you're signed in, your collection and progress save to the cloud and follow you to any device. This turns on once the app is deployed to your own host with your Firebase keys — on this preview it stays in local-only mode. See the setup guide that came with your files.</div>
                 </details>
                 <details>
@@ -2213,17 +2254,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     }
     function updateAcctBtn(){ acctBtn.textContent = fbUser ? initials(fbUser.displayName,fbUser.email) : '☻'; acctBtn.style.fontSize = fbUser?'12px':''; acctBtn.style.fontWeight = fbUser?'800':''; }
 
-    function signIn(which){
-      if(firebaseBlocked || !window.firebase || !firebase.auth){ setStatus('Sign-in works on your deployed site, not the Claude preview.',true); return; }
+    function signIn(which, statusFn){
+      var st = statusFn || setStatus;
+      if(firebaseBlocked || !window.firebase || !firebase.auth){ st('Sign-in works on your deployed site, not the Claude preview.',true); return; }
       var prov = which==='apple' ? new firebase.auth.OAuthProvider('apple.com') : new firebase.auth.GoogleAuthProvider();
-      setStatus('Opening '+(which==='apple'?'Apple':'Google')+'…');
+      st('Opening '+(which==='apple'?'Apple':'Google')+'…');
       firebase.auth().signInWithPopup(prov).catch(function(e){
         var m=(e&&e.message)||'Sign-in failed.';
         if(e&&e.code==='auth/operation-not-allowed') m=(which==='apple'?'Apple':'Google')+" sign-in isn't enabled in your Firebase project yet.";
         else if(e&&e.code==='auth/popup-blocked') m='Popup blocked — allow popups and try again.';
         else if(e&&e.code==='auth/popup-closed-by-user') m='';
         else if(e&&e.code==='auth/unauthorized-domain') m="This site's domain isn't in Firebase Auth → Settings → Authorized domains yet.";
-        setStatus(m,true);
+        st(m,true);
       });
     }
 
@@ -2259,8 +2301,47 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     saveDone=function(){ saveDoneLocal(); scheduleCloudSave(); };
     if(typeof saveLocalTuts==='function'){ var _slt=saveLocalTuts; saveLocalTuts=function(){ _slt(); scheduleCloudSave(); }; }
 
+    // ---- login gate ----
+    var gate=byId('authGate'), gateMode='signin';
+    function hideGate(){ if(gate) gate.classList.add('hide'); }
+    function showGate(){ if(gate) gate.classList.remove('hide'); }
+    function gStat(m,bad){ var el=byId('gStatus'); if(el){ el.textContent=m||''; el.style.color=bad?'var(--accent)':'var(--muted)'; } }
+    function setGateMode(m){
+      gateMode=m;
+      byId('gSubmit').textContent = m==='create'?'Create account':'Sign in';
+      byId('gToggleTxt').textContent = m==='create'?'Have an account?':'New here?';
+      byId('gToggle').textContent = m==='create'?'Sign in':'Create an account';
+      byId('gPass').setAttribute('autocomplete', m==='create'?'new-password':'current-password');
+      gStat('');
+    }
+    function emailAuth(){
+      if(firebaseBlocked||!window.firebase||!firebase.auth){ gStat('Sign-in works on the live site, not this preview.',true); return; }
+      var em=(byId('gEmail').value||'').trim(), pw=byId('gPass').value||'';
+      if(!em||!pw){ gStat('Enter your email and password.',true); return; }
+      gStat(gateMode==='create'?'Creating your account…':'Signing in…');
+      var auth=firebase.auth();
+      var pr = gateMode==='create' ? auth.createUserWithEmailAndPassword(em,pw) : auth.signInWithEmailAndPassword(em,pw);
+      pr.catch(function(e){
+        var c=(e&&e.code)||'', m=(e&&e.message)||'Something went wrong.';
+        if(c==='auth/invalid-email') m="That email doesn't look right.";
+        else if(c==='auth/missing-password') m='Enter a password.';
+        else if(c==='auth/weak-password') m='Password must be at least 6 characters.';
+        else if(c==='auth/email-already-in-use') m='That email already has an account — try signing in.';
+        else if(c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found') m='Wrong email or password.';
+        else if(c==='auth/operation-not-allowed') m="Email sign-in isn't enabled in Firebase yet.";
+        else if(c==='auth/too-many-requests') m='Too many tries — wait a moment and retry.';
+        gStat(m,true);
+      });
+    }
+    function forgot(){
+      if(firebaseBlocked||!window.firebase||!firebase.auth){ gStat('Available on the live site.',true); return; }
+      var em=(byId('gEmail').value||'').trim();
+      if(!em){ gStat('Enter your email above first, then tap “Forgot password”.',true); return; }
+      firebase.auth().sendPasswordResetEmail(em).then(function(){ gStat('Password reset email sent — check your inbox.'); }).catch(function(){ gStat("Couldn't send a reset email for that address.",true); });
+    }
+
     function boot(){
-      if(!hasConfig()) return; // local-only (default build / Claude preview)
+      if(!hasConfig()){ hideGate(); return; } // no keys = open/local mode
       acctBtn.style.display='';
       loadScript('https://www.gstatic.com/firebasejs/'+FB_VER+'/firebase-app-compat.js')
         .then(function(){ return loadScript('https://www.gstatic.com/firebasejs/'+FB_VER+'/firebase-auth-compat.js'); })
@@ -2271,11 +2352,11 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
           try{ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
           firebase.auth().onAuthStateChanged(function(u){
             fbUser=u||null;
-            if(fbUser) pullThenPush(); else cloudReady=false;
+            if(fbUser){ hideGate(); pullThenPush(); } else { showGate(); cloudReady=false; }
             renderAuth(); updateAcctBtn();
           });
         })
-        .catch(function(){ firebaseBlocked=true; updateAcctBtn(); });
+        .catch(function(){ firebaseBlocked=true; updateAcctBtn(); hideGate(); });
     }
 
     acctBtn.addEventListener('click', openAuth);
@@ -2284,6 +2365,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     byId('gBtn').addEventListener('click', function(){ signIn('google'); });
     byId('aBtn').addEventListener('click', function(){ signIn('apple'); });
     byId('signOutBtn').addEventListener('click', function(){ try{ if(window.firebase&&firebase.auth) firebase.auth().signOut(); }catch(e){} closeAuth(); });
+    // gate wiring
+    byId('gGoogle').addEventListener('click', function(){ signIn('google', gStat); });
+    byId('gApple').addEventListener('click', function(){ signIn('apple', gStat); });
+    byId('gForm').addEventListener('submit', function(e){ e.preventDefault(); emailAuth(); });
+    byId('gToggle').addEventListener('click', function(e){ e.preventDefault(); setGateMode(gateMode==='create'?'signin':'create'); });
+    byId('gForgot').addEventListener('click', function(e){ e.preventDefault(); forgot(); });
 
     boot();
   })();
