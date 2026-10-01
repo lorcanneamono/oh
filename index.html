@@ -458,14 +458,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.5.4</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.5.5</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0 – v6.5.4</span> Scan your decks <span class="new">Latest</span><span class="cnt">31 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0 – v6.5.5</span> Scan your decks <span class="new">Latest</span><span class="cnt">32 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.5.4</span> Brand logos <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.5.5</span> Live photo sync <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Fixed photo syncing across devices — add a photo to a deck on one device (say your computer) and it now shows up on your others (your phone) <b>automatically</b>, without re-signing in. Your whole collection and progress now update live while you're signed in.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.5.4</span> Brand logos <span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">Brands can now show a <b>logo</b> next to their name in the brand list, so the catalog is easier to scan at a glance.</div>
                 </details>
                 <details>
@@ -2547,12 +2551,24 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     }
 
     function docRef(){ return fbdb.collection('users').doc(fbUser.uid); }
+    // merge one cloud deck onto the local one — cloud wins for fields, but a photo is
+    // never lost: if cloud lacks an image the local copy has, the local image is kept
+    function mergeDeck(local, cloud){
+      var out=Object.assign({}, local, cloud);
+      var ls=(local&&local.shots)||{}, cs=(cloud&&cloud.shots)||{}, sh={};
+      SHOT_KEYS.forEach(function(k){ sh[k]= cs[k] || ls[k] || ''; });
+      out.shots=sh;
+      out.photo = cloud.photo || local.photo || sh.front || '';
+      out.photoBack = cloud.photoBack || local.photoBack || sh.back || '';
+      return out;
+    }
+    // upsert cloud decks into local: update existing (so new photos arrive, old ones kept) and add new ones
     function mergeFromCloud(data){
       try{
-        var cd=(data&&data.decks)||[]; var byKey={};
-        decks.forEach(function(d){ byKey[(d.id||d.name||'').toLowerCase()]=1; });
-        cd.forEach(function(d){ var k=(d.id||d.name||'').toLowerCase(); if(k && !byKey[k]){ byKey[k]=1; decks.push(d); } });
-        var cdone=(data&&data.done)||{}; for(var k in cdone){ if(cdone[k]) done[k]=cdone[k]; }
+        var cd=(data&&data.decks)||[]; var pos={};
+        decks.forEach(function(d,i){ pos[(d.id||d.name||'').toLowerCase()]=i; });
+        cd.forEach(function(d){ var k=(d.id||d.name||'').toLowerCase(); if(!k) return; if(pos[k]!==undefined){ decks[pos[k]]=mergeDeck(decks[pos[k]], d); } else { decks.push(d); pos[k]=decks.length-1; } });
+        var cdone=(data&&data.done)||{}; for(var kk in cdone){ if(cdone[kk]) done[kk]=cdone[kk]; }
         if(typeof userTuts!=='undefined'){ var ct=(data&&data.tuts)||[]; var tk={}; userTuts.forEach(function(t){ tk[(t.id||t.title||'').toLowerCase()]=1; }); ct.forEach(function(t){ var k2=(t.id||t.title||'').toLowerCase(); if(k2&&!tk[k2]){ tk[k2]=1; userTuts.push(t); } }); }
       }catch(e){}
     }
@@ -2570,19 +2586,26 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         if(d.shots.back) d.photoBack=d.shots.back;
       });
     }
-    function pullThenPush(){
-      cloudReady=false; renderAuth();
-      var getMain=docRef().get();
-      var getPhotos=photoCol().get().catch(function(){ return {forEach:function(){}}; });
-      Promise.all([getMain,getPhotos]).then(function(res){
-        var snap=res[0], psnap=res[1], pmap={};
-        psnap.forEach(function(doc){ var dd=doc.data(); if(dd&&dd.d){ pmap[doc.id]=dd.d; photoSig[doc.id]=sigOf(dd.d); } });
+    // apply one snapshot of the user's cloud doc (fetches photos, rehydrates, upserts locally)
+    function applyCloud(snap){
+      return photoCol().get().catch(function(){ return {forEach:function(){}}; }).then(function(psnap){
+        var pmap={}; psnap.forEach(function(doc){ var dd=doc.data(); if(dd&&dd.d){ pmap[doc.id]=dd.d; photoSig[doc.id]=sigOf(dd.d); } });
         if(snap.exists){ var data=snap.data(); rehydrateDecks(data.decks, pmap); mergeFromCloud(data); }
         saveDecksLocal(); saveDoneLocal(); if(typeof saveLocalTuts==='function') saveLocalTuts();
         try{ renderDecks(); renderMoves(); updateProgress(); if(typeof afterTutsChanged==='function') afterTutsChanged(); }catch(e){}
-        cloudReady=true; renderAuth(); pushCloud();
-      }).catch(function(e){ cloudReady=false; var sy=byId('authSync'); if(sy) sy.textContent='Cloud error: '+((e&&e.message)||e); });
+      });
     }
+    var cloudUnsub=null;
+    function subscribeCloud(){
+      if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; }
+      cloudReady=false; renderAuth();
+      var first=true;
+      cloudUnsub = docRef().onSnapshot(function(snap){
+        if(snap.metadata && snap.metadata.hasPendingWrites){ return; } // ignore our own just-written echo
+        applyCloud(snap).then(function(){ if(first){ first=false; cloudReady=true; renderAuth(); pushCloud(); } else { cloudReady=true; renderAuth(); } });
+      }, function(e){ cloudReady=false; var sy=byId('authSync'); if(sy) sy.textContent='Cloud error: '+((e&&e.message)||e); });
+    }
+    function unsubscribeCloud(){ if(cloudUnsub){ try{ cloudUnsub(); }catch(e){} cloudUnsub=null; } }
 
     // store each base64 photo as its own small Firestore doc (free plan, no Storage needed),
     // and return a "light" copy of decks where photos are swapped for tiny 'ref:KEY' links
@@ -2789,7 +2812,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
           try{ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
           firebase.auth().onAuthStateChanged(function(u){
             fbUser=u||null;
-            if(fbUser){ hideGate(); pullThenPush(); } else { cloudReady=false; if(isGuest()) hideGate(); else showGate(); }
+            if(fbUser){ hideGate(); subscribeCloud(); } else { unsubscribeCloud(); cloudReady=false; if(isGuest()) hideGate(); else showGate(); }
             renderAuth(); updateAcctBtn();
           });
         })
