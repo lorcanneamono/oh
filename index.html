@@ -273,6 +273,10 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .branddir>summary .bct{flex:0 0 auto; font-weight:700; font-size:12.5px; color:var(--accent-ink); background:var(--accent-soft); border:1px solid rgba(224,36,63,.35); border-radius:100px; padding:3px 11px; white-space:nowrap}
 .brandhdr{display:flex; align-items:baseline; gap:10px; margin:2px 0 8px; flex-wrap:wrap}
 .brandhdr b{font-family:var(--disp); font-weight:800; font-size:22px}
+.obadge{font-size:11px; margin-left:6px; opacity:.85}
+.pmark{font-size:10px; margin-right:5px; flex:0 0 auto}
+.pmark.ok{color:#3bbf6b}
+.pmark.no{color:var(--faint)}
 .brandhdr span{font-size:13px; color:var(--muted)}
 .owned-check{color:var(--accent-ink); font-weight:700; margin-left:6px; font-size:11.5px}
 .brandgrp[open]>summary .caret{transform:rotate(180deg)}
@@ -449,14 +453,30 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.4.3</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.5</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0 – v6.4.3</span> Scan your decks <span class="new">Latest</span><span class="cnt">23 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0 – v6.5</span> Scan your decks <span class="new">Latest</span><span class="cnt">27 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.4.3</span> Photos sync to your account <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.5</span> Decks with photos <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Some decks now come with <b>photos already included</b> — when you add one of those, its box art shows up automatically, so you don't have to photograph it yourself. You can still add or swap in your own photos anytime. A small 📷 marks decks in your collection that came with photos.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.4.6</span> AI turned off <span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Turned off the AI features for now. <b>Add a tutorial</b> stays fully working — paste a link or upload a clip, fill in the details, and save it to your catalog.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.4.5</span> Free AI on your own site <span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">The <b>AI tutorial auto-fill</b> and <b>AI coach feedback</b> can now run on your own live site — free — using a Google Gemini key (free tier, no credit card). Paste the key in once and both features work for everyone who visits. See the setup guide.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.4.4</span> Add-a-tutorial fix <span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Fixed <b>Add a tutorial</b>: the form and its <b>Add to catalog</b> button now appear as soon as you pick a video or paste a link, so you can always save a tutorial by hand — even where the AI auto-fill isn't available. (The AI analyze &amp; AI coach feedback still run only on the Claude-hosted version.)</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.4.3</span> Photos sync to your account <span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">The deck photos you add now <b>save to your account</b> and follow you to any device. Each photo is stored as its own small record in the database, so it all syncs reliably on the <b>free plan — no credit card needed</b>. Works automatically once you're signed in.</div>
                 </details>
                 <details>
@@ -851,6 +871,13 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
                 <span id="dfScanStatus" style="font-size:12px; color:var(--muted)">Capture the box sides in 3D</span>
               </div>
             </div>
+            <div class="fld" id="dfAdminRow" style="margin-top:12px; display:none; border-top:1px solid var(--line); padding-top:12px">
+              <label style="color:var(--accent)">Admin · official photos (shared with everyone)</label>
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+                <button class="btn" id="dfAdminPhotoBtn" type="button">🌐 Publish official photos</button>
+                <span id="dfAdminStatus" style="font-size:12px; color:var(--muted)"></span>
+              </div>
+            </div>
             <div class="fld" style="margin-top:10px"><label>Notes</label><textarea id="dfNotes" rows="2" placeholder="Where you got it, why you love it…"></textarea></div>
             <div style="display:flex; gap:8px; margin-top:14px">
               <button class="btn" id="dfSave">Add to collection</button>
@@ -1024,6 +1051,22 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         </div>
       </div>
       <div id="authSync" class="note" style="margin-bottom:12px"></div>
+
+      <div id="adminArea" style="display:none; margin:0 0 12px; border-top:1px solid var(--line); padding-top:12px">
+        <div id="adminLockedRow">
+          <label style="font-size:12px; color:var(--accent); font-weight:700">Admin access</label>
+          <div style="display:flex; gap:8px; margin-top:6px">
+            <input id="adminPass" class="search" type="password" placeholder="Admin password" autocomplete="off" style="flex:1">
+            <button class="btn" id="adminUnlockBtn" type="button" style="width:auto; white-space:nowrap">Unlock</button>
+          </div>
+          <div id="adminUnlockMsg" class="note" style="margin-top:6px"></div>
+        </div>
+        <div id="adminUnlockedRow" style="display:none">
+          <div class="note" style="color:#3bbf6b; margin-bottom:8px">✓ Admin unlocked — you can publish official deck photos.</div>
+          <button class="btn line" id="adminLockBtn" type="button" style="width:100%">Lock admin</button>
+        </div>
+      </div>
+
       <button class="btn line" id="signOutBtn" style="width:100%">Sign out</button>
     </div>
   </div>
@@ -1205,17 +1248,71 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function loadLocalTuts(){ try{ var r=localStorage.getItem(TKEY); if(r) userTuts=JSON.parse(r)||[]; }catch(e){ userTuts=[]; } }
   function saveLocalTuts(){ try{ localStorage.setItem(TKEY, JSON.stringify(userTuts.map(function(t){var c=Object.assign({},t); delete c.videoUrl; return c;}))); }catch(e){} }
 
+  // ---------- AI features (turned OFF for now) ----------
+  var AI_ENABLED = false;                // set true to re-enable the AI tutorial auto-fill & coach
+  // ---------- Free AI via Google Gemini (used only when AI_ENABLED and a key is set) ----------
+  var GEMINI_KEY = "";                   // paste a FREE Google AI Studio (Gemini) key to turn on AI on your own site
+  var GEMINI_MODEL = "gemini-2.0-flash";
+  function blobToB64(blob){ return new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ var s=r.result||""; var i=s.indexOf(','); res(i>=0?s.slice(i+1):s); }; r.onerror=rej; r.readAsDataURL(blob); }); }
+  function makeGeminiSampler(key, model){
+    var EP='https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent?key='+encodeURIComponent(key);
+    async function call(prompt, opts, asJson){
+      opts=opts||{}; var parts=[{text:prompt}]; var imgs=opts.images||[];
+      for(var i=0;i<imgs.length;i++){ var b=imgs[i]; var data=await blobToB64(b); parts.push({inline_data:{mime_type:(b.type||'image/jpeg'), data:data}}); }
+      var body={ contents:[{parts:parts}] };
+      if(asJson) body.generationConfig={ responseMimeType:'application/json' };
+      var resp=await fetch(EP,{method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body), signal:opts.signal});
+      if(!resp.ok){ var em=''; try{ em=(await resp.json()).error.message; }catch(e){} throw new Error('AI '+resp.status+(em?': '+em:'')); }
+      var j=await resp.json(); var txt='';
+      try{ txt=j.candidates[0].content.parts.map(function(p){return p.text||'';}).join(''); }catch(e){ txt=''; }
+      if(opts.onText && txt) opts.onText({text:txt});
+      return txt;
+    }
+    var fn=function(prompt,opts){ return call(prompt,opts,false).then(function(t){ return {text:t}; }); };
+    fn.json=function(prompt,opts){ return call(prompt,opts,true).then(function(t){ t=(t||'').trim().replace(/^```json\s*/i,'').replace(/```\s*$/,'').trim(); try{ return JSON.parse(t); }catch(e){ var m=t.match(/\{[\s\S]*\}/); if(m){ try{ return JSON.parse(m[0]); }catch(e2){} } throw new Error('Bad AI response'); } }); };
+    fn.limits=function(){ return Promise.resolve({images:16}); };
+    return fn;
+  }
+
+  // ---------- Admin: shared official deck photos ----------
+  var ADMIN_EMAILS = ["lorcannneamon@gmail.com"];   // only this signed-in account can publish
+  var ADMIN_PASS_SALT = "cardistry-admin-salt-7731x";
+  var ADMIN_PASS_HASH = "f261c53df28920b3c1a1b94fa56f5d45c84fd3b6de0c47e31d764429deab2aab";         // SHA-256 hex of (SALT + password) — set from your chosen password
+  var adminUnlocked = false;
+  try{ adminUnlocked = sessionStorage.getItem('cardistry_admin_ok')==='1'; }catch(e){}
+  var CloudAPI = null;              // set by the cloud layer once Firebase is ready
+  var officialIndex = {};           // deckKey -> {front:1, back:1, ...} for decks that HAVE official photos
+  var officialPhotos = {};          // deckKey -> {front:base64, ...} cache
+  function deckKeyOf(name){ return (name||'').toLowerCase(); }
+  function isAdminAccount(){ return !!(CloudAPI && CloudAPI.isAdmin && CloudAPI.isAdmin()); }
+  function isAdmin(){ return isAdminAccount() && adminUnlocked && !!ADMIN_PASS_HASH; }
+  async function tryAdminUnlock(pw){
+    if(!ADMIN_PASS_HASH || !pw) return false;
+    try{
+      var enc=new TextEncoder().encode(ADMIN_PASS_SALT+pw);
+      var buf=await crypto.subtle.digest('SHA-256', enc);
+      var hex=Array.prototype.map.call(new Uint8Array(buf),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
+      if(hex===ADMIN_PASS_HASH){ adminUnlocked=true; try{ sessionStorage.setItem('cardistry_admin_ok','1'); }catch(e){} return true; }
+    }catch(e){}
+    return false;
+  }
+  function adminLock(){ adminUnlocked=false; try{ sessionStorage.removeItem('cardistry_admin_ok'); }catch(e){} }
+  function hasOfficial(key){ return !!officialIndex[key]; }
+
   // ---------- Claude capabilities (only on claude.ai-hosted version) ----------
   var sampleFn=null, imagesLimit=null, DB=null, ASSETS=null, DL=null, usingDB=false;
   function initCaps(){
     var c = window.claude;
-    if(!(c && typeof c.use==="function")){ loadLocalTuts(); afterTutsChanged(); return; }
+    if(!(c && typeof c.use==="function")){
+      if(AI_ENABLED && GEMINI_KEY){ sampleFn=makeGeminiSampler(GEMINI_KEY, GEMINI_MODEL); imagesLimit={maxCount:6}; }
+      loadLocalTuts(); afterTutsChanged(); refreshAddUI(); return;
+    }
     c.use("downloads").then(function(d){ DL=d; }).catch(function(){});
-    c.use("sample").then(function(s){
+    if(AI_ENABLED){ c.use("sample").then(function(s){
       sampleFn=s;
       if(s){ s.limits().then(function(l){ imagesLimit = l && l.images ? l.images : null; refreshAddUI(); }).catch(function(){ refreshAddUI(); }); }
       refreshAddUI();
-    }).catch(function(){ refreshAddUI(); });
+    }).catch(function(){ refreshAddUI(); }); }
     c.use("assets").then(function(a){ ASSETS=a; }).catch(function(){});
     c.use("db").then(function(d){
       if(d){ DB=d; usingDB=true; subscribeTuts(); }
@@ -1374,6 +1471,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   })();
   function refreshAddUI(){
     document.getElementById('aiBadge').hidden = !sampleFn;
+    if(!AI_ENABLED){
+      var cs=document.querySelector('#modeSeg [data-mode="coach"]'); if(cs) cs.style.display='none';
+      var ms=document.getElementById('modeSeg'); if(ms) ms.style.display='none';
+      document.getElementById('aiBadge').hidden=true; addMode='add';
+      var lede=document.getElementById('addLede'); if(lede) lede.textContent="Paste a YouTube/tutorial link (or upload a clip), add a few details, and it's saved to your catalog.";
+    }
     document.getElementById('addFoot').textContent = usingDB
       ? "Your tutorials are saved to this app's shared database."
       : "Your tutorials are saved in this browser.";
@@ -1384,7 +1487,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   drop.addEventListener('dragover', function(e){ e.preventDefault(); });
   drop.addEventListener('drop', function(e){ e.preventDefault(); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
   fileInput.addEventListener('change', function(e){ if(e.target.files[0]) handleFile(e.target.files[0]); });
-  linkIn.addEventListener('input', function(){ chosenUrl=linkIn.value.trim(); updateAiRow(); });
+  linkIn.addEventListener('input', function(){ chosenUrl=linkIn.value.trim(); if(addMode!=='coach'){ form.hidden = !(chosenFile || chosenUrl); } updateAiRow(); });
   function clearFile(){ chosenFile=null; chosenThumb=""; prev.hidden=true; prev.removeAttribute('src'); form.hidden=true; aiRow.hidden=true; drop.querySelector('b').textContent="Tap to choose a video"; }
   function handleFile(f){
     if(!/^video\//.test(f.type)){ addStatus.textContent="That doesn't look like a video file."; return; }
@@ -1494,11 +1597,12 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   var addMode='add';
   var modeSeg=document.getElementById('modeSeg'), coachOut=document.getElementById('coachOut'), coachNote=document.getElementById('coachNote');
   function applyMode(){
-    var coach = addMode==='coach';
+    var coach = AI_ENABLED && addMode==='coach';
     document.getElementById('addTitle').textContent = coach ? "Coach my move" : "Add a tutorial";
     document.getElementById('linkField').hidden = coach;
     if(coach){ document.getElementById('form').hidden = true; coachOut.hidden = !coachOut.textContent; }
-    else { coachOut.hidden = true; if(chosenFile) document.getElementById('form').hidden=false; }
+    else { coachOut.hidden = true; document.getElementById('form').hidden = !(chosenFile || (linkIn.value||'').trim()); }
+    if(!AI_ENABLED){ document.getElementById('addLede').textContent="Paste a YouTube/tutorial link (or upload a clip), add a few details, and it's saved to your catalog."; coachNote.hidden=true; updateAiRow(); return; }
     document.getElementById('addLede').textContent = coach
       ? (sampleFn ? "Upload a clip of YOUR attempt — the AI watches the whole thing, then gives you specific tips on what to fix." : "Upload a clip of your attempt for AI feedback. (AI coaching runs on the Claude-hosted version.)")
       : (sampleFn ? "Upload a cardistry clip (up to 30 min) and an AI will watch it, write a summary, pick a category, rate the skill level, and even give the left- and right-handed setup — then it's added to your catalog." : "Upload a clip (or paste a link) and fill in a few details — it's added to your catalog and sorted automatically. (The AI auto-rating runs on the Claude-hosted version.)");
@@ -1853,7 +1957,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     if(d.fav) t+='<span class="dtag fav">★</span>';
     return t;
   }
-  var deckView="mine", dbView=[], brandQuery="";
+  var deckView="mine", dbView=[], brandQuery="", brandNeedsOnly=false;
   function renderDecks(){ if(deckView==="brands") renderAllBrands(); else renderMine(); }
   function renderMine(){
     var list=decks.filter(function(d){ if(deckFilter==="own") return d.status==="own"; if(deckFilter==="wish") return d.status==="wish"; if(deckFilter==="fav") return !!d.fav; return true; });
@@ -1871,13 +1975,15 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       html+='<details class="brandgrp" open><summary><span class="bdot" style="background:'+(arr[0].color||'#888')+'"></span>'+esc(b)+'<span class="bc">'+arr.length+' deck'+(arr.length===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
       arr.forEach(function(d){
         var cf=deckShots(d).front; var chip = cf ? 'class="chip" style="background-image:url('+cf+')"' : 'class="chip" style="background:'+(d.color||'#888')+'"';
-        html+='<div class="drow" data-open="'+d.id+'"><span '+chip+'></span><span class="dnm">'+esc(d.name)+'</span><span class="rtags">'+rowTags(d)+'</span><span class="go">&rsaquo;</span></div>';
+        var off = hasOfficial(deckKeyOf(d.name)) ? '<span class="obadge" title="Comes with photos">📷</span>' : '';
+        html+='<div class="drow" data-open="'+d.id+'"><span '+chip+'></span><span class="dnm">'+esc(d.name)+off+'</span><span class="rtags">'+rowTags(d)+'</span><span class="go">&rsaquo;</span></div>';
       });
       html+='</details>';
     });
     dEls.grid.innerHTML=html;
   }
   function renderAllBrands(){
+    var admin=isAdmin();
     // build brand -> [indices], counts
     var groups={};
     DECKS_DB.forEach(function(x,i){ var b=(x[1]||"").trim()||"Other"; (groups[b]=groups[b]||[]).push(i); });
@@ -1885,33 +1991,45 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     var ownedSet={}; decks.forEach(function(d){ ownedSet[(d.name||"").toLowerCase()]=1; });
     dEls.count.textContent="";
     var q=(brandQuery||"").trim().toLowerCase();
-    var total=DECKS_DB.length, shownBrands=0;
+    var total=DECKS_DB.length, shownBrands=0, withPhotos=0;
+    DECKS_DB.forEach(function(x){ if(hasOfficial(deckKeyOf(x[0]))) withPhotos++; });
+    var needsFilter = admin && brandNeedsOnly;
     var body="";
     brands.forEach(function(b){
       var idxs=groups[b];
       var brandMatch = q ? (b.toLowerCase().indexOf(q)>=0) : true;
-      // decide which deck rows to show
       var rowIdxs;
       if(!q){ rowIdxs=idxs; }
       else if(brandMatch){ rowIdxs=idxs; }
       else { rowIdxs=idxs.filter(function(i){ return DECKS_DB[i][0].toLowerCase().indexOf(q)>=0; }); }
-      if(q && !brandMatch && rowIdxs.length===0) return; // brand hidden
+      // per-brand "needs photos" count
+      var needCount=0; idxs.forEach(function(i){ if(!hasOfficial(deckKeyOf(DECKS_DB[i][0]))) needCount++; });
+      if(needsFilter){ rowIdxs = rowIdxs.filter(function(i){ return !hasOfficial(deckKeyOf(DECKS_DB[i][0])); }); if(rowIdxs.length===0) return; }
+      if(q && !brandMatch && rowIdxs.length===0) return;
       shownBrands++;
       var n=idxs.length;
       var col=DECKS_DB[idxs[0]][2]||'#888';
-      var openAttr = q ? ' open' : '';
-      body+='<details class="brandgrp branddir"'+openAttr+'><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bct">'+n+' deck'+(n===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
+      var openAttr = (q||needsFilter) ? ' open' : '';
+      var pill = admin ? (n+' · '+needCount+' need photo'+(needCount===1?'':'s')) : (n+' deck'+(n===1?'':'s'));
+      body+='<details class="brandgrp branddir"'+openAttr+'><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bct">'+pill+'</span><span class="caret">&#9662;</span></summary>';
       rowIdxs.sort(function(p,r){ var m=DECKS_DB[p][0].toLowerCase(), s=DECKS_DB[r][0].toLowerCase(); return m<s?-1:m>s?1:0; }).forEach(function(i){
         var e=DECKS_DB[i]; var have=ownedSet[e[0].toLowerCase()];
-        body+='<div class="drow" data-bi="'+i+'"><span class="chip" style="background:'+(e[2]||'#888')+'"></span><span class="dnm">'+esc(e[0])+(have?'<span class="owned-check">✓ in collection</span>':'')+'</span><span class="go">'+(have?'':'+')+'</span></div>';
+        var photo = hasOfficial(deckKeyOf(e[0]));
+        var adminMark = admin ? (photo? '<span class="pmark ok">●</span>' : '<span class="pmark no">○</span>') : '';
+        body+='<div class="drow" data-bi="'+i+'">'+adminMark+'<span class="chip" style="background:'+(e[2]||'#888')+'"></span><span class="dnm">'+esc(e[0])+(have?'<span class="owned-check">✓ in collection</span>':'')+'</span><span class="go">'+(have?'':'+')+'</span></div>';
       });
       body+='</details>';
     });
     var hdr;
     if(q){ hdr='<div class="brandhdr"><b>'+shownBrands+' of '+brands.length+' brands</b><span>matching "'+esc(brandQuery.trim())+'"</span></div>'; }
+    else if(admin){ var need=total-withPhotos; hdr='<div class="brandhdr"><b>'+brands.length+' brands</b><span>'+withPhotos+' of '+total+' decks have official photos — <b style="color:var(--accent)">'+need+' still need them</b></span></div>'
+      +'<div class="deckbar" style="margin:2px 0 8px"><button class="dchip'+(brandNeedsOnly?'':' on')+'" id="bfAll">All decks</button><button class="dchip'+(brandNeedsOnly?' on':'')+'" id="bfNeed">Needs photos</button></div>'; }
     else { hdr='<div class="brandhdr"><b>'+brands.length+' brands</b><span>'+total+' decks in the database — tap a brand to see its decks</span></div>'; }
-    if(q && shownBrands===0){ body='<div class="note" style="margin-top:14px">No brands or decks match "'+esc(brandQuery.trim())+'".</div>'; }
+    if(shownBrands===0){ body='<div class="note" style="margin-top:14px">'+(q?'No brands or decks match "'+esc(brandQuery.trim())+'".':'Nothing to show.')+'</div>'; }
     dEls.grid.innerHTML=hdr+body;
+    var a=byId('bfAll'), nb=byId('bfNeed');
+    if(a) a.addEventListener('click', function(){ brandNeedsOnly=false; renderAllBrands(); });
+    if(nb) nb.addEventListener('click', function(){ brandNeedsOnly=true; renderAllBrands(); });
   }
 
   // ---- 3D viewer modal ----
@@ -2009,6 +2127,30 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   function downscale(file, cb){
     var rd=new FileReader(); rd.onload=function(){ var img=new Image(); img.onload=function(){ var mx=620, w=img.width, h=img.height; if(w>mx||h>mx){ if(w>h){ h=Math.round(h*mx/w); w=mx; } else { w=Math.round(w*mx/h); h=mx; } } var cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); try{ cb(cv.toDataURL('image/jpeg',0.82)); }catch(e){ cb(String(rd.result)); } }; img.onerror=function(){ cb(String(rd.result)); }; img.src=String(rd.result); }; rd.readAsDataURL(file);
   }
+  function updateAdminPhotoBtn(){
+    var row=byId('dfAdminRow'); if(!row) return;
+    if(isAdmin()){
+      row.style.display='';
+      var key=deckKeyOf(dfState.name);
+      byId('dfAdminStatus').textContent = hasOfficial(key) ? 'This deck already has official photos — publishing replaces them.' : 'No official photos yet. Add a front/back photo above, then publish.';
+    } else { row.style.display='none'; }
+  }
+  function adminPublishPhotos(){
+    if(!isAdmin() || !CloudAPI){ return; }
+    var key=deckKeyOf(dfState.name);
+    var shots=Object.assign({}, dfState.shots||{});
+    if(dfState.photo && !shots.front) shots.front=dfState.photo;
+    if(dfState.photoBack && !shots.back) shots.back=dfState.photoBack;
+    var n=0; for(var k in shots){ if(shots[k]) n++; }
+    if(!n){ byId('dfAdminStatus').textContent='Add at least a front photo first (Front photo button above).'; return; }
+    byId('dfAdminStatus').textContent='Publishing…';
+    CloudAPI.publishOfficialPhotos(key, shots).then(function(){
+      byId('dfAdminStatus').textContent='✓ Published — everyone now sees these for '+(dfState.name||'this deck')+'.';
+      dfState._official=true; try{ renderDecks(); }catch(e){}
+    }).catch(function(e){ byId('dfAdminStatus').textContent='Could not publish: '+((e&&e.message)||e)+' (are you signed in as admin?)'; });
+  }
+  (function(){ var b=byId('dfAdminPhotoBtn'); if(b) b.addEventListener('click', adminPublishPhotos); })();
+
   function openDeckForm(pre, editId){
     var d = editId ? decks.filter(function(x){return x.id===editId;})[0] : null;
     dfState.id = editId||null;
@@ -2020,6 +2162,23 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     dfState.photo = (d&&d.photo) || "";
     dfState.photoBack = (d&&d.photoBack) || "";
     dfState.shots = Object.assign({}, (d&&d.shots) || {});
+    dfState._official=false;
+    // pull in shared official photos if the user hasn't added their own
+    (function(){
+      var key=deckKeyOf(dfState.name);
+      if(CloudAPI && CloudAPI.getOfficialPhotos && hasOfficial(key) && !scanCount(dfState.shots) && !dfState.photo && !dfState.photoBack){
+        CloudAPI.getOfficialPhotos(key).then(function(sh){
+          if(sh && Object.keys(sh).length){
+            dfState.shots=Object.assign({}, sh);
+            if(sh.front) dfState.photo=sh.front;
+            if(sh.back) dfState.photoBack=sh.back;
+            dfState._official=true;
+            try{ photoLabel(); updateScanStatus(); }catch(e){}
+          }
+        });
+      }
+      updateAdminPhotoBtn();
+    })();
     byId('dfTitle').textContent = editId ? "Edit deck" : "Add a deck";
     byId('dfDeckName').textContent = dfState.name;
     byId('dfDeckBrand').textContent = dfState.brand || "";
@@ -2257,12 +2416,23 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         if(fbUser.photoURL){ av.style.backgroundImage='url('+fbUser.photoURL+')'; av.textContent=''; }
         else { av.style.backgroundImage=''; av.textContent=initials(fbUser.displayName,fbUser.email); }
         byId('authSync').textContent = cloudReady ? 'Your decks and progress are synced to the cloud.' : 'Syncing…';
+        renderAdminArea();
       } else {
         byId('authSignedOut').style.display='';
         byId('authSignedIn').style.display='none';
         byId('authTitle').textContent='Sign in';
         setStatus('');
       }
+    }
+    function renderAdminArea(){
+      var aa=byId('adminArea'); if(!aa) return;
+      if(isAdminAccount()){
+        aa.style.display='';
+        var unlocked=isAdmin();
+        byId('adminLockedRow').style.display = unlocked?'none':'';
+        byId('adminUnlockedRow').style.display = unlocked?'':'none';
+        if(!ADMIN_PASS_HASH) byId('adminUnlockMsg').textContent='No admin password set yet in this build.';
+      } else { aa.style.display='none'; }
     }
     function updateAcctBtn(){ acctBtn.textContent = fbUser ? initials(fbUser.displayName,fbUser.email) : '☻'; acctBtn.style.fontSize = fbUser?'12px':''; acctBtn.style.fontWeight = fbUser?'800':''; }
 
@@ -2355,6 +2525,38 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     }
     function scheduleCloudSave(){ if(!fbUser||!cloudReady) return; clearTimeout(saveTimer); saveTimer=setTimeout(pushCloud,1200); }
 
+    // ---- shared OFFICIAL deck photos (admin publishes; everyone sees) ----
+    function loadOfficialIndex(){
+      if(!fbdb) return;
+      fbdb.collection('publicData').doc('photoIndex').get().then(function(snap){
+        officialIndex = (snap.exists && snap.data() && snap.data().keys) || {};
+        try{ renderDecks(); }catch(e){}
+      }).catch(function(){});
+    }
+    function getOfficialPhotos(key){
+      if(officialPhotos[key]) return Promise.resolve(officialPhotos[key]);
+      var shots=officialIndex[key]; if(!shots||!fbdb) return Promise.resolve(null);
+      var out={};
+      return Promise.all(Object.keys(shots).map(function(k){
+        return fbdb.collection('publicPhotos').doc(key+'__'+k).get().then(function(s){ if(s.exists&&s.data()&&s.data().d) out[k]=s.data().d; }).catch(function(){});
+      })).then(function(){ officialPhotos[key]=out; return out; });
+    }
+    function publishOfficialPhotos(key, shots){
+      if(!fbdb) return Promise.reject(new Error('offline'));
+      var present={}, jobs=[];
+      SHOT_KEYS.forEach(function(k){ if(shots[k]){ present[k]=1; jobs.push(fbdb.collection('publicPhotos').doc(key+'__'+k).set({d:shots[k]}).catch(function(e){ throw e; })); } });
+      return Promise.all(jobs).then(function(){
+        officialIndex[key]=present; officialPhotos[key]=shots;
+        var upd={}; upd['keys.'+key]=present;
+        return fbdb.collection('publicData').doc('photoIndex').set({keys:officialIndex},{merge:true});
+      });
+    }
+    CloudAPI = {
+      isAdmin: function(){ return !!(fbUser && fbUser.email && ADMIN_EMAILS.indexOf((fbUser.email||'').toLowerCase())>=0); },
+      getOfficialPhotos: getOfficialPhotos,
+      publishOfficialPhotos: publishOfficialPhotos
+    };
+
     // wrap local savers so edits also sync to the cloud when signed in
     var saveDecksLocal=saveDecks, saveDoneLocal=saveDone;
     saveDecks=function(){ saveDecksLocal(); scheduleCloudSave(); };
@@ -2419,6 +2621,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         .then(function(){
           firebase.initializeApp(FIREBASE_CONFIG);
           fbdb=firebase.firestore();
+          loadOfficialIndex();
           try{ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
           firebase.auth().onAuthStateChanged(function(u){
             fbUser=u||null;
@@ -2434,7 +2637,16 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     authModal.addEventListener('click', function(e){ if(e.target===authModal) closeAuth(); });
     byId('gBtn').addEventListener('click', function(){ signIn('google'); });
     byId('aBtn').addEventListener('click', function(){ signIn('apple'); });
-    byId('signOutBtn').addEventListener('click', function(){ try{ localStorage.removeItem(GKEY); }catch(e){} try{ if(window.firebase&&firebase.auth) firebase.auth().signOut(); }catch(e){} closeAuth(); if(hasConfig()&&!firebaseBlocked) showGate(); });
+    byId('signOutBtn').addEventListener('click', function(){ try{ localStorage.removeItem(GKEY); }catch(e){} adminLock(); try{ if(window.firebase&&firebase.auth) firebase.auth().signOut(); }catch(e){} closeAuth(); if(hasConfig()&&!firebaseBlocked) showGate(); });
+    byId('adminUnlockBtn').addEventListener('click', function(){
+      var pw=byId('adminPass').value||''; byId('adminUnlockMsg').textContent='Checking…';
+      tryAdminUnlock(pw).then(function(ok){
+        if(ok){ byId('adminPass').value=''; byId('adminUnlockMsg').textContent=''; renderAdminArea(); try{ renderDecks(); }catch(e){} }
+        else { byId('adminUnlockMsg').textContent = ADMIN_PASS_HASH ? 'Wrong password.' : 'No admin password set in this build yet.'; byId('adminUnlockMsg').style.color='var(--accent)'; }
+      });
+    });
+    byId('adminPass').addEventListener('keydown', function(e){ if(e.key==='Enter') byId('adminUnlockBtn').click(); });
+    byId('adminLockBtn').addEventListener('click', function(){ adminLock(); renderAdminArea(); try{ renderDecks(); }catch(e){} });
     // gate wiring
     byId('gGoogle').addEventListener('click', function(){ signIn('google', gStat); });
     byId('gApple').addEventListener('click', function(){ signIn('apple', gStat); });
