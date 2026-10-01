@@ -265,6 +265,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .brandgrp>summary{list-style:none; cursor:pointer; padding:13px 15px; display:flex; align-items:center; gap:9px; font-family:var(--disp); font-weight:700; font-size:15px}
 .brandgrp>summary::-webkit-details-marker{display:none}
 .brandgrp>summary .bdot{width:10px; height:14px; border-radius:3px; flex:0 0 auto; box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.bdot.logo{width:22px !important; height:22px !important; border-radius:5px; background-size:cover; background-position:center; background-color:#fff}
+.blogoBtn{background:none; border:1px solid var(--line); border-radius:7px; cursor:pointer; font-size:12px; padding:1px 6px; margin-left:6px; flex:0 0 auto}
 .brandgrp>summary .bc{margin-left:auto; font-size:12px; font-weight:600; color:var(--muted)}
 .brandgrp>summary .caret{color:var(--muted); transition:transform .18s; margin-left:4px}
 .branddir>summary{gap:12px; padding:14px 16px}
@@ -456,14 +458,18 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.5.3</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v6.5.4</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v6.0 – v6.5.3</span> Scan your decks <span class="new">Latest</span><span class="cnt">30 updates</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v6.0 – v6.5.4</span> Scan your decks <span class="new">Latest</span><span class="cnt">31 updates</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
-                  <summary><span class="ver">v6.5.3</span> Deck count fix <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <summary><span class="ver">v6.5.4</span> Brand logos <span class="new">New</span><span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Brands can now show a <b>logo</b> next to their name in the brand list, so the catalog is easier to scan at a glance.</div>
+                </details>
+                <details>
+                  <summary><span class="ver">v6.5.3</span> Deck count fix <span class="date">Oct 1, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">Fixed the owned-deck count so duplicates are counted properly — if you have 2 copies of a deck, it now counts as 2 (with a "unique" count shown too), both in the header and per brand.</div>
                 </details>
                 <details>
@@ -910,6 +916,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
           </div>
           <div id="deckCount" class="note" style="margin-top:6px"></div>
           <div class="deckgrid" id="deckGrid"></div>
+          <input type="file" id="brandLogoInput" accept="image/*" hidden>
         </section>
       </div>
     </div>
@@ -1299,6 +1306,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
   var officialIndex = {};           // deckKey -> {front:1, back:1, ...} for decks that HAVE official photos
   var officialPhotos = {};          // deckKey -> {front:base64, ...} cache
   var publicDeckList = [];          // admin-added shared decks (raw entries), for admin management
+  var brandLogos = {};              // brandKey -> logo dataURL (shared, admin-published)
+  function brandKeyOf(b){ return (b||'').trim().toLowerCase(); }
+  function bdotHtml(b, fallback){ var k=brandKeyOf(b); if(brandLogos[k]) return '<span class="bdot logo" style="background-image:url('+brandLogos[k]+')"></span>'; return '<span class="bdot" style="background:'+(fallback||'#888')+'"></span>'; }
   function deckKeyOf(name){ return (name||'').toLowerCase(); }
   function isAdminAccount(){ return !!(CloudAPI && CloudAPI.isAdmin && CloudAPI.isAdmin()); }
   function isAdmin(){ return isAdminAccount() && adminUnlocked && !!ADMIN_PASS_HASH; }
@@ -2006,7 +2016,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     brands.forEach(function(b){
       var arr=groups[b].sort(function(x,y){ var m=x.name.toLowerCase(),n=y.name.toLowerCase(); return m<n?-1:m>n?1:0; });
       var gc=arr.reduce(function(s,d){ return s + (d.status==='own' ? (Number(d.qty)||1) : 1); },0);
-      html+='<details class="brandgrp" open><summary><span class="bdot" style="background:'+(arr[0].color||'#888')+'"></span>'+esc(b)+'<span class="bc">'+gc+' deck'+(gc===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
+      html+='<details class="brandgrp" open><summary>'+bdotHtml(b,arr[0].color||'#888')+esc(b)+'<span class="bc">'+gc+' deck'+(gc===1?'':'s')+'</span><span class="caret">&#9662;</span></summary>';
       arr.forEach(function(d){
         var cf=deckShots(d).front; var chip = cf ? 'class="chip" style="background-image:url('+cf+')"' : 'class="chip" style="background:'+(d.color||'#888')+'"';
         var off = hasOfficial(deckKeyOf(d.name)) ? '<span class="obadge" title="Comes with photos">📷</span>' : '';
@@ -2046,7 +2056,8 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       var col=DECKS_DB[idxs[0]][2]||'#888';
       var openAttr = (q||fMode!=='all') ? ' open' : '';
       var pill = admin ? (n+' · '+needCount+' need photo'+(needCount===1?'':'s')) : (n+' deck'+(n===1?'':'s'));
-      body+='<details class="brandgrp branddir"'+openAttr+'><summary><span class="bdot" style="background:'+col+'"></span><span class="bnm">'+esc(b)+'</span><span class="bct">'+pill+'</span><span class="caret">&#9662;</span></summary>';
+      var logoBtn = admin ? '<button class="blogoBtn" data-bk="'+esc(brandKeyOf(b))+'" title="Set brand logo">🖼</button>' : '';
+      body+='<details class="brandgrp branddir"'+openAttr+'><summary>'+bdotHtml(b,col)+'<span class="bnm">'+esc(b)+'</span>'+logoBtn+'<span class="bct">'+pill+'</span><span class="caret">&#9662;</span></summary>';
       rowIdxs.sort(function(p,r){ var m=DECKS_DB[p][0].toLowerCase(), s=DECKS_DB[r][0].toLowerCase(); return m<s?-1:m>s?1:0; }).forEach(function(i){
         var e=DECKS_DB[i]; var have=ownedSet[e[0].toLowerCase()];
         var photo = hasOfficial(deckKeyOf(e[0]));
@@ -2110,7 +2121,11 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
     [].forEach.call(document.querySelectorAll('.mren'), function(btn){ btn.addEventListener('click', function(){ renamingKey=btn.getAttribute('data-k'); armedDel=''; renderAllBrands(); }); });
     var mcancel=document.querySelector('.mcancel'); if(mcancel) mcancel.addEventListener('click', function(){ renamingKey=''; renderAllBrands(); });
     [].forEach.call(document.querySelectorAll('.msave'), function(btn){ btn.addEventListener('click', function(){ var k=btn.getAttribute('data-k'); var e=findEntry(k); var row=btn.closest('.mrow'); if(!e||!row) return; var nn=row.querySelector('.mren-n'), nb=row.querySelector('.mren-b'); if(CloudAPI&&CloudAPI.renameSharedDeck){ CloudAPI.renameSharedDeck(e, nn?nn.value:e.name, nb?nb.value:e.brand).then(function(){ renamingKey=''; renderAllBrands(); }).catch(function(){ renamingKey=''; renderAllBrands(); }); } }); });
+    // brand logo (admin)
+    [].forEach.call(document.querySelectorAll('.blogoBtn'), function(btn){ btn.addEventListener('click', function(ev){ ev.preventDefault(); ev.stopPropagation(); logoTargetBrand=btn.getAttribute('data-bk'); byId('brandLogoInput').click(); }); });
   }
+  var logoTargetBrand="";
+  (function(){ var inp=byId('brandLogoInput'); if(inp) inp.addEventListener('change', function(e){ var f=e.target.files[0]; if(!f||!logoTargetBrand) return; downscale(f, function(url){ if(CloudAPI&&CloudAPI.publishBrandLogo){ CloudAPI.publishBrandLogo(logoTargetBrand, url).catch(function(){}); } }); this.value=''; }); })();
 
   // ---- 3D viewer modal ----
   var deckModal=byId('deckModal'), dvCur=null;
@@ -2665,13 +2680,43 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
       if(!newName) return Promise.reject(new Error('name required'));
       return removeSharedDeck(entry).then(function(){ return publishDecks(newBrand, [newName]); });
     }
+    // ---- shared BRAND LOGOS (admin publishes; everyone sees) ----
+    function loadBrandLogos(){
+      if(!fbdb) return;
+      fbdb.collection('publicData').doc('brandLogoIndex').get().then(function(snap){
+        var keys=(snap.exists && snap.data() && snap.data().keys) || {};
+        var ks=Object.keys(keys); if(!ks.length) return;
+        ks.forEach(function(k){
+          fbdb.collection('publicBrandLogos').doc(k).get().then(function(s){ if(s.exists&&s.data()&&s.data().d){ brandLogos[k]=s.data().d; try{ renderDecks(); }catch(e){} } }).catch(function(){});
+        });
+      }).catch(function(){});
+    }
+    function publishBrandLogo(brandKey, dataUrl){
+      if(!fbdb) return Promise.reject(new Error('offline'));
+      if(!brandKey||!dataUrl) return Promise.reject(new Error('missing'));
+      return fbdb.collection('publicBrandLogos').doc(brandKey).set({d:dataUrl}).then(function(){
+        brandLogos[brandKey]=dataUrl;
+        var idx={keys:{}}; idx.keys[brandKey]=1;
+        return fbdb.collection('publicData').doc('brandLogoIndex').set(idx,{merge:true});
+      }).then(function(){ try{ renderDecks(); }catch(e){} });
+    }
+    function removeBrandLogo(brandKey){
+      if(!fbdb) return Promise.reject(new Error('offline'));
+      return fbdb.collection('publicBrandLogos').doc(brandKey).delete().then(function(){
+        delete brandLogos[brandKey];
+        var patch={keys:{}}; patch.keys[brandKey]=firebase.firestore.FieldValue.delete();
+        return fbdb.collection('publicData').doc('brandLogoIndex').set(patch,{merge:true});
+      }).then(function(){ try{ renderDecks(); }catch(e){} });
+    }
     CloudAPI = {
       isAdmin: function(){ return !!(fbUser && fbUser.email && ADMIN_EMAILS.indexOf((fbUser.email||'').toLowerCase())>=0); },
       getOfficialPhotos: getOfficialPhotos,
       publishOfficialPhotos: publishOfficialPhotos,
       publishDecks: publishDecks,
       removeSharedDeck: removeSharedDeck,
-      renameSharedDeck: renameSharedDeck
+      renameSharedDeck: renameSharedDeck,
+      publishBrandLogo: publishBrandLogo,
+      removeBrandLogo: removeBrandLogo
     };
 
     // wrap local savers so edits also sync to the cloud when signed in
@@ -2740,6 +2785,7 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
           fbdb=firebase.firestore();
           loadOfficialIndex();
           loadPublicDecks();
+          loadBrandLogos();
           try{ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
           firebase.auth().onAuthStateChanged(function(u){
             fbUser=u||null;
