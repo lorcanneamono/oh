@@ -1521,8 +1521,14 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
           var fullFb = m.video || ytFull(m.name);
           var shortFb = m.videoShort || ytShortTut(m.name);
           var quick = ytQuick(m.name);
-          watch='<button class="watch" type="button" data-ytq="'+esc(m.name+' cardistry tutorial')+'" data-mid="'+esc(m.id)+'" data-title="'+esc(m.name)+'" data-fb="'+esc(fullFb)+'" title="Full tutorial, in-app">'+playIco+'Full</button>'
-               +'<button class="watch short" type="button" data-ytq="'+esc(m.name+' cardistry tutorial short')+'" data-mid="'+esc(m.id)+'" data-title="'+esc(m.name)+'" data-fb="'+esc(shortFb)+'" title="Short video, in-app">'+playIco+'Short</button>'
+          var fullId = ytId(m.video||''), shortId = ytId(m.videoShort||'');
+          var fullBtn = fullId
+            ? '<button class="watch" type="button" data-ytv="'+esc(fullId)+'" data-mid="'+esc(m.id)+'" data-title="'+esc(m.name)+'" data-fb="'+esc(fullFb)+'" title="Full tutorial, in-app">'+playIco+'Full</button>'
+            : '<a class="watch" href="'+esc(fullFb)+'" target="_blank" rel="noopener" title="Full tutorial on YouTube">'+playIco+'Full</a>';
+          var shortBtn = shortId
+            ? '<button class="watch short" type="button" data-ytv="'+esc(shortId)+'" data-mid="'+esc(m.id)+'" data-title="'+esc(m.name)+'" data-fb="'+esc(shortFb)+'" title="Short video, in-app">'+playIco+'Short</button>'
+            : '<a class="watch short" href="'+esc(shortFb)+'" target="_blank" rel="noopener" title="Short video on YouTube">'+playIco+'Short</a>';
+          watch=fullBtn+shortBtn
                +'<a class="watch quick" href="'+esc(quick)+'" target="_blank" rel="noopener" title="Search YouTube for this trick">'+searchIco+'Search</a>';
         }
         var credParts=[];
@@ -1641,12 +1647,25 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   function buildYT(opts){
     var holder=byId('ytPlayer'); holder.innerHTML=''; var inner=document.createElement('div'); holder.appendChild(inner);
     var pv={ rel:0, modestbranding:1, playsinline:1 };
-    var cfg={ width:'100%', height:'100%', playerVars:pv, events:{ onReady:function(e){ try{ e.target.playVideo(); }catch(x){} startPmTimer(); } } };
-    if(opts.kind==='ytsearch'){ cfg.playerVars.listType='search'; cfg.playerVars.list=opts.query; }
-    else if(opts.videoId){ cfg.videoId=opts.videoId; }
+    var cfg={ width:'100%', height:'100%', playerVars:pv, events:{
+      onReady:function(e){ try{ e.target.playVideo(); }catch(x){} startPmTimer(); },
+      onError:function(){ stopPmTimer(); showFallback(opts); }
+    } };
+    if(opts.videoId){ cfg.videoId=opts.videoId; }
+    else if(opts.kind==='ytsearch'){ showFallback(opts); return; }
     try{ ytPlayer=new YT.Player(inner, cfg); }catch(e){ showFallback(opts); }
   }
-  function showFallback(opts){ var ytH=byId('ytHolder'), fb=byId('pmFallback'); if(ytH) ytH.style.display='none'; if(fb){ fb.style.display=''; fb.innerHTML='The in-app player runs on the live site. <a href="'+esc(opts.fallback||'#')+'" target="_blank" rel="noopener">Open on YouTube &rarr;</a>'; } }
+  function showFallback(opts){
+    var ytH=byId('ytHolder'), fb=byId('pmFallback'); if(ytH) ytH.style.display='none';
+    try{ if(ytPlayer && ytPlayer.destroy){ ytPlayer.destroy(); } }catch(e){} ytPlayer=null;
+    if(!fb) return;
+    var link=esc(opts.fallback||'#');
+    var html='This tutorial can&rsquo;t play embedded here (the uploader has disabled it or it&rsquo;s a Short). '
+      +'<a href="'+link+'" target="_blank" rel="noopener">Watch it on YouTube &rarr;</a>';
+    if(opts.moveId && !done[opts.moveId]){ html+='<div style="margin-top:9px"><button class="btn line" type="button" id="pmMark">Mark as learned</button></div>'; }
+    fb.style.display=''; fb.innerHTML=html;
+    var mk=byId('pmMark'); if(mk){ mk.onclick=function(){ pmMoveId=opts.moveId; completeFromWatch(); mk.disabled=true; mk.textContent='✓ Learned'; }; }
+  }
   function openPlayer(opts, legacyTitle){
     if(typeof opts==='string') opts={ url:opts, title:legacyTitle, kind:'file' };
     byId('modalTitle').textContent=opts.title||'Tutorial';
