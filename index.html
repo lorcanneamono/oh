@@ -338,6 +338,9 @@ video.prev{width:100%; border-radius:13px; background:#000; margin-top:6px; max-
 .capslot.on{outline:2px solid var(--accent); outline-offset:1px}
 .capslot .th{height:46px; border-radius:6px; background:var(--surface); background-size:cover; background-position:center; display:grid; place-items:center; color:var(--faint); font-size:18px; margin-bottom:5px}
 .capslot .lb{color:var(--muted); font-size:10.5px; line-height:1.2}
+.capslot.skipped{border-style:dashed; opacity:.85}
+.capslot.skipped .th{color:var(--muted); font-size:20px}
+.capslot.skipped .lb{color:var(--muted); font-weight:700; font-style:italic}
 .capslot.filled .lb{color:var(--accent-ink); font-weight:700}
 .capslot.filled .th{color:#fff; text-shadow:0 1px 3px rgba(0,0,0,.5)}
 .capdone{display:flex; gap:8px; margin-top:16px}
@@ -485,6 +488,14 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
 .pmbar>i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent),var(--l2)); border-radius:100px; transition:width .3s ease }
 .pmlab{ font-size:12.5px; color:var(--muted); margin-top:7px; text-align:center }
 
+/* ===== language warning ===== */
+.langicon{ font-size:40px; line-height:1; color:var(--l2); margin:4px 0 6px }
+.langh{ font-family:var(--disp); font-weight:800; font-size:21px; margin:0 0 6px }
+.langp{ font-size:14.5px; color:var(--muted); margin:0 auto 18px; max-width:30ch; line-height:1.5 }
+.langbtns{ display:flex; gap:9px; justify-content:center }
+.langbtns .btn{ min-width:120px }
+.langtag{ display:inline-flex; align-items:center; gap:3px; font-family:var(--disp); font-weight:700; font-size:9.5px; letter-spacing:.4px; text-transform:uppercase; color:var(--l2); background:color-mix(in srgb,var(--l2) 15%,transparent); border:1px solid color-mix(in srgb,var(--l2) 35%,transparent); border-radius:6px; padding:2px 6px; vertical-align:middle }
+
 /* ===== community (WIP) ===== */
 .wipbanner{ border-radius:20px; padding:22px; margin-top:12px; color:#fff; box-shadow:var(--shadow); position:relative; overflow:hidden; background:radial-gradient(130% 150% at 15% 0%,#4a0f1c 0%,#26090f 55%,#0c0709 100%) }
 .wipbanner:after{ content:"\1F3AC"; position:absolute; right:-6px; bottom:-18px; font-size:96px; opacity:.12 }
@@ -609,13 +620,20 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
         <section class="block" id="changelog">
           <p class="eyebrow">What's new</p>
           <h2 class="big">Changelog</h2>
-          <p class="updline">Last updated <b>Oct 1, 2026</b> &middot; you're on <b>v7.0</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
+          <p class="updline">Last updated <b>Oct 6, 2026</b> &middot; you're on <b>v7.2</b>. Big updates bump the whole number; smaller ones bump a decimal.</p>
           <div class="log">
 
             <details class="grp" open>
-              <summary><span class="range">v7.0 &ndash; v7.1</span> Streaks, rewards &amp; a new look <span class="new">Latest</span><span class="cnt">Oct 2026</span><span class="caret">&#9662;</span></summary>
+              <summary><span class="range">v7.0 &ndash; v7.2</span> Streaks, rewards &amp; a new look <span class="new">Latest</span><span class="cnt">Oct 2026</span><span class="caret">&#9662;</span></summary>
               <div class="inner">
                 <details open>
+                  <summary><span class="ver">v7.2</span> Scanner, deletes &amp; content warnings <span class="date">Oct 6, 2026</span><span class="caret">&#9662;</span></summary>
+                  <div class="body">Quality-of-life improvements across scanning, your collection and tutorials.
+                    <br>&bull; <b>Delete a scan</b> — in a deck&rsquo;s 3D view you can now remove just its photos (and re-scan) while keeping the deck, or remove the whole deck. Both work for everyone, on your own collection.
+                    <br>&bull; <b>Skip a scan angle</b> — the scanner&rsquo;s <b>Skip</b> now counts a step as done without saving a photo, so you can finish a deck even when a side or the card shot isn&rsquo;t handy. Skipped steps are marked, and you can undo a skip anytime.
+                    <br>&bull; <b>Language warnings</b> — tutorials known to contain strong language now show a quick heads-up before they play, so nothing catches you off guard.</div>
+                </details>
+                <details>
                   <summary><span class="ver">v7.1</span> Video player fixes <span class="date">Oct 4, 2026</span><span class="caret">&#9662;</span></summary>
                   <div class="body">A focused bug-fix release for the in-app tutorial player.
                     <br>&bull; <b>Fixed &ldquo;This video is unavailable&rdquo;</b> — tutorials now load the actual tutorial video instead of a live search, so the built-in moves play right inside the app again.
@@ -962,6 +980,20 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
     <div id="ytHolder" class="ytholder" style="display:none"><div id="ytPlayer"></div></div>
     <div id="pmProg" class="pmprog" style="display:none"><div class="pmbar"><i id="pmFill"></i></div><div class="pmlab" id="pmLab"></div></div>
     <div id="pmFallback" class="note" style="display:none; margin-top:10px"></div>
+    <button id="pmFlagBtn" class="btn line" type="button" style="display:none; margin-top:12px; width:100%"></button>
+  </div>
+</div>
+
+<!-- language warning modal -->
+<div class="modal" id="langModal">
+  <div class="box2" style="max-width:380px; text-align:center">
+    <div class="langicon">&#9888;</div>
+    <h3 class="langh">Language warning</h3>
+    <p class="langp" id="langMsg">Heads up &mdash; this tutorial may contain vulgar or strong language.</p>
+    <div class="langbtns">
+      <button class="btn" id="langGo" type="button">Watch anyway</button>
+      <button class="btn line" id="langCancel" type="button">Cancel</button>
+    </div>
   </div>
 </div>
 
@@ -982,7 +1014,8 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
       <button class="btn" id="dvScan">📷 Scan the deck</button>
       <button class="btn line" id="dvEdit">Edit</button>
       <button class="btn line" id="dvFav">★ Favorite</button>
-      <button class="btn line" id="dvRemove">Remove</button>
+      <button class="btn line" id="dvDelScan" style="display:none">🗑 Delete scan</button>
+      <button class="btn line" id="dvRemove">Remove deck</button>
     </div>
   </div>
 </div>
@@ -1412,6 +1445,8 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   var publicDeckList = [];          // admin-added shared decks (raw entries), for admin management
   var brandLogos = {};              // brandKey -> logo dataURL (shared, admin-published)
   var stockPrices = {};             // deckKey -> price (shared, admin sets the "stock price")
+  var langFlags = {};               // videoId -> 1 (shared, admin flags tutorials with vulgar language)
+  function hasLang(vid){ return !!(vid && langFlags[vid]); }
   function brandKeyOf(b){ return (b||'').trim().toLowerCase(); }
   function bdotHtml(b, fallback){ var k=brandKeyOf(b); if(brandLogos[k]) return '<span class="bdot logo" style="background-image:url('+brandLogos[k]+')"></span>'; return '<span class="bdot" style="background:'+(fallback||'#888')+'"></span>'; }
   function deckKeyOf(name){ return (name||'').toLowerCase(); }
@@ -1515,6 +1550,8 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
       html+='<div class="lvbar"><i class="b'+L.n+'" style="width:'+pct+'%"></i></div>';
       shown.forEach(function(m){
         var d=done[m.id]?" done":"";
+        var langFlagged = hasLang(ytId(m.video||'')) || hasLang(ytId(m.videoShort||'')) || hasLang(ytId(m.videoUrl||'')) || hasLang(ytId(m.link||''));
+        var langTag = langFlagged ? ' <span class="langtag" title="May contain vulgar or strong language">&#9888; Language</span>' : '';
         var yours = m.src==="you" ? ' <span class="yours">Yours</span>' : '';
         var by=(m.by==="classic"||m.by==="iconic"||m.by==="foundation"||!m.by)?'<span class="mby">'+esc(m.by||"")+'</span>':'<span class="mby">by '+esc(m.by)+'</span>';
         var watch;
@@ -1547,7 +1584,7 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
         html+='<div class="move'+d+'" data-id="'+m.id+'">'
           +'<div class="hit">'
           +'<div class="box" role="checkbox" tabindex="0" aria-checked="'+(!!done[m.id])+'" aria-label="Mark '+esc(m.name)+' as learned"><svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg></div>'
-          +'<div class="mbody"><div class="mtop"><span class="lvtag p'+m.lv+'">L'+m.lv+'</span><span class="mname">'+esc(m.name)+'</span>'+yours+by+'</div>'
+          +'<div class="mbody"><div class="mtop"><span class="lvtag p'+m.lv+'">L'+m.lv+'</span><span class="mname">'+esc(m.name)+'</span>'+yours+by+langTag+'</div>'
           +'<div class="mcat">'+esc(m.cat)+'</div><div class="mblurb">'+esc(m.blurb)+'</div>'+thumb+hands+credit+'</div></div>'
           +'<div class="acts">'+watch+edit+'</div></div>';
       });
@@ -1618,7 +1655,7 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
     var ed=e.target.closest('[data-edit]'); if(ed){ openEdit(ed.getAttribute('data-edit')); return; }
     var play=e.target.closest('[data-play]'); if(play){ openPlayer({kind:'file', url:play.getAttribute('data-play'), title:play.getAttribute('data-title'), moveId:play.getAttribute('data-mid')||null}); return; }
     var ytq=e.target.closest('[data-ytq]'); if(ytq){ openPlayer({kind:'ytsearch', query:ytq.getAttribute('data-ytq'), title:ytq.getAttribute('data-title'), moveId:ytq.getAttribute('data-mid')||null, fallback:ytq.getAttribute('data-fb')}); return; }
-    var ytv=e.target.closest('[data-ytv]'); if(ytv){ openPlayer({kind:'yt', videoId:ytv.getAttribute('data-ytv'), title:ytv.getAttribute('data-title'), moveId:ytv.getAttribute('data-mid')||null, fallback:ytv.getAttribute('data-fb')}); return; }
+    var ytv=e.target.closest('[data-ytv]'); if(ytv){ var _o={kind:'yt', videoId:ytv.getAttribute('data-ytv'), title:ytv.getAttribute('data-title'), moveId:ytv.getAttribute('data-mid')||null, fallback:ytv.getAttribute('data-fb')}; if(hasLang(_o.videoId)){ warnLang(_o); } else { openPlayer(_o); } return; }
     if(e.target.closest('.watch')) return; // let links work
     var box=e.target.closest('.box'); if(box){ var mv=box.closest('.move'); toggle(mv.getAttribute('data-id')); }
   });
@@ -1632,7 +1669,7 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   var modal=document.getElementById('modal'), modalVid=document.getElementById('modalVid');
   // ---------- in-app video player with watch-to-complete ----------
   var ytApiState=0; // 0 idle, 1 loading, 2 ready, -1 failed
-  var ytPlayer=null, pmMoveId=null, pmDone=false, pmTimer=null; var PM_THRESH=0.5;
+  var ytPlayer=null, pmMoveId=null, pmDone=false, pmTimer=null, pmVideoId=null; var PM_THRESH=0.5;
   function loadYTApi(){
     if(ytApiState>=1) return;
     ytApiState=1;
@@ -1676,9 +1713,10 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   function openPlayer(opts, legacyTitle){
     if(typeof opts==='string') opts={ url:opts, title:legacyTitle, kind:'file' };
     byId('modalTitle').textContent=opts.title||'Tutorial';
-    pmMoveId=opts.moveId||null; pmDone=false;
+    pmMoveId=opts.moveId||null; pmDone=false; pmVideoId=opts.videoId||null;
     var vid=byId('modalVid'), ytH=byId('ytHolder'), prog=byId('pmProg'), fb=byId('pmFallback');
     vid.style.display='none'; ytH.style.display='none'; prog.style.display='none'; fb.style.display='none'; fb.textContent='';
+    refreshFlagBtn();
     stopPmTimer();
     if(pmMoveId && !done[pmMoveId]){ prog.style.display=''; setPmProg(0); byId('pmLab').textContent='Watch about halfway to check this move off.'; }
     else if(pmMoveId){ prog.style.display=''; setPmProg(1); byId('pmLab').textContent='✓ Already learned.'; pmDone=true; }
@@ -1696,6 +1734,28 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   function closePlayer(){ modal.classList.remove('on'); stopPmTimer(); var vid=byId('modalVid'); try{ vid.pause(); vid.removeAttribute('src'); vid.load(); }catch(e){} try{ if(ytPlayer && ytPlayer.destroy){ ytPlayer.destroy(); } }catch(e){} ytPlayer=null; var yp=byId('ytPlayer'); if(yp) yp.innerHTML=''; }
   document.getElementById('modalX').addEventListener('click', closePlayer);
   modal.addEventListener('click', function(e){ if(e.target===modal) closePlayer(); });
+
+  // ---------- language warning + admin flagging ----------
+  var langModal=byId('langModal'), _langPending=null;
+  function warnLang(opts){ _langPending=opts; byId('langMsg').textContent='Heads up — this tutorial may contain vulgar or strong language.'; langModal.classList.add('on'); }
+  function closeLang(){ langModal.classList.remove('on'); _langPending=null; }
+  byId('langGo').addEventListener('click', function(){ var o=_langPending; langModal.classList.remove('on'); _langPending=null; if(o) openPlayer(o); });
+  byId('langCancel').addEventListener('click', closeLang);
+  langModal.addEventListener('click', function(e){ if(e.target===langModal) closeLang(); });
+  function refreshFlagBtn(){
+    var b=byId('pmFlagBtn'); if(!b) return;
+    if(!isAdmin() || !pmVideoId || !(CloudAPI && CloudAPI.publishLangFlag)){ b.style.display='none'; return; }
+    b.style.display='';
+    b.textContent = hasLang(pmVideoId) ? '⚑ Flagged for language — tap to clear' : '⚑ Flag this video for language';
+  }
+  byId('pmFlagBtn').addEventListener('click', function(){
+    if(!isAdmin() || !pmVideoId || !(CloudAPI && CloudAPI.publishLangFlag)) return;
+    var on=!hasLang(pmVideoId);
+    if(on) langFlags[pmVideoId]=1; else delete langFlags[pmVideoId];
+    CloudAPI.publishLangFlag(pmVideoId, on);
+    refreshFlagBtn(); try{ renderMoves(); }catch(e){}
+    if(typeof toast==='function') toast(on ? 'Flagged — viewers will see a language warning.' : 'Language flag cleared.');
+  });
 
 
   // ---------- Add a tutorial ----------
@@ -2346,7 +2406,10 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
     byId('dvTags').innerHTML = d.fav ? '<span class="dtag fav">★ Favorite</span>' : '';
     var nt=byId('dvNotes'); if(d.notes){ nt.textContent=d.notes; nt.hidden=false; } else { nt.hidden=true; }
     byId('dvFav').textContent = d.fav ? "★ Unfavorite" : "☆ Favorite";
-    byId('dvRemove').removeAttribute('data-armed'); byId('dvRemove').textContent="Remove";
+    byId('dvRemove').removeAttribute('data-armed'); byId('dvRemove').textContent="Remove deck";
+    var hasScan = scanCount(d.shots) > 0 || !!d.photo || !!d.photoBack;
+    var dds=byId('dvDelScan'); dds.style.display = hasScan ? '' : 'none'; dds.removeAttribute('data-armed'); dds.textContent="🗑 Delete scan";
+    byId('dvScan').textContent = hasScan ? "📷 Re-scan the deck" : "📷 Scan the deck";
     var S=deckShots(d), cv=byId('dvCardView');
     if(S.cardFront||S.cardBack){
       cv.hidden=false;
@@ -2371,7 +2434,15 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   deckModal.addEventListener('click', function(e){ if(e.target===deckModal) closeDeckModal(); });
   byId('dvEdit').addEventListener('click', function(){ if(dvCur){ var id=dvCur; closeDeckModal(); openDeckForm(null, id); } });
   byId('dvFav').addEventListener('click', function(){ if(!dvCur) return; decks.forEach(function(d){ if(d.id===dvCur) d.fav=!d.fav; }); saveDecks(); renderDecks(); openDeckModal(dvCur); });
-  byId('dvRemove').addEventListener('click', function(){ if(!dvCur) return; var btn=this; if(btn.getAttribute('data-armed')){ decks=decks.filter(function(d){return d.id!==dvCur;}); saveDecks(); try{ recordValue(); }catch(e){} renderDecks(); closeDeckModal(); } else { btn.setAttribute('data-armed','1'); btn.textContent="Tap to confirm"; setTimeout(function(){ if(btn){ btn.removeAttribute('data-armed'); btn.textContent="Remove"; } },2500); } });
+  byId('dvRemove').addEventListener('click', function(){ if(!dvCur) return; var btn=this; if(btn.getAttribute('data-armed')){ decks=decks.filter(function(d){return d.id!==dvCur;}); saveDecks(); try{ recordValue(); }catch(e){} renderDecks(); closeDeckModal(); } else { btn.setAttribute('data-armed','1'); btn.textContent="Tap to confirm"; setTimeout(function(){ if(btn){ btn.removeAttribute('data-armed'); btn.textContent="Remove deck"; } },2500); } });
+  byId('dvDelScan').addEventListener('click', function(){ if(!dvCur) return; var btn=this;
+    if(btn.getAttribute('data-armed')){
+      var id=dvCur;
+      decks.forEach(function(d){ if(d.id===id){ d.shots={}; d.photo=""; d.photoBack=""; } });
+      saveDecks(); renderDecks(); openDeckModal(id);
+      if(typeof toast==='function') toast('Scan deleted — the deck is still in your collection.');
+    } else { btn.setAttribute('data-armed','1'); btn.textContent="Tap to confirm"; setTimeout(function(){ if(btn){ btn.removeAttribute('data-armed'); btn.textContent="🗑 Delete scan"; } },2500); }
+  });
 
   // ---- autocomplete ----
   var acItems=[], acHi=-1;
@@ -2541,12 +2612,13 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   var CAP_ICON={front:'▮',back:'▯',left:'▏',right:'▕',top:'▔',bottom:'▁',inside:'▤',cardFront:'♠',cardBack:'✦'};
   function normFace(f){ f=(f||"").toLowerCase().replace(/\s+/g,''); if(f==='card-front'||f==='cardfront'||f==='face') return 'cardFront'; if(f==='card-back'||f==='cardback') return 'cardBack'; if(['front','back','left','right','top','bottom','inside'].indexOf(f)>=0) return f; return null; }
   var BOX_FACE_KEYS=['front','back','left','right','top','bottom'];
-  var capModal=byId('capModal'), capShots={}, capActive=0, capMode='scan', capStream=null, capOnDone=null, capForce=false, capBusy=false;
+  var capModal=byId('capModal'), capShots={}, capSkipped={}, capActive=0, capMode='scan', capStream=null, capOnDone=null, capForce=false, capBusy=false;
+  function capDone(k){ return !!(capShots[k] || capSkipped[k]); }
   var capList=CAP_TARGETS.slice();   // active targets (fewer when the deck is sealed)
   function capListFor(cond){ return cond==='sealed' ? CAP_TARGETS.filter(function(t){ return BOX_FACE_KEYS.indexOf(t.k)>=0; }) : CAP_TARGETS.slice(); }
   function capValidTarget(k){ return capList.some(function(t){return t.k===k;}); }
-  function firstEmpty(){ for(var i=0;i<capList.length;i++){ if(!capShots[capList[i].k]) return i; } return 0; }
-  function capFilledCount(){ var n=0; capList.forEach(function(t){ if(capShots[t.k]) n++; }); return n; }
+  function firstEmpty(){ for(var i=0;i<capList.length;i++){ if(!capDone(capList[i].k)) return i; } return 0; }
+  function capFilledCount(){ var n=0; capList.forEach(function(t){ if(capDone(t.k)) n++; }); return n; }
   function grabFrame(){
     var v=byId('capVideo'); if(!v||!v.videoWidth) return null;
     var mx=560,w=v.videoWidth,h=v.videoHeight; if(w>mx||h>mx){ if(w>h){h=Math.round(h*mx/w);w=mx;} else {w=Math.round(w*mx/h);h=mx;} }
@@ -2563,10 +2635,11 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   }
   function renderCapGrid(){
     byId('capGrid').innerHTML = capList.map(function(t,i){
-      var has=capShots[t.k];
+      var has=capShots[t.k], skip=!has && capSkipped[t.k];
       var th = has ? 'style="background-image:url('+has+')"' : '';
-      var del = has ? '<button class="capdel" data-del="'+i+'" title="Remove this photo">&times;</button>' : '';
-      return '<div class="capslot'+(has?' filled':'')+(i===capActive?' on':'')+'" data-i="'+i+'">'+del+'<div class="th" '+th+'>'+(has?'':CAP_ICON[t.k]||'?')+'</div><div class="lb">'+esc(t.label.replace(' of the box','').replace('A card — ','Card '))+'</div></div>';
+      var del = (has||skip) ? '<button class="capdel" data-del="'+i+'" title="'+(skip?'Undo skip':'Remove this photo')+'">&times;</button>' : '';
+      var inner = has ? '' : (skip ? '&#10003;' : (CAP_ICON[t.k]||'?'));
+      return '<div class="capslot'+(has?' filled':'')+(skip?' skipped':'')+(i===capActive?' on':'')+'" data-i="'+i+'">'+del+'<div class="th" '+th+'>'+inner+'</div><div class="lb">'+(skip?'Skipped':esc(t.label.replace(' of the box','').replace('A card — ','Card ')))+'</div></div>';
     }).join("");
     var n=capFilledCount();
     byId('capProg').textContent = n+' of '+capList.length+' captured'+(n<capList.length?' — need all to finish':' — all set!');
@@ -2580,7 +2653,7 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
     byId('capTargetHint').textContent=t.hint + (sampleFn?' · the AI trims the photo down to just the deck.':'');
     renderCapGrid();
   }
-  function assignShot(key,url){ if(capValidTarget(key)){ capShots[key]=url; } }
+  function assignShot(key,url){ if(capValidTarget(key)){ capShots[key]=url; delete capSkipped[key]; } }
   function facesOf(res){ var out={}; if(res&&res.faces){ res.faces.forEach(function(f){ var k=normFace(f); if(k) out[k]=1; }); } if(res&&res.inside) out['inside']=1; return out; }
   function validBox(b){ return b && b.length===4 && b.every(function(n){return typeof n==='number'&&isFinite(n);}) && b[2]>0.03 && b[3]>0.03 && b[0]>=0 && b[1]>=0 && b[0]<1 && b[1]<1; }
   function cropToBox(url,b){
@@ -2656,6 +2729,7 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   function openCapture(shots, title, cond, onDone){
     capList = capListFor(cond);
     capShots = Object.assign({}, shots||{});
+    capSkipped = {};
     capOnDone = onDone||function(){}; capForce=false;
     byId('capStatus').textContent = cond==='sealed' ? 'Sealed deck — just the 6 outer sides needed (no inside or card).' : '';
     byId('capUpStatus').textContent='';
@@ -2669,9 +2743,16 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
   byId('capShot').addEventListener('click', function(){ if(capBusy) return; var f=grabFrame(); if(f){ handleCapture(f); } else { byId('capFileCam').click(); } });
   byId('capTakePhoto').addEventListener('click', function(){ byId('capFileCam').click(); });
   byId('capFileCam').addEventListener('change', function(e){ var f=e.target.files[0]; if(!f) return; downscale(f, function(url){ handleCapture(url); }); this.value=''; });
-  byId('capSkip').addEventListener('click', function(){ setCapTarget((capActive+1)%capList.length); });
+  byId('capSkip').addEventListener('click', function(){
+    var k=capList[capActive].k;
+    if(!capShots[k]) capSkipped[k]=1;   // counts toward completion, but no photo is stored
+    byId('capStatus').textContent='Skipped '+capList[capActive].label+' — counted, no photo saved.';
+    renderCapGrid();
+    var ne=firstEmpty();
+    if(capFilledCount()<capList.length) setCapTarget(ne); else setCapTarget((capActive+1)%capList.length);
+  });
   byId('capGrid').addEventListener('click', function(e){
-    var del=e.target.closest('.capdel'); if(del){ e.stopPropagation(); var di=Number(del.getAttribute('data-del')); delete capShots[capList[di].k]; byId('capStatus').textContent='Removed '+capList[di].label+'.'; setCapTarget(di); return; }
+    var del=e.target.closest('.capdel'); if(del){ e.stopPropagation(); var di=Number(del.getAttribute('data-del')); var wasSkip=!capShots[capList[di].k]&&capSkipped[capList[di].k]; delete capShots[capList[di].k]; delete capSkipped[capList[di].k]; byId('capStatus').textContent=(wasSkip?'Un-skipped ':'Removed ')+capList[di].label+'.'; setCapTarget(di); return; }
     var s=e.target.closest('.capslot'); if(!s) return; capActive=Number(s.getAttribute('data-i')); capForce=true; renderCapGrid(); byId('capStatus').textContent='Next capture → '+capList[capActive].label+'. '+(capMode==='upload'?'Choose a photo.':'Capture or take a photo.'); if(capMode==='upload'){ byId('capFiles').click(); } });
   byId('capPick').addEventListener('click', function(){ byId('capFiles').click(); });
   function downscaleP(file){ return new Promise(function(res){ downscale(file, res); }); }
@@ -2953,6 +3034,17 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
       var patch={map:{}}; patch.map[deckKey]=Number(price)||0;
       return fbdb.collection('publicData').doc('prices').set(patch,{merge:true}).then(function(){ try{ renderDecks(); recordValue(); }catch(e){} });
     }
+    function loadLangFlags(){
+      if(!fbdb) return;
+      fbdb.collection('publicData').doc('langflags').get().then(function(s){
+        if(s.exists && s.data() && s.data().map){ langFlags=s.data().map; try{ renderMoves(); }catch(e){} }
+      }).catch(function(){});
+    }
+    function publishLangFlag(videoId, on){
+      if(!fbdb || !videoId) return Promise.reject(new Error('offline'));
+      var patch={map:{}}; patch.map[videoId]= on ? true : firebase.firestore.FieldValue.delete();
+      return fbdb.collection('publicData').doc('langflags').set(patch,{merge:true});
+    }
     CloudAPI = {
       isAdmin: function(){ return !!(fbUser && fbUser.email && ADMIN_EMAILS.indexOf((fbUser.email||'').toLowerCase())>=0); },
       getOfficialPhotos: getOfficialPhotos,
@@ -2962,7 +3054,9 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
       renameSharedDeck: renameSharedDeck,
       publishBrandLogo: publishBrandLogo,
       removeBrandLogo: removeBrandLogo,
-      publishStockPrice: publishStockPrice
+      publishStockPrice: publishStockPrice,
+      loadLangFlags: loadLangFlags,
+      publishLangFlag: publishLangFlag
     };
 
     // wrap local savers so edits also sync to the cloud when signed in
@@ -3034,6 +3128,7 @@ section.block .card:hover{ box-shadow:0 18px 44px rgba(0,0,0,.22) }
           loadPublicDecks();
           loadBrandLogos();
           loadStockPrices();
+          loadLangFlags();
           try{ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){}
           firebase.auth().onAuthStateChanged(function(u){
             fbUser=u||null;
